@@ -1,0 +1,87 @@
+must_urls:
+  # === Ceppi raccomandati / backup dal documento ===
+  - url: "https://www.ccap.ac.uk/catalogue/strain-1475-9"
+    tag: "CCAP 1475/9 Limnospira maxima (pre-Nagoya; LC-MS toxins none detected)"
+    focus: "spirulina_strains_eu_collections"
+    source: "seed:doc"
+  - url: "https://marinebiotechnology.org/en/store/strain-cultures/cyanobacteria/bea0005b.html"
+    tag: "BEA 0005B Arthrospira sp. (scaling verso raceway)"
+    focus: "spirulina_strains_eu_collections"
+    source: "seed:doc"
+  - url: "https://marinebiotechnology.org/en/store/strain-cultures/cyanobacteria/bea0010b.html"
+    tag: "BEA 0010B A. platensis (backup; filamenti dritti harvesting)"
+    focus: "spirulina_strains_eu_collections"
+    source: "seed:doc"
+  - url: "https://sagdb.uni-goettingen.de/"
+    tag: "SAG DB (Göttingen) - catalogo ceppi"
+    focus: "spirulina_strains_eu_collections"
+    source: "seed:doc"
+
+  # === Riferimenti operativi citati (utili anche per medium/QA) ===
+  - url: "https://www.technap-spiruline.fr/images/pdf/GROW_YOUR_OWN_SPIRULINA.pdf"
+    tag: "Manuale Jourdan (mezzo semplificato e pratica)"
+    focus: "culture_parameters_and_media_cost"
+    source: "seed:doc"
+  - url: "https://www.who.int/docs/default-source/wash-documents/wash-chemicals/cyanobacterial-toxins-background-document.pdf"
+    tag: "WHO cyanobacterial toxins (microcystins background)"
+    focus: "biomass_analytics_food_cosmetic_safety"
+    source: "seed:doc"
+  - url: "https://eur-lex.europa.eu/eli/reg/2004/852/oj/eng"
+    tag: "Reg. (CE) 852/2004 igiene alimenti (HACCP prerequisiti)"
+    focus: "certifications_protocols_food_cosmetic"
+    source: "seed:doc"
+  - url: "https://eur-lex.europa.eu/eli/reg/2002/178/oj/eng"
+    tag: "Reg. (CE) 178/2002 tracciabilità"
+    focus: "certifications_protocols_food_cosmetic"
+    source: "seed:doc"
+
+collections:
+  - name: "CCAP"
+    base_urls:
+      - "https://www.ccap.ac.uk/catalogue/"
+    brave_queries:
+      # ceppo raccomandato + tassonomia aggiornata
+      - 'site:ccap.ac.uk (strain-1475-9 OR "1475/9") (Limnospira OR Arthrospira OR Spirulina)'
+      - 'site:ccap.ac.uk (Limnospira OR Arthrospira OR Spirulina) catalogue strain'
+      # pagina esclusa (Phormidium breve) utile come “negative seed”
+      - 'site:ccap.ac.uk strain-1406-1 Phormidium "toxic"'
+
+  - name: "SAG"
+    base_urls:
+      - "https://sagdb.uni-goettingen.de/"
+    brave_queries:
+      # numeri citati nel documento (49.88, 84.79, 85.79, 86.79, ecc.)
+      - 'site:sagdb.uni-goettingen.de (Arthrospira OR Spirulina OR Limnospira) (49.88 OR 84.79 OR 85.79 OR 86.79 OR 21.99 OR 257.80 OR 31.96) detailedList.php'
+      - 'site:sagdb.uni-goettingen.de detailedList.php Arthrospira'
+
+  - name: "DSMZ"
+    base_urls:
+      - "https://www.dsmz.de/collection/catalogue/microorganisms/catalogue"
+      - "https://www.dsmz.de/collection/catalogue/details/culture/"
+    brave_queries:
+      - 'site:dsmz.de (Arthrospira OR Spirulina OR Limnospira) "details/culture"'
+      - 'site:dsmz.de (Arthrospira OR Spirulina OR Limnospira) cyanobacteria catalogue'
+
+  - name: "BCCM_ULC"
+    base_urls:
+      - "https://bccm.belspo.be/taxon-browser-ulc"
+    brave_queries:
+      - 'site:bccm.belspo.be (Arthrospira OR Spirulina OR Limnospira) ULC strain'
+      - 'site:bccm.belspo.be taxon browser ULC cyanobacteria'
+
+  - name: "BEA"
+    base_urls:
+      - "https://marinebiotechnology.org/en/store/strain-cultures/cyanobacteria/"
+    brave_queries:
+      - 'site:marinebiotechnology.org (bea0005b OR bea0010b) Arthrospira'
+      - 'site:marinebiotechnology.org "strain-cultures" cyanobacteria Arthrospira'
+      - 'BEA 0005B raceway Arthrospira filetype:pdf'
+
+  - name: "RCC_Roscoff"
+    base_urls:
+      - "https://roscoff-culture-collection.org/"
+    brave_queries:
+      # nel documento: RCC10755 (PCC8005), RCC6351 (CH-9), RCC10818 (SP-Paracas)
+      - 'site:roscoff-culture-collection.org (RCC10755 OR RCC6351 OR RCC10818)'
+      - 'site:roscoff-culture-collection.org (PCC8005 OR "CH-9" OR "SP-Paracas") Arthrospira'
+      - 'RCC10755 PCC8005 Limnospira Arthrospira culture conditions'

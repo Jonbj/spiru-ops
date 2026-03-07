@@ -1,0 +1,6 @@
+# spiru-ops — cron entry (production)
+# Runs 4 times/day at 02:10, 08:10, 14:10, 20:10 UTC.
+# Install with: crontab -e  (then paste the line below, adjusting USER if needed)
+#
+# To install: crontab -e
+10 2,8,14,20 * * * cd /home/stefano/Documents/Projects/spiru-ops && PROFILE=kb_first /bin/bash /home/stefano/Documents/Projects/spiru-ops/pipelines/cron_run_daily.sh >> /home/stefano/Documents/Projects/spiru-ops/storage/logs/cron_crontab.log 2>&1

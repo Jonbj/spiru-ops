@@ -1,0 +1,1 @@
+0 10 * * 1 cd /path/to/spiru-ops && ls -1 storage/artifacts/*_report.md | tail -n 7 > storage/artifacts/weekly_inputs.txt

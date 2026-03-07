@@ -1,0 +1,516 @@
+focus:
+- name: pbr_airlift_geometry_and_scale_down
+  keywords:
+  - airlift photobioreactor
+  - internal loop airlift
+  - draft tube
+  - riser downcomer
+  - gas holdup
+  - kLa
+  - superficial gas velocity
+  - bubble column
+  openalex_query: '("airlift" OR "internal loop" OR "draft tube") AND ("photobioreactor" OR "PBR" OR "microalgae") AND ("gas
+    holdup" OR "kLa" OR "riser" OR "downcomer")
+
+    '
+  brave_queries:
+  - '"airlift photobioreactor" draft tube riser downcomer pdf'
+  - '"internal loop airlift" photobioreactor kLa pdf'
+  - bubble column airlift photobioreactor superficial gas velocity pdf
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" (guideline OR "best practices" OR protocol OR SOP OR manual)
+    filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" (thesis OR dissertation OR "master thesis" OR "PhD thesis")
+    filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" (review OR overview) filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" site:.edu filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" site:.gov filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" site:.int filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" site:patents.google.com'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" guida manuale protocollo filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" guide protocole manuel filetype:pdf'
+  - '"airlift photobioreactor" "internal loop airlift" "draft tube" guía manual protocolo filetype:pdf'
+- name: process_control_setpoints_ph_co2_temp
+  keywords:
+  - Arthrospira
+  - Spirulina
+  - Limnospira
+  - pH setpoint
+  - bicarbonate
+  - CO2 dosing
+  - alkalinity
+  - temperature control
+  openalex_query: '("Arthrospira" OR "Spirulina" OR "Limnospira") AND ("pH" OR "alkalinity" OR "bicarbonate" OR "CO2") AND
+    ("setpoint" OR "control" OR "temperature")
+
+    '
+  brave_queries:
+  - Arthrospira pH setpoint bicarbonate CO2 dosing alkaline pdf
+  - Spirulina cultivation pH 9 10 bicarbonate CO2 control pdf
+  - Arthrospira Spirulina Limnospira (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf
+  - Arthrospira Spirulina Limnospira (report OR "technical report" OR "working paper") filetype:pdf
+  - Arthrospira Spirulina Limnospira (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - Arthrospira Spirulina Limnospira (review OR overview) filetype:pdf
+  - Arthrospira Spirulina Limnospira site:.edu filetype:pdf
+  - Arthrospira Spirulina Limnospira site:.gov filetype:pdf
+  - Arthrospira Spirulina Limnospira site:.int filetype:pdf
+  - Arthrospira Spirulina Limnospira site:patents.google.com
+  - Arthrospira Spirulina Limnospira guida manuale protocollo filetype:pdf
+  - Arthrospira Spirulina Limnospira guide protocole manuel filetype:pdf
+  - Arthrospira Spirulina Limnospira guía manual protocolo filetype:pdf
+- name: illumination_led_commercial_roi
+  keywords:
+  - LED spectrum
+  - PPFD
+  - photon efficiency
+  - µmol/J
+  - 660 nm
+  - 450 nm
+  - photobioreactor lighting
+  openalex_query: '("microalgae" OR "photobioreactor") AND ("LED" OR "light spectrum" OR "PPFD" OR "photon efficiency" OR
+    "µmol/J")
+
+    '
+  brave_queries:
+  - microalgae photobioreactor LED spectrum 660 450 PPFD µmol/J pdf
+  - photobioreactor lighting photon efficiency µmol per joule pdf
+  - '"LED spectrum" PPFD "photon efficiency" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" (review OR overview) filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" site:.edu filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" site:.gov filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" site:.int filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" site:patents.google.com'
+  - '"LED spectrum" PPFD "photon efficiency" guida manuale protocollo filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" guide protocole manuel filetype:pdf'
+  - '"LED spectrum" PPFD "photon efficiency" guía manual protocolo filetype:pdf'
+- name: harvesting_fresh_biomass_filtration
+  keywords:
+  - Spirulina harvesting
+  - microstrainer
+  - screen
+  - mesh
+  - micron
+  - belt filter
+  - filtration
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("harvesting" OR "filtration" OR "microstrainer" OR "screen" OR "mesh")
+
+    '
+  brave_queries:
+  - Spirulina harvesting microstrainer 20 micron 30 micron 60 micron pdf
+  - Arthrospira filtration screen mesh size belt filter pdf
+  - '"Spirulina harvesting" microstrainer screen (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen (review OR overview) filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen site:.edu filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen site:.gov filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen site:.int filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen site:patents.google.com'
+  - '"Spirulina harvesting" microstrainer screen guida manuale protocollo filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen guide protocole manuel filetype:pdf'
+  - '"Spirulina harvesting" microstrainer screen guía manual protocolo filetype:pdf'
+- name: biomass_analytics_food_cosmetic_safety
+  keywords:
+  - microbiological criteria
+  - heavy metals
+  - contaminants
+  - GRAS
+  - EFSA
+  - food safety
+  - cosmetics safety
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("food safety" OR "microbiological" OR "contaminants" OR "heavy metals"
+    OR "EFSA" OR "GRAS")
+
+    '
+  brave_queries:
+  - Spirulina heavy metals microbiological criteria EFSA pdf
+  - Spirulina GRAS notice FDA pdf
+  - '"microbiological criteria" "heavy metals" contaminants (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants (review OR overview) filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:.edu filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:.gov filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:.int filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:patents.google.com'
+  - '"microbiological criteria" "heavy metals" contaminants guida manuale protocollo filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants guide protocole manuel filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants guía manual protocolo filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:europa.eu filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:efsa.europa.eu filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:fao.org filetype:pdf'
+  - '"microbiological criteria" "heavy metals" contaminants site:who.int filetype:pdf'
+- name: certifications_protocols_food_cosmetic
+  keywords:
+  - ISO 22000
+  - HACCP
+  - ISO 22716
+  - GMP cosmetics
+  - food safety management
+  - SOP
+  openalex_query: '("ISO 22000" OR "HACCP" OR "ISO 22716" OR "cosmetic GMP") AND ("guideline" OR "checklist" OR "implementation")
+
+    '
+  brave_queries:
+  - ISO 22716 cosmetic GMP checklist pdf
+  - ISO 22000 implementation guide pdf
+  - HACCP guideline microalgae spirulina pdf
+  - '"ISO 22000" HACCP "ISO 22716" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" (review OR overview) filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:.edu filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:.gov filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:.int filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:patents.google.com'
+  - '"ISO 22000" HACCP "ISO 22716" guida manuale protocollo filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" guide protocole manuel filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" guía manual protocolo filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:europa.eu filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:efsa.europa.eu filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:fao.org filetype:pdf'
+  - '"ISO 22000" HACCP "ISO 22716" site:who.int filetype:pdf'
+- name: culture_parameters_and_media_cost
+  keywords:
+  - Zarrouk medium
+  - nutrients
+  - nitrate
+  - phosphate
+  - bicarbonate
+  - salinity
+  - cost
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("Zarrouk" OR "medium" OR "nutrients" OR "bicarbonate" OR "nitrate"
+    OR "phosphate" OR "salinity")
+
+    '
+  brave_queries:
+  - Zarrouk medium Spirulina bicarbonate nitrate phosphate pdf
+  - Arthrospira medium optimization cost bicarbonate pdf
+  - '"Zarrouk medium" nutrients nitrate (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate (review OR overview) filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate site:.edu filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate site:.gov filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate site:.int filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate site:patents.google.com'
+  - '"Zarrouk medium" nutrients nitrate guida manuale protocollo filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate guide protocole manuel filetype:pdf'
+  - '"Zarrouk medium" nutrients nitrate guía manual protocolo filetype:pdf'
+- name: circular_economy_waste_streams
+  keywords:
+  - wastewater
+  - digestate
+  - olive mill wastewater
+  - nutrient recovery
+  - circular economy
+  openalex_query: '("microalgae" OR "Spirulina" OR "Arthrospira") AND ("wastewater" OR "digestate" OR "olive mill wastewater"
+    OR "nutrient recovery" OR "circular economy")
+
+    '
+  brave_queries:
+  - microalgae digestate nutrient recovery pdf
+  - olive mill wastewater microalgae Arthrospira pdf
+  - wastewater digestate "olive mill wastewater" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf
+  - wastewater digestate "olive mill wastewater" (report OR "technical report" OR "working paper") filetype:pdf
+  - wastewater digestate "olive mill wastewater" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - wastewater digestate "olive mill wastewater" (review OR overview) filetype:pdf
+  - wastewater digestate "olive mill wastewater" site:.edu filetype:pdf
+  - wastewater digestate "olive mill wastewater" site:.gov filetype:pdf
+  - wastewater digestate "olive mill wastewater" site:.int filetype:pdf
+  - wastewater digestate "olive mill wastewater" site:patents.google.com
+  - wastewater digestate "olive mill wastewater" guida manuale protocollo filetype:pdf
+  - wastewater digestate "olive mill wastewater" guide protocole manuel filetype:pdf
+  - wastewater digestate "olive mill wastewater" guía manual protocolo filetype:pdf
+- name: raceway_pond_design_operations
+  keywords:
+  - raceway pond
+  - open pond
+  - paddle wheel
+  - outdoor cultivation
+  - mixing
+  openalex_query: '("microalgae" OR "algae") AND ("raceway pond" OR "open pond" OR "paddle wheel" OR "outdoor cultivation")
+
+    '
+  brave_queries:
+  - raceway pond design mixing paddle wheel pdf
+  - open pond microalgae cultivation best practices pdf
+  - '"raceway pond" "open pond" "paddle wheel" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" (review OR overview) filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" site:.edu filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" site:.gov filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" site:.int filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" site:patents.google.com'
+  - '"raceway pond" "open pond" "paddle wheel" guida manuale protocollo filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" guide protocole manuel filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" guía manual protocolo filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" design handbook filetype:pdf'
+  - '"raceway pond" "open pond" "paddle wheel" "standard operating procedure" filetype:pdf'
+- name: water_treatment_well_mains
+  keywords:
+  - UV disinfection
+  - reverse osmosis
+  - RO
+  - drinking water
+  - pretreatment
+  openalex_query: '("drinking water" OR "water treatment") AND ("UV disinfection" OR "reverse osmosis" OR "RO" OR "pretreatment")
+
+    '
+  brave_queries:
+  - UV disinfection drinking water design guide pdf
+  - reverse osmosis pretreatment SDI turbidity pdf
+  - '"UV disinfection" "reverse osmosis" "drinking water" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" (review OR overview) filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:.edu filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:.gov filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:.int filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:patents.google.com'
+  - '"UV disinfection" "reverse osmosis" "drinking water" guida manuale protocollo filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" guide protocole manuel filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" guía manual protocolo filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:europa.eu filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:efsa.europa.eu filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:fao.org filetype:pdf'
+  - '"UV disinfection" "reverse osmosis" "drinking water" site:who.int filetype:pdf'
+- name: sensors_esp32_industrial_interfaces
+  keywords:
+  - RS485
+  - Modbus RTU
+  - 4-20mA
+  - pH sensor
+  - turbidity
+  - ESP32
+  openalex_query: '("Modbus" OR "RS485" OR "4-20mA") AND ("sensor" OR "pH" OR "turbidity" OR "controller")
+
+    '
+  brave_queries:
+  - RS485 Modbus pH sensor high alkalinity manual pdf
+  - turbidity sensor modbus RTU datasheet pdf
+  - RS485 "Modbus RTU" 4-20mA (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA (report OR "technical report" OR "working paper") filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA (review OR overview) filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA site:.edu filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA site:.gov filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA site:.int filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA site:patents.google.com
+  - RS485 "Modbus RTU" 4-20mA guida manuale protocollo filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA guide protocole manuel filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA guía manual protocolo filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA datasheet filetype:pdf
+  - RS485 "Modbus RTU" 4-20mA application note filetype:pdf
+- name: spirulina_strains_eu_collections
+  keywords:
+  - SAG
+  - CCAP
+  - DSMZ
+  - UTEX
+  - strain
+  - Arthrospira platensis
+  - Limnospira maxima
+  openalex_query: '("Arthrospira" OR "Spirulina" OR "Limnospira") AND ("strain" OR "culture collection" OR "SAG" OR "CCAP"
+    OR "DSMZ")
+
+    '
+  brave_queries:
+  - SAG Arthrospira platensis strain page
+  - CCAP Limnospira maxima strain catalogue
+  - DSMZ Arthrospira strain catalogue
+  - SAG CCAP DSMZ (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf
+  - SAG CCAP DSMZ (report OR "technical report" OR "working paper") filetype:pdf
+  - SAG CCAP DSMZ (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - SAG CCAP DSMZ (review OR overview) filetype:pdf
+  - SAG CCAP DSMZ site:.edu filetype:pdf
+  - SAG CCAP DSMZ site:.gov filetype:pdf
+  - SAG CCAP DSMZ site:.int filetype:pdf
+  - SAG CCAP DSMZ site:patents.google.com
+  - SAG CCAP DSMZ guida manuale protocollo filetype:pdf
+  - SAG CCAP DSMZ guide protocole manuel filetype:pdf
+  - SAG CCAP DSMZ guía manual protocolo filetype:pdf
+- name: local_adaptation_marche_fermo_outdoor
+  keywords:
+  - Italy
+  - Marche
+  - outdoor
+  - climate
+  - seasonal
+  - contamination risk
+  openalex_query: '("microalgae" OR "Spirulina" OR "Arthrospira") AND ("outdoor" OR "seasonal" OR "climate" OR "contamination")
+
+    '
+  brave_queries:
+  - outdoor Spirulina cultivation seasonal climate contamination pdf
+  - Italy outdoor microalgae cultivation raceway pond pdf
+  - Italy Marche outdoor (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf
+  - Italy Marche outdoor (report OR "technical report" OR "working paper") filetype:pdf
+  - Italy Marche outdoor (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - Italy Marche outdoor (review OR overview) filetype:pdf
+  - Italy Marche outdoor site:.edu filetype:pdf
+  - Italy Marche outdoor site:.gov filetype:pdf
+  - Italy Marche outdoor site:.int filetype:pdf
+  - Italy Marche outdoor site:patents.google.com
+  - Italy Marche outdoor guida manuale protocollo filetype:pdf
+  - Italy Marche outdoor guide protocole manuel filetype:pdf
+  - Italy Marche outdoor guía manual protocolo filetype:pdf
+  - Italy Marche outdoor design handbook filetype:pdf
+  - Italy Marche outdoor "standard operating procedure" filetype:pdf
+- name: network_partners_accelerators_suppliers
+  keywords:
+  - EU algae sector
+  - suppliers
+  - pilot scale
+  - best practices
+  - enalgae
+  - JRC
+  openalex_query: '("algae sector" OR "microalgae") AND ("pilot scale" OR "best practices" OR "JRC" OR "European")
+
+    '
+  brave_queries:
+  - European Commission algae sector report pdf
+  - JRC algae biomass production brief pdf
+  - enalgae best practices pilot scale microalgae pdf
+  - '"EU algae sector" suppliers "pilot scale" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" (review OR overview) filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" site:.edu filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" site:.gov filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" site:.int filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" site:patents.google.com'
+  - '"EU algae sector" suppliers "pilot scale" guida manuale protocollo filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" guide protocole manuel filetype:pdf'
+  - '"EU algae sector" suppliers "pilot scale" guía manual protocolo filetype:pdf'
+- name: alternative_products_phyco_pigments_bioplastics
+  keywords:
+  - phycocyanin
+  - pigments
+  - bioplastics
+  - PHB
+  - polyhydroxybutyrate
+  openalex_query: '("microalgae" OR "Spirulina") AND ("phycocyanin" OR "pigment" OR "bioplastic" OR "PHB" OR "polyhydroxybutyrate")
+
+    '
+  brave_queries:
+  - Spirulina phycocyanin extraction process pdf
+  - microalgae bioplastics PHB review pdf
+  - phycocyanin pigments bioplastics (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf
+  - phycocyanin pigments bioplastics (report OR "technical report" OR "working paper") filetype:pdf
+  - phycocyanin pigments bioplastics (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - phycocyanin pigments bioplastics (review OR overview) filetype:pdf
+  - phycocyanin pigments bioplastics site:.edu filetype:pdf
+  - phycocyanin pigments bioplastics site:.gov filetype:pdf
+  - phycocyanin pigments bioplastics site:.int filetype:pdf
+  - phycocyanin pigments bioplastics site:patents.google.com
+  - phycocyanin pigments bioplastics guida manuale protocollo filetype:pdf
+  - phycocyanin pigments bioplastics guide protocole manuel filetype:pdf
+  - phycocyanin pigments bioplastics guía manual protocolo filetype:pdf
+- name: packaging_labeling_retail
+  keywords:
+  - packaging
+  - labeling
+  - food label
+  - retail
+  - consumer
+  - shelf appeal
+  - nutraceutical
+  openalex_query: '("Spirulina" OR "Arthrospira" OR "microalgae") AND ("packaging" OR "labeling" OR "retail" OR "consumer" OR "nutraceutical")
+
+    '
+  brave_queries:
+  - Spirulina packaging labeling retail consumer pdf
+  - Spirulina food label nutraceutical requirements pdf
+  - Spirulina consumer packaging shelf appeal best practices
+  - '"Spirulina packaging" labeling retail (guideline OR "best practices" OR protocol OR requirements) filetype:pdf'
+  - '"Spirulina packaging" labeling retail (report OR "technical report" OR "market analysis") filetype:pdf'
+  - '"Spirulina packaging" labeling retail (review OR case study) filetype:pdf'
+  - '"Spirulina packaging" labeling retail site:.edu filetype:pdf'
+  - '"Spirulina packaging" labeling retail site:.gov filetype:pdf'
+  - '"Spirulina packaging" labeling retail site:europa.eu filetype:pdf'
+  - '"Spirulina packaging" labeling retail site:efsa.europa.eu filetype:pdf'
+  - Spirulina imballaggio etichettatura vendita filetype:pdf
+  - Spirulina emballage étiquetage vente filetype:pdf
+  - Spirulina etiquetado envasado venta filetype:pdf
+- name: marketing_branding_consumer_perception
+  keywords:
+  - brand strategy
+  - consumer perception
+  - marketing
+  - superfood
+  - health claims
+  - social media
+  openalex_query: '("Spirulina" OR "microalgae") AND ("consumer perception" OR "marketing" OR "superfood" OR "health claims" OR "brand")
+
+    '
+  brave_queries:
+  - Spirulina consumer perception superfood marketing pdf
+  - microalgae brand strategy health claims retail pdf
+  - Spirulina social media marketing case study pdf
+  - '"Spirulina marketing" "consumer perception" superfood (case study OR report OR analysis) filetype:pdf'
+  - '"Spirulina marketing" "consumer perception" superfood (thesis OR dissertation) filetype:pdf'
+  - '"Spirulina marketing" "consumer perception" superfood (review OR overview) filetype:pdf'
+  - '"Spirulina marketing" "consumer perception" superfood site:.edu filetype:pdf'
+  - '"Spirulina marketing" "consumer perception" superfood site:.gov filetype:pdf'
+  - Spirulina marketing strategia marchio consumatore
+  - Spirulina marketing stratégie marque consommateur
+  - Spirulina marketing estrategia marca consumidor
+  - Spirulina superfood "health claims" EU regulation
+  - Spirulina nutraceutical branding positioning
+- name: diy_home_cultivation_kits
+  keywords:
+  - DIY
+  - home cultivation
+  - kit
+  - small-scale
+  - hobbyist
+  - aquarium
+  - indoor
+  openalex_query: '("Spirulina" OR "microalgae") AND ("DIY" OR "home cultivation" OR "small-scale" OR "kit" OR "hobbyist" OR "indoor")
+
+    '
+  brave_queries:
+  - Spirulina DIY home cultivation kit guide pdf
+  - home Spirulina cultivation small-scale indoor aquarium pdf
+  - Spirulina hobbyist cultivation manual pdf
+  - '"Spirulina DIY" "home cultivation" kit (guide OR manual OR tutorial) filetype:pdf'
+  - '"Spirulina DIY" "home cultivation" kit (review OR case study) filetype:pdf'
+  - '"Spirulina DIY" "home cultivation" kit site:.edu filetype:pdf'
+  - Spirulina coltivazione domestica fai-da-te kit guida
+  - Spirulina cultivation maison DIY kit guide
+  - Spirulina cultivo casero DIY kit guía
+  - Spirulina home kit aquarium indoor setup
+  - small-scale Spirulina cultivation hobbyist pdf
+  - Spirulina DIY photobioreactor home pdf
+  - grow Spirulina at home kit manual pdf
+- name: quality_shelf_life_storage_degradation
+  keywords:
+  - shelf life
+  - storage
+  - degradation
+  - oxidation
+  - moisture
+  - temperature
+  - phycocyanin stability
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("shelf life" OR "storage" OR "degradation" OR "stability" OR "oxidation")
+
+    '
+  brave_queries:
+  - Spirulina shelf life storage degradation phycocyanin pdf
+  - Arthrospira storage conditions oxidation moisture temperature pdf
+  - Spirulina powder stability degradation kinetics pdf
+  - '"Spirulina shelf life" storage degradation (guideline OR "best practices" OR protocol) filetype:pdf'
+  - '"Spirulina shelf life" storage degradation (report OR "technical report" OR analysis) filetype:pdf'
+  - '"Spirulina shelf life" storage degradation (thesis OR dissertation) filetype:pdf'
+  - '"Spirulina shelf life" storage degradation (review OR overview) filetype:pdf'
+  - '"Spirulina shelf life" storage degradation site:.edu filetype:pdf'
+  - '"Spirulina shelf life" storage degradation site:.gov filetype:pdf'
+  - Spirulina conservazione durata degradazione filetype:pdf
+  - Spirulina conservation durée dégradation filetype:pdf
+  - Spirulina conservación duración degradación filetype:pdf
+  - Spirulina phycocyanin stability storage temperature
+  - Spirulina oxidation packaging atmosphere modified

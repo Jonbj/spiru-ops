@@ -1,0 +1,128 @@
+focuses:
+  - name: process_control_setpoints_ph_co2_temp
+    base_score: 30
+    queries:
+      - "Spirulina Arthrospira pH setpoint CO2 bicarbonate alkaline"
+      - "Zarrouk medium pH control CO2 dosing Spirulina"
+      - "alkaline photobioreactor pH control CO2 mass transfer kLa"
+
+  - name: pbr_airlift_geometry_and_scale_down
+    base_score: 30
+    queries:
+      - "airlift photobioreactor internal loop draft tube riser downcomer"
+      - "bubble column airlift draft tube superficial gas velocity"
+      - "gas holdup circulation velocity internal loop airlift reactor"
+
+  - name: harvesting_fresh_biomass_filtration
+    base_score: 25
+    queries:
+      - "Spirulina harvesting filtration microstrainer mesh micron"
+      - "Spirulina microstrainer 20 micron 30 micron 60 micron screen"
+      - "belt filter microalgae harvesting Spirulina filtration"
+
+  - name: certifications_protocols_food_cosmetic
+    base_score: 25
+    queries:
+      - "ISO 22716 cosmetic GMP checklist"
+      - "ISO 22000 HACCP microalgae spirulina food safety"
+      - "EU microbiological criteria algae food supplement spirulina"
+
+  - name: biomass_analytics_food_cosmetic_safety
+    base_score: 25
+    queries:
+      - "spirulina heavy metals limits cadmium lead arsenic mercury regulation"
+      - "spirulina microbiological limits Salmonella E. coli food supplement"
+      - "GRAS Spirulina Cyanotech FDA dossier"
+
+  - name: illumination_led_commercial_roi
+    base_score: 20
+    queries:
+      - "LED spectrum 660nm 450nm PPFD microalgae photobioreactor"
+      - "µmol per joule LED efficacy horticulture red blue 660 450"
+      - "light dark cycles mixing frequency photobioreactor growth"
+
+  - name: water_treatment_well_mains
+    base_score: 15
+    queries:
+      - "UV disinfection design drinking water toolkit"
+      - "reverse osmosis pretreatment turbidity SDI cartridge filter 5 micron"
+      - "microfiltration 0.1 10 micron water treatment pretreatment RO"
+
+  - name: spirulina_strains_eu_collections
+    base_score: 15
+    queries:
+      - "SAG Arthrospira platensis strain catalogue"
+      - "CCAP Limnospira maxima Spirulina strain"
+      - "DSMZ straininfo Arthrospira Spirulina culture collection"
+
+  - name: circular_economy_waste_streams
+    base_score: 15
+    queries:
+      - "olive mill wastewater microalgae cultivation Arthrospira"
+      - "digestate nutrient recovery microalgae cultivation"
+      - "wastewater treatment photobioreactor CO2 capture microalgae"
+
+  - name: network_partners_accelerators_suppliers
+    base_score: 10
+    queries:
+      - "European algae sector report JRC"
+      - "EU algae biomass production brief"
+      - "pilot scale microalgae best practices report"
+
+  - name: local_adaptation_marche_fermo_outdoor
+    base_score: 10
+    queries:
+      - "raceway pond operation efficient algal biomass cultivation"
+      - "outdoor microalgae raceway reactor process control benchmark"
+      - "microalgae cultivation in raceway ponds advances review"
+
+  # --- Added focus areas (ops gaps): CIP/cleaning, gas management, contamination ---
+  - name: cip_cleaning_sanitation_material_compatibility
+    base_score: 18
+    queries:
+      - "photobioreactor CIP cleaning protocol food grade sanitizer peracetic acid"
+      - "PMMA chemical compatibility sodium hypochlorite ethanol peracetic acid"
+      - "biofilm removal photobioreactor cleaning validation"
+
+  - name: gas_management_o2_stripping_kla
+    base_score: 18
+    queries:
+      - "airlift photobioreactor oxygen stripping CO2 transfer kLa"
+      - "gas holdup airlift reactor kLa superficial gas velocity"
+      - "photobioreactor degassing column oxygen inhibition microalgae"
+
+  - name: contamination_monitoring_response
+    base_score: 16
+    queries:
+      - "Spirulina culture contamination control rotifers protozoa bacteria"
+      - "spirulina outdoor cultivation contamination mitigation pH salinity"
+      - "cyanobacteria contamination monitoring microscopy protocol"
+
+  # --- Commercial / market-oriented focus areas ---
+  - name: packaging_labeling_retail
+    base_score: 20
+    queries:
+      - "Spirulina packaging labeling food supplement retail consumer"
+      - "microalgae nutraceutical packaging shelf appeal branding"
+      - "Spirulina food label requirements EU regulation health claims"
+
+  - name: marketing_branding_consumer_perception
+    base_score: 18
+    queries:
+      - "Spirulina consumer perception superfood marketing study"
+      - "microalgae brand strategy health claims social media marketing"
+      - "Spirulina market analysis consumer acceptance willingness to pay"
+
+  - name: diy_home_cultivation_kits
+    base_score: 15
+    queries:
+      - "Spirulina DIY home cultivation kit guide small-scale"
+      - "grow Spirulina at home aquarium indoor photobioreactor"
+      - "home Spirulina cultivation hobbyist manual setup"
+
+  - name: quality_shelf_life_storage_degradation
+    base_score: 22
+    queries:
+      - "Spirulina shelf life storage degradation phycocyanin stability"
+      - "Spirulina powder oxidation moisture temperature storage conditions"
+      - "Arthrospira biomass degradation kinetics packaging atmosphere"

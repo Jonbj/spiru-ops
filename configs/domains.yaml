@@ -1,0 +1,27 @@
+deny_domains:
+  - facebook.com
+  - instagram.com
+  - tiktok.com
+  - pinterest.com
+
+prefer_domains:
+  - .edu
+  - .ac.uk
+  - .gov
+  - europa.eu
+  - efsa.europa.eu
+  - fao.org
+  - who.int
+  - cnr.it
+  - unibo.it
+  - polimi.it
+
+pdf_bonus_domains:
+  - mdpi.com
+  - frontiersin.org
+  - elsevier.com
+  - sciencedirect.com
+  - springer.com
+  - nature.com
+  - wiley.com
+  - tandfonline.com
