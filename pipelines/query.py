@@ -16,10 +16,9 @@ import pathlib
 from typing import Optional
 
 from pipelines.common import env
-from pipelines.qdrant_rest import QdrantConfig, search
+from pipelines.qdrant_rest import QdrantConfig, search, hybrid_query
 
-# Embedding backend: sentence-transformers
-from sentence_transformers import SentenceTransformer
+_BGE_M3_NAMES = {"baai/bge-m3", "bge-m3"}
 
 
 def smart_snippet(text: str, query: str, n: int = 900) -> str:
@@ -53,15 +52,36 @@ def main() -> None:
     qdrant_url = env("QDRANT_URL", required=True)
     collection = env("QDRANT_COLLECTION", "docs_chunks")
     model_name = env("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-
-    model = SentenceTransformer(model_name)
-    qvec = model.encode([args.question], normalize_embeddings=True)[0].tolist()
+    is_bge_m3 = model_name.lower() in _BGE_M3_NAMES
 
     cfg = QdrantConfig(url=qdrant_url, collection=collection)
     qfilter = None
     if args.focus:
         qfilter = {"must": [{"key": "focus", "match": {"value": args.focus}}]}
-    res = search(cfg, vector=qvec, limit=args.topk * 3, qfilter=qfilter, timeout=30)
+
+    if is_bge_m3:
+        from FlagEmbedding import BGEM3FlagModel  # type: ignore
+        model = BGEM3FlagModel(model_name, use_fp16=True)
+        enc = model.encode([args.question], return_dense=True, return_sparse=True, return_colbert_vecs=False)
+        dense_vec = enc["dense_vecs"][0].tolist()
+        svec = enc["lexical_weights"][0]
+        sparse_indices = [int(k) for k in svec.keys()]
+        sparse_values = [float(v) for v in svec.values()]
+        res = hybrid_query(
+            cfg,
+            dense_vector=dense_vec,
+            sparse_indices=sparse_indices,
+            sparse_values=sparse_values,
+            limit=args.topk * 3,
+            qfilter=qfilter,
+            prefetch_limit=args.topk * 6,
+        )
+    else:
+        from sentence_transformers import SentenceTransformer
+        model = SentenceTransformer(model_name)
+        qvec = model.encode([args.question], normalize_embeddings=True)[0].tolist()
+        res = search(cfg, vector=qvec, limit=args.topk * 3, qfilter=qfilter, timeout=30)
+
     hits = res.get("result") or []
 
     lines = []

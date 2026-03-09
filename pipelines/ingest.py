@@ -68,8 +68,9 @@ from pipelines.common import (
     normalize_url,
     load_domains,
     denied,
-    soup_text,
+    extract_html_text,
     clean_text_with_stats,
+    classify_doc_type,
 )
 from pipelines.relevance import compute_spirulina_relevance
 
@@ -1024,7 +1025,7 @@ def main() -> None:
                 if pub_year is None:
                     pub_year = extract_pub_year_from_html(html)
 
-                text = soup_text(html)
+                text = extract_html_text(html)
             except Exception as e:
                 record_failure(failures_by_reason, failures_examples, "html_parse_error", final_url, extra={"error": str(e)[:240]})
                 continue
@@ -1084,6 +1085,12 @@ def main() -> None:
         meta["spirulina_score"] = round(float(rel.score), 4)
         meta["spirulina_terms"] = rel.positive_terms[:20]
         meta["spirulina_reasons"] = rel.reasons[:10]
+        meta["doc_type"] = classify_doc_type(
+            url=final_url,
+            title=str(meta.get("title") or ""),
+            doi=str(meta.get("doi") or ""),
+            source=str(meta.get("source") or ""),
+        )
 
         if len(text) < SPIRULINA_MIN_TEXT_CHARS:
             meta["short_text"] = True

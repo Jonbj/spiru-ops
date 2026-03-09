@@ -3,6 +3,14 @@ deny_domains:
   - instagram.com
   - tiktok.com
   - pinterest.com
+  - walmart.com
+  - youtube.com
+  - twitter.com
+  - x.com
+  - reddit.com
+  - instructables.com
+  - ntrs.nasa.gov
+  - science.gov
 
 prefer_domains:
   - .edu

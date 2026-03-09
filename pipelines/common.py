@@ -294,21 +294,7 @@ def prefer_score(url: str, prefer_domains: list[str]) -> int:
 # =============================================================================
 
 def soup_text(html: str) -> str:
-    """Extract readable text from HTML.
-
-    This is intentionally not perfect "readability" extraction.
-    The goal is "good enough" and predictable.
-
-    Pipeline context:
-    - Many publisher pages contain heavy boilerplate (menus, cookie banners).
-    - Noise hurts retrieval (chunks become mostly boilerplate).
-
-    So we:
-    - remove obvious non-content tags
-    - take get_text("\n")
-    - run `clean_text_with_stats` to drop boilerplate lines
-    """
-
+    """Extract readable text from HTML (BeautifulSoup fallback)."""
     soup = BeautifulSoup(html, "html.parser")
     for tag in soup(["script", "style", "noscript", "nav", "footer", "header", "aside", "form"]):
         tag.decompose()
@@ -316,6 +302,63 @@ def soup_text(html: str) -> str:
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     cleaned, _stats = clean_text_with_stats(text)
     return cleaned
+
+
+def extract_html_text(html: str) -> str:
+    """Extract readable text from HTML.
+
+    Tries trafilatura first (specialized content extractor — better at removing
+    boilerplate from publisher/journal pages). Falls back to soup_text if
+    trafilatura returns empty or very short text.
+    """
+    try:
+        import trafilatura  # type: ignore
+        result = trafilatura.extract(
+            html,
+            include_comments=False,
+            include_tables=True,
+            no_fallback=False,
+            favor_recall=True,
+        )
+        if result and len(result.strip()) > 200:
+            return result.strip()
+    except Exception:
+        pass
+    return soup_text(html)
+
+
+def classify_doc_type(url: str = "", title: str = "", doi: str = "", source: str = "") -> str:
+    """Classify document type as paper/thesis/guideline/regulation/webpage.
+
+    Uses heuristic signals from URL, DOI presence, source label, and title keywords.
+    Returns one of: 'paper', 'thesis', 'guideline', 'regulation', 'webpage'.
+    """
+    u = (url or "").lower()
+    t = (title or "").lower()
+    s = (source or "").lower()
+
+    # Regulations / official standards
+    reg_keywords = ("regulation", "directive", "ordinance", "decree", "statute", "official journal", "codex alimentarius")
+    if any(k in t for k in reg_keywords) or any(k in u for k in ("regulation", "directive", "codex")):
+        return "regulation"
+
+    # Guidelines / recommendations / technical reports
+    guide_keywords = ("guideline", "guidance", "recommendation", "position paper", "technical report", "opinion", "efsa", "who ", "fao ", "assessment")
+    if any(k in t for k in guide_keywords) or any(k in u for k in ("guideline", "guidance", "efsa", "who.int", "fao.org")):
+        return "guideline"
+
+    # Theses / dissertations
+    if "thesis" in t or "dissertation" in t or "thes" in u or "dissertat" in u:
+        return "thesis"
+
+    # Academic papers: DOI present, or known academic sources/domains
+    academic_domains = ("doi.org", "pubmed", "arxiv", "biorxiv", "medrxiv", "springer", "elsevier",
+                        "wiley", "tandfonline", "mdpi", "frontiersin", "nature.com", "science.org",
+                        "core.ac.uk", "semanticscholar", "researchgate", "hal.", "zenodo")
+    if doi or any(d in u for d in academic_domains) or s in ("openalex", "core", "pubmed"):
+        return "paper"
+
+    return "webpage"
 
 
 @dataclass(frozen=True)

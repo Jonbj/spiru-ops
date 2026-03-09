@@ -35,7 +35,7 @@ import json
 import pathlib
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
@@ -58,6 +58,7 @@ from pipelines.relevance import compute_spirulina_relevance
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.4")
 BRAVE_API_KEY = env("BRAVE_API_KEY", required=False)
 OPENALEX_EMAIL = env("OPENALEX_EMAIL", required=False)
+CORE_API_KEY = env("CORE_API_KEY", required=False)
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 # Output path is RUN_ID-scoped for determinism; daily.sh exports CANDIDATES_PATH
@@ -164,6 +165,41 @@ def openalex_search(query: str, per_page: int = 15) -> List[Dict[str, Any]]:
     return data.get("results") or []
 
 
+def core_search(query: str, limit: int = 15) -> List[Dict[str, Any]]:
+    """Search CORE.ac.uk for open-access papers.
+
+    CORE is the largest EU open-access aggregator (200M+ docs). Particularly
+    useful for European/Italian institutional papers not well covered by OpenAlex.
+    Register for a free API key at: https://core.ac.uk/services/api
+    """
+    if not CORE_API_KEY:
+        return []
+    url = "https://api.core.ac.uk/v3/search/works"
+    headers = {
+        "Authorization": f"Bearer {CORE_API_KEY}",
+        "User-Agent": USER_AGENT,
+    }
+    params = {"q": query, "limit": str(limit)}
+    r = requests.get(url, headers=headers, params=params, timeout=10)
+    r.raise_for_status()
+    data = r.json()
+    return data.get("results") or []
+
+
+def _core_best_url(work: Dict[str, Any]) -> str:
+    """Pick best URL from a CORE result: prefer downloadUrl (direct PDF), then fulltext."""
+    download = (work.get("downloadUrl") or "").strip()
+    if download:
+        return download
+    fulltext = work.get("sourceFulltextUrls") or []
+    if isinstance(fulltext, list) and fulltext:
+        return (fulltext[0] or "").strip()
+    doi = (work.get("doi") or "").strip()
+    if doi:
+        return "https://doi.org/" + doi.lstrip("/")
+    return ""
+
+
 def load_scoring(path: str) -> Dict[str, Any]:
     cfg = load_yaml(path) or {}
     return cfg if isinstance(cfg, dict) else {}
@@ -252,7 +288,7 @@ def add_temporal_rotation(q: str, run_date: Optional[datetime] = None) -> str:
     Rotates between 30/60/90/120 day windows based on date ordinal.
     """
     if run_date is None:
-        run_date = datetime.utcnow()
+        run_date = datetime.now(timezone.utc)
     
     # Rotate window: 30/60/90/120 days based on day modulo 4
     days_back_options = [30, 60, 90, 120]
@@ -513,6 +549,60 @@ def main():
                     candidates.append(c)
             except Exception as e:
                 print(f"[discover] WARN: openalex search failed for query '{q[:60]}': {e}", flush=True)
+
+            # 3) CORE
+            if CORE_API_KEY:
+                try:
+                    works = core_search(q, limit=15)
+                    for w in works:
+                        doi = (w.get("doi") or "").strip()
+                        doi_norm: Optional[str] = None
+                        if doi:
+                            doi_norm = doi.replace("https://doi.org/", "").replace("http://doi.org/", "").strip() or None
+                            if doi_norm and doi_norm.lower() in seen_doi:
+                                continue  # already ingested
+
+                        url = _core_best_url(w)
+                        url = normalize_url(url)
+                        if not url:
+                            continue
+
+                        d = domain_of(url)
+                        if DENY_RESEARCHGATE and d in RESEARCHGATE_DOMAINS:
+                            continue
+                        if is_denied_domain(url, dom_cfg):
+                            continue
+
+                        if RESOLVE_DOI_REDIRECTS and d in DOI_DOMAINS:
+                            resolved = resolve_final_url(url)
+                            resolved_n = normalize_url(resolved)
+                            if resolved_n:
+                                url = resolved_n
+
+                        title = (w.get("title") or "").strip() or url
+                        year = w.get("yearPublished") or w.get("year")
+                        pub = f"{year}-01-01" if year else None
+                        snippet = (w.get("abstract") or "")[:400]
+
+                        hint = compute_spirulina_relevance(url=url, title=title, text=snippet).score
+                        score = enrich_score(url, base_score, dom_cfg, is_doi=bool(doi_norm)) + (8.0 * float(hint))
+
+                        c = mk_candidate(
+                            url=url,
+                            title=title,
+                            snippet=snippet,
+                            focus=focus,
+                            source="core",
+                            score=score,
+                            published_at=pub,
+                            is_pdf=looks_like_pdf_url(url),
+                            doi=doi_norm,
+                        )
+                        c["spirulina_hint"] = round(float(hint), 4)
+                        candidates.append(c)
+                    time.sleep(0.5)
+                except Exception as e:
+                    print(f"[discover] WARN: core search failed for query '{q[:60]}': {e}", flush=True)
 
     candidates = dedup(candidates)
 

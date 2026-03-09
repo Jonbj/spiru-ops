@@ -281,3 +281,126 @@ def count_points(cfg: QdrantConfig, *, qfilter: Optional[dict] = None) -> int:
     )
     out = _safe_json(r)
     return int((out.get("result") or {}).get("count") or 0)
+
+
+# ---------------------------------------------------------------------------
+# Hybrid retrieval support (bge-m3: dense 1024d + sparse BM25-like vectors)
+# Requires Qdrant >= 1.10 and named-vector collection format.
+# ---------------------------------------------------------------------------
+
+
+def create_collection_hybrid(
+    cfg: QdrantConfig, *, dense_dim: int = 1024, distance: str = "Cosine"
+) -> None:
+    """Create a named-vector collection with dense + sparse vectors."""
+    payload = {
+        "vectors": {
+            "dense": {"size": dense_dim, "distance": distance},
+        },
+        "sparse_vectors": {
+            "sparse": {"index": {"type": "sparse", "on_disk": False}},
+        },
+    }
+    _request(
+        cfg,
+        "PUT",
+        f"/collections/{cfg.collection}",
+        payload=payload,
+        timeout_s=30,
+        retries=1,
+        ok_status=(200, 201, 202),
+        allow_409=True,
+    )
+
+
+def ensure_collection_hybrid(
+    cfg: QdrantConfig, *, dense_dim: int = 1024, distance: str = "Cosine"
+) -> None:
+    """Ensure a hybrid (named-vector) collection exists. Creates it if missing."""
+    if not collection_exists(cfg):
+        create_collection_hybrid(cfg, dense_dim=dense_dim, distance=distance)
+
+
+def upsert_points_hybrid(
+    cfg: QdrantConfig, points: List[dict], *, wait: bool = True, timeout: int = 60
+) -> None:
+    """
+    Upsert points where each point's vector is a named-vector dict:
+      {"dense": [float, ...], "sparse": {"indices": [int, ...], "values": [float, ...]}}
+    """
+    if not points:
+        return
+    q_timeout = max(1, int(timeout))
+    params = {"wait": "true" if wait else "false", "timeout": str(q_timeout)}
+    payload = {"points": points}
+    http_timeout = q_timeout + 10
+    _request(
+        cfg,
+        "PUT",
+        f"/collections/{cfg.collection}/points",
+        params=params,
+        payload=payload,
+        timeout_s=http_timeout,
+        retries=2,
+        ok_status=(200, 201, 202),
+    )
+
+
+def hybrid_query(
+    cfg: QdrantConfig,
+    *,
+    dense_vector: List[float],
+    sparse_indices: List[int],
+    sparse_values: List[float],
+    limit: int,
+    qfilter: Optional[dict] = None,
+    prefetch_limit: int = 30,
+    timeout: int = 30,
+) -> dict:
+    """
+    Hybrid retrieval via Qdrant /points/query (RRF fusion of dense + sparse).
+    Requires Qdrant >= 1.10.
+
+    Returns same structure as ``search``: {"result": [...hits...], ...}
+    but hits come from res["result"]["points"] — normalised before return.
+    """
+    body: Dict[str, Any] = {
+        "prefetch": [
+            {
+                "query": {"indices": sparse_indices, "values": sparse_values},
+                "using": "sparse",
+                "limit": prefetch_limit,
+            },
+            {
+                "query": dense_vector,
+                "using": "dense",
+                "limit": prefetch_limit,
+            },
+        ],
+        "query": {"fusion": "rrf"},
+        "limit": limit,
+        "with_payload": True,
+        "with_vector": False,
+    }
+    if qfilter:
+        body["filter"] = qfilter
+
+    r = _request(
+        cfg,
+        "POST",
+        f"/collections/{cfg.collection}/points/query",
+        payload=body,
+        timeout_s=max(5, int(timeout)) + 5,
+        retries=2,
+        ok_status=(200, 201, 202),
+    )
+    raw = _safe_json(r)
+    # Normalise to same shape as ``search`` output: {"result": [hit, ...]}
+    result = raw.get("result") or {}
+    if isinstance(result, dict):
+        # Qdrant 1.10+: {"result": {"points": [...]}}
+        hits = result.get("points") or []
+    else:
+        # Fallback: already a list
+        hits = result
+    return {"result": hits}

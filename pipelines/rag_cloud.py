@@ -12,21 +12,24 @@ This header is *documentation-only*; the runtime logic below is preserved.
 
 import json
 import pathlib
+import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
-from sentence_transformers import SentenceTransformer
 
 from pipelines.common import env, normalize_url
-from pipelines.qdrant_rest import QdrantConfig, search
+from pipelines.qdrant_rest import QdrantConfig, search, hybrid_query
 
 QDRANT_URL = env("QDRANT_URL", "http://localhost:6333")
 QDRANT_COLLECTION = env("QDRANT_COLLECTION", "docs_chunks")
 
 # Retrieval embedding model (local)
-SENTENCE_MODEL = env("SENTENCE_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+SENTENCE_MODEL = env("SENTENCE_MODEL", env("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2"))
+
+_BGE_M3_NAMES = {"baai/bge-m3", "bge-m3"}
+IS_BGE_M3 = SENTENCE_MODEL.lower() in _BGE_M3_NAMES
 
 # Generation (OpenAI) – raw HTTP (no SDK proxy surprises)
 OPENAI_API_KEY = env("OPENAI_API_KEY", required=True)
@@ -60,14 +63,22 @@ class Evidence:
     text: str
 
 
-_embedder: Optional[SentenceTransformer] = None
+_embedder = None  # SentenceTransformer or BGEM3FlagModel
+_bgem3_model = None
 
 
-def get_embedder() -> SentenceTransformer:
-    global _embedder
-    if _embedder is None:
-        _embedder = SentenceTransformer(SENTENCE_MODEL)
-    return _embedder
+def get_embedder():
+    global _embedder, _bgem3_model
+    if IS_BGE_M3:
+        if _bgem3_model is None:
+            from FlagEmbedding import BGEM3FlagModel  # type: ignore
+            _bgem3_model = BGEM3FlagModel(SENTENCE_MODEL, use_fp16=True)
+        return _bgem3_model
+    else:
+        if _embedder is None:
+            from sentence_transformers import SentenceTransformer
+            _embedder = SentenceTransformer(SENTENCE_MODEL)
+        return _embedder
 
 
 def _domain(url: str) -> str:
@@ -77,16 +88,41 @@ def _domain(url: str) -> str:
         return ""
 
 
-def qdrant_search(vector: List[float], limit: int, focus: Optional[str] = None) -> Dict[str, Any]:
-    cfg = QdrantConfig(url=QDRANT_URL, collection=QDRANT_COLLECTION)
+def _build_qfilter(focus: Optional[str], doc_type: Optional[str] = None) -> Optional[dict]:
     must = []
     if focus:
         must.append({"key": "focus", "match": {"value": focus}})
-    # Prefer Spirulina-centric chunks by default; user can lower via env.
+    if doc_type:
+        must.append({"key": "doc_type", "match": {"value": doc_type}})
     if MIN_SPIRULINA_SCORE > 0:
         must.append({"key": "spirulina_score", "range": {"gte": MIN_SPIRULINA_SCORE}})
-    qfilter = {"must": must} if must else None
-    return search(cfg, vector=vector, limit=limit, qfilter=qfilter, timeout=30)
+    return {"must": must} if must else None
+
+
+def qdrant_search(vector: List[float], limit: int, focus: Optional[str] = None, doc_type: Optional[str] = None) -> Dict[str, Any]:
+    cfg = QdrantConfig(url=QDRANT_URL, collection=QDRANT_COLLECTION)
+    return search(cfg, vector=vector, limit=limit, qfilter=_build_qfilter(focus, doc_type), timeout=30)
+
+
+def qdrant_hybrid_search(
+    dense_vector: List[float],
+    sparse_indices: List[int],
+    sparse_values: List[float],
+    limit: int,
+    focus: Optional[str] = None,
+    doc_type: Optional[str] = None,
+) -> Dict[str, Any]:
+    cfg = QdrantConfig(url=QDRANT_URL, collection=QDRANT_COLLECTION)
+    return hybrid_query(
+        cfg,
+        dense_vector=dense_vector,
+        sparse_indices=sparse_indices,
+        sparse_values=sparse_values,
+        limit=limit,
+        qfilter=_build_qfilter(focus, doc_type),
+        prefetch_limit=max(limit * 2, 30),
+        timeout=30,
+    )
 
 
 def _pick_url(payload: Dict[str, Any]) -> str:
@@ -153,11 +189,24 @@ def _dedup_and_diversify(evs: List[Evidence], topk: int) -> List[Evidence]:
     return out
 
 
-def retrieve(query: str, focus: Optional[str] = None, topk: int = 8) -> List[Evidence]:
-    emb = get_embedder().encode([query], normalize_embeddings=True)[0].tolist()
-
+def retrieve(query: str, focus: Optional[str] = None, topk: int = 8, doc_type: Optional[str] = None) -> List[Evidence]:
     fetch_n = max(topk * OVERFETCH_MULT, topk)
-    res = qdrant_search(emb, limit=fetch_n, focus=focus)
+
+    if IS_BGE_M3:
+        enc = get_embedder().encode(
+            [query],
+            return_dense=True,
+            return_sparse=True,
+            return_colbert_vecs=False,
+        )
+        dense_vec = enc["dense_vecs"][0].tolist()
+        svec = enc["lexical_weights"][0]
+        sparse_indices = [int(k) for k in svec.keys()]
+        sparse_values = [float(v) for v in svec.values()]
+        res = qdrant_hybrid_search(dense_vec, sparse_indices, sparse_values, limit=fetch_n, focus=focus, doc_type=doc_type)
+    else:
+        emb = get_embedder().encode([query], normalize_embeddings=True)[0].tolist()
+        res = qdrant_search(emb, limit=fetch_n, focus=focus, doc_type=doc_type)
 
     raw: List[Evidence] = []
     for hit in (res.get("result") or []):
@@ -271,11 +320,12 @@ def openai_chat(system: str, user: str) -> str:
     return (data["choices"][0]["message"]["content"] or "").strip()
 
 
-def ask_copilot(question: str, focus: Optional[str] = None) -> Dict[str, Any]:
-    topk = int(env("COPILOT_TOPK", 10))
+def ask_copilot(question: str, focus: Optional[str] = None, topk_override: Optional[int] = None, doc_type: Optional[str] = None) -> Dict[str, Any]:
+    topk = topk_override if topk_override is not None else int(env("COPILOT_TOPK", 10))
     max_ctx = int(env("COPILOT_MAX_CONTEXT_CHARS", 18000))
 
-    evidence = retrieve(question, focus=focus, topk=topk)
+    t0 = time.time()
+    evidence = retrieve(question, focus=focus, topk=topk, doc_type=doc_type)
     evidence_block = build_evidence_block(evidence, query=question, max_chars=max_ctx)
     spec_excerpt = load_living_spec_excerpt(max_chars=8000)
 
@@ -288,6 +338,12 @@ def ask_copilot(question: str, focus: Optional[str] = None) -> Dict[str, Any]:
     )
 
     answer = openai_chat(system=system, user=user)
+    latency_ms = int((time.time() - t0) * 1000)
+
+    try:
+        _append_query_log(question, focus, evidence, latency_ms, answer)
+    except Exception:
+        pass  # logging must never break the copilot
 
     return {
         "answer": answer,
@@ -307,6 +363,36 @@ def ask_copilot(question: str, focus: Optional[str] = None) -> Dict[str, Any]:
             for e in evidence
         ],
     }
+
+
+def _append_query_log(
+    question: str,
+    focus: Optional[str],
+    evidence: List[Evidence],
+    latency_ms: int,
+    answer: str,
+) -> None:
+    """Append one entry to the query log JSONL.
+
+    Each line records: timestamp, question, focus, latency, evidence doc_ids,
+    answer_preview. Used to identify KB gaps (questions with few/no good hits).
+    """
+    artifacts = pathlib.Path(env("ARTIFACTS_DIR", "storage/artifacts"))
+    artifacts.mkdir(parents=True, exist_ok=True)
+    log_path = artifacts / "query_log.jsonl"
+
+    entry = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "question": question,
+        "focus": focus,
+        "latency_ms": latency_ms,
+        "n_evidence": len(evidence),
+        "top_scores": [round(e.score, 3) for e in evidence[:5]],
+        "doc_ids": [e.doc_id for e in evidence if e.doc_id],
+        "answer_preview": answer[:200].replace("\n", " "),
+    }
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
 def append_to_living_spec(decision_block_md: str, question: Optional[str] = None) -> None:

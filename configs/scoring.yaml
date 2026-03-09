@@ -83,6 +83,9 @@ focuses:
       - "photobioreactor CIP cleaning protocol food grade sanitizer peracetic acid"
       - "PMMA chemical compatibility sodium hypochlorite ethanol peracetic acid"
       - "biofilm removal photobioreactor cleaning validation"
+      - "algae photobioreactor sterilization NaOH hydrogen peroxide cleaning in place"
+      - "microalgae culture biofilm PMMA acrylic alkaline cleaning compatibility pH 10"
+      - "photobioreactor sanitation protocol food safety microalgae production"
 
   - name: gas_management_o2_stripping_kla
     base_score: 18
@@ -90,6 +93,10 @@ focuses:
       - "airlift photobioreactor oxygen stripping CO2 transfer kLa"
       - "gas holdup airlift reactor kLa superficial gas velocity"
       - "photobioreactor degassing column oxygen inhibition microalgae"
+      - "dissolved oxygen inhibition Spirulina Arthrospira photosynthesis supersaturation"
+      - "kLa measurement dynamic gassing out method photobioreactor microalgae"
+      - "CO2 mass transfer sparger bubble size microalgae culture bioreactor"
+      - "oxygen accumulation airlift Spirulina productivity inhibition stripping"
 
   - name: contamination_monitoring_response
     base_score: 16

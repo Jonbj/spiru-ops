@@ -1,0 +1,55 @@
+# configs/manual_seeds.yaml
+#
+# Curated seed URLs for under-covered focus areas.
+# These are injected into the discovery backlog by scripts/inject_manual_seeds.py.
+# Add URLs here when automatic discovery misses key sources.
+
+seeds:
+
+  spirulina_strains_eu_collections:
+    - url: "https://www.ccap.ac.uk/strain-details/?strain=1479%2F2"
+      title: "CCAP 1479/2 Arthrospira platensis strain details"
+    - url: "https://www.dsmz.de/collection/catalogue/details/culture/PCC-9108"
+      title: "DSMZ Arthrospira platensis strain PCC-9108"
+    - url: "https://utex.org/products/utex-b-1926"
+      title: "UTEX 1926 Spirulina platensis"
+    - url: "https://www.sccap.dk/strain/SAG-85.79/"
+      title: "SAG 85.79 Arthrospira platensis"
+
+  biomass_analytics_food_cosmetic_safety:
+    - url: "https://www.efsa.europa.eu/en/efsajournal/pub/4409"
+      title: "EFSA Safety of Spirulina as food supplement 2016"
+    - url: "https://www.fda.gov/food/cfsan-constituent-updates/fda-completes-review-notification-generally-recognized-safe-spirulina"
+      title: "FDA GRAS notification spirulina review"
+    - url: "https://www.who.int/publications/i/item/9789240044906"
+      title: "WHO guidelines on contaminants in food supplements"
+
+  water_treatment_well_mains:
+    - url: "https://www.who.int/publications/i/item/9789241549950"
+      title: "WHO Guidelines for Drinking-water Quality 4th edition"
+    - url: "https://www.epa.gov/sites/default/files/2019-08/documents/uv-disinfection-guidance-manual.pdf"
+      title: "EPA UV Disinfection Guidance Manual for Drinking Water"
+
+  circular_economy_waste_streams:
+    - url: "https://www.mdpi.com/2073-4441/13/13/1854"
+      title: "Microalgae cultivation on digestate: a review"
+    - url: "https://www.frontiersin.org/articles/10.3389/fenvs.2021.611836/full"
+      title: "Arthrospira on olive mill wastewater"
+
+  local_adaptation_marche_fermo_outdoor:
+    - url: "https://www.enalgae.eu/media/37167/enalgae-working-paper-n6-raceway-ponds.pdf"
+      title: "ENALGAE working paper N6 raceway ponds"
+    - url: "https://www.algaeresearch.com/spirulina-cultivation-guide"
+      title: "Spirulina outdoor cultivation guide"
+
+  packaging_labeling_retail:
+    - url: "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32011R1169"
+      title: "EU Regulation 1169/2011 food information to consumers"
+    - url: "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32002L0046"
+      title: "EU Directive 2002/46 food supplements labeling"
+
+  network_partners_accelerators_suppliers:
+    - url: "https://publications.jrc.ec.europa.eu/repository/handle/JRC136524"
+      title: "JRC Algae for food and feed in the EU 2023"
+    - url: "https://algaebiomass.org/resource-center/technical-standards/"
+      title: "Algae Biomass Organization technical standards"
