@@ -89,6 +89,11 @@ else
   echo "[daily] SEED_STRAINS=0 -> skip pipelines.seed_strains (set SEED_STRAINS=1 to enable)"
 fi
 
+# Inject curated manual seeds into candidates before discovery.
+# This ensures focused URLs (culture collections, regulatory docs, etc.) are always
+# picked up even when automatic search misses them.
+"$PYBIN" scripts/inject_manual_seeds.py || echo "[daily] WARN: inject_manual_seeds failed (non-fatal)" >&2
+
 # Run the pipeline steps
 "$PYBIN" -m pipelines.discover
 "$PYBIN" -m pipelines.ingest
@@ -124,3 +129,6 @@ fi
 
 # Pruning old state files (best-effort)
 bash "$ROOT_DIR/pipelines/prune_artifacts.sh" || echo "[daily] WARN: prune_artifacts failed (non-fatal)" >&2
+
+# Update Obsidian diario with run summary (best-effort)
+"$PYBIN" scripts/update_obsidian_diario.py || echo "[daily] WARN: update_obsidian_diario failed (non-fatal)" >&2

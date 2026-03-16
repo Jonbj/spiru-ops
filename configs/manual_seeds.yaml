@@ -53,3 +53,49 @@ seeds:
       title: "JRC Algae for food and feed in the EU 2023"
     - url: "https://algaebiomass.org/resource-center/technical-standards/"
       title: "Algae Biomass Organization technical standards"
+
+  spirulina_inoculation_scaleup_protocol:
+    # FAO spirulina cultivation manual (Belay 1997) — classic practitioner reference
+    - url: "https://www.fao.org/3/w6374e/w6374e00.htm"
+      title: "FAO Spirulina Production and Research 1997 — Belay"
+    # UTEX culture collection growing notes for Arthrospira/Spirulina
+    - url: "https://utex.org/pages/algae-guides"
+      title: "UTEX Algae Culture Guides — maintenance and scale-up protocols"
+    # SAG culture collection handling instructions PDF
+    - url: "https://sagdb.uni-goettingen.de/infos/HandlingInstructions.pdf"
+      title: "SAG Algae Culture Collection — Handling Instructions PDF"
+    # WorldSpirulinaOrganization practitioner guide
+    - url: "https://www.worldspirulina.com/index.php/spirulina-tech"
+      title: "WorldSpirulina — technical growing guide"
+    # Practical guide by Spirulina Source (Ripley Fox lineage)
+    - url: "https://www.spirulinasource.com/earthfoodch8.html"
+      title: "Spirulina Source — scale-up and inoculum protocol chapter"
+    # Spirulina Sourcebook — inoculum and production volume chapter
+    - url: "https://www.spirulinasource.com/earthfoodch7.html"
+      title: "Spirulina Source — starter culture and daily management"
+
+  spirulina_novel_food_status_eu_it:
+    # EU Novel Food catalogue — Spirulina/Arthrospira entry
+    - url: "https://food.ec.europa.eu/safety/novel-food/novel-food-catalogue_en"
+      title: "EU Novel Food Catalogue — Spirulina/Arthrospira status"
+    # EFSA 2016 safety opinion on Spirulina (journal article 4347)
+    - url: "https://efsa.onlinelibrary.wiley.com/doi/10.2903/j.efsa.2016.4347"
+      title: "EFSA 2016 — Safety of Spirulina as food supplement (opinion 4347)"
+    # EUR-Lex Regulation 2015/2283 Novel Food (HTML, not PDF — more accessible)
+    - url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32015R2283"
+      title: "EU Regulation 2015/2283 on Novel Food (full text)"
+    # EC implementing regulation on Union list of novel foods
+    - url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32017R2470"
+      title: "EU Reg. 2017/2470 — Union list of authorised novel foods"
+    # Ministero della Salute — registro integratori alimentari
+    - url: "https://www.salute.gov.it/portale/integratoriAlimentari/homeIntegratoriAlimentari.jsp"
+      title: "Ministero della Salute — Registro integratori alimentari (portale SIAN)"
+    # Ministero della Salute — procedura notifica integratori alimentari
+    - url: "https://www.salute.gov.it/portale/integratoriAlimentari/dettaglioContenutiIntegratoriAlimentari.jsp?lingua=italiano&id=2282&area=integratori-alimentari&menu=notifica"
+      title: "Ministero Salute — Procedura notifica integratori alimentari in Italia"
+    # EC Novel Food application guidance for small producers
+    - url: "https://food.ec.europa.eu/safety/novel-food/authorisation_en"
+      title: "EC Novel Food — authorisation procedure and guidance documents"
+    # EFSA guidance on Novel Food applications
+    - url: "https://www.efsa.europa.eu/en/applications/novel-food"
+      title: "EFSA — Novel Food application guidance and templates"

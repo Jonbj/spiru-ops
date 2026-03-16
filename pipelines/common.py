@@ -215,6 +215,14 @@ def normalize_url(url: str) -> str:
             netloc = (p2.netloc or "").lower()
             p = p2
 
+        # Strip default ports (:443 for https, :80 for http) so that
+        # "https://host:443/path" and "https://host/path" normalize to the same string.
+        _default_ports = {"https": "443", "http": "80"}
+        if ":" in netloc:
+            host_part, _, port_part = netloc.rpartition(":")
+            if port_part == _default_ports.get(scheme):
+                netloc = host_part
+
         path = re.sub(r"/{2,}", "/", p.path or "")
         if path.endswith("/") and path != "/":
             path = path[:-1]

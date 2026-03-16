@@ -5,6 +5,9 @@ focuses:
       - "Spirulina Arthrospira pH setpoint CO2 bicarbonate alkaline"
       - "Zarrouk medium pH control CO2 dosing Spirulina"
       - "alkaline photobioreactor pH control CO2 mass transfer kLa"
+      - "Spirulina Arthrospira temperature effect growth rate low temperature cold"
+      - "Arthrospira optimal temperature cultivation 20 25 degrees photobioreactor"
+      - "Spirulina temperature stress cold growth pigment production biomass"
 
   - name: pbr_airlift_geometry_and_scale_down
     base_score: 30
@@ -133,3 +136,66 @@ focuses:
       - "Spirulina shelf life storage degradation phycocyanin stability"
       - "Spirulina powder oxidation moisture temperature storage conditions"
       - "Arthrospira biomass degradation kinetics packaging atmosphere"
+
+  - name: pbr_technology_comparison_low_cost_startup
+    base_score: 28
+    queries:
+      - "photobioreactor comparison plastic bag PMMA tubular flat panel low-cost microalgae"
+      - "Spirulina low-cost photobioreactor startup pilot scale comparison review"
+      - "plastic bag bioreactor Spirulina Arthrospira polyethylene sleeve cultivation"
+      - "PMMA column photobioreactor Spirulina cultivation cost comparison"
+      - "flat panel photobioreactor vs tubular low cost microalgae Spirulina"
+      - "low-cost photobioreactor design build Spirulina startup small scale DIY"
+      - "microalgae photobioreactor selection criteria capital cost comparison review"
+      - "polyethylene sleeve photobioreactor Arthrospira outdoor indoor"
+      - "fotobioreattore sacca polietilene spirulina coltivazione economico"
+      - "photobioreactor capital cost operating cost technology selection startup"
+
+  - name: downstream_drying_processing
+    base_score: 24
+    queries:
+      - "Spirulina spray drying drum drying flash drying parameters quality"
+      - "Arthrospira drying temperature moisture content powder quality pdf"
+      - "Spirulina freeze drying vs spray drying comparison quality cost"
+      - "microalgae biomass drying downstream processing technology energy"
+
+  - name: italian_regulatory_notification
+    base_score: 26
+    queries:
+      - "integratori alimentari Spirulina notifica Ministero della Salute procedura"
+      - "D.lgs. 169/2004 integratori alimentari procedura notifica SIAN"
+      - "Spirulina novel food Reg. 2015/2283 autorizzazione Italia"
+      - "food supplement notification Italy Ministry Health SIAN procedure"
+
+  - name: unit_economics_financial_model
+    base_score: 26
+    queries:
+      - "Spirulina production cost per kg CAPEX OPEX financial model analysis"
+      - "microalgae techno-economic analysis production cost scale pilot"
+      - "Arthrospira business plan break-even economic feasibility analysis"
+      - "spirulina cost of production benchmark industry report"
+
+  - name: inhouse_qc_analytical_methods
+    base_score: 22
+    queries:
+      - "Spirulina phycocyanin spectrophotometry HPLC in-house assay method"
+      - "Arthrospira microbiological plate count rapid test analytical method"
+      - "Spirulina analytical methods QC laboratory protocol in-house validation"
+      - "microalgae biomass analytical method validation in-house rapid"
+
+  - name: sales_channels_italy_b2b_b2c
+    base_score: 20
+    queries:
+      - "Spirulina distribuzione Italia B2B B2C canali vendita distributori"
+      - "spirulina superfood Italy distribution channel retail health food"
+      - "Spirulina Italy B2C direct-to-consumer e-commerce brand strategy"
+      - "spirulina Ho.Re.Ca food industry B2B Italy market channels"
+
+  - name: cosmetic_market_entry_barriers
+    base_score: 24
+    queries:
+      - "EU cosmetic regulation 1223/2009 CPSR responsible person CPNP notification"
+      - "cosmetic market entry barriers investment requirements EU Italy startup"
+      - "CPSR cosmetic safety report requirements SCCS opinion regulation"
+      - "Spirulina cosmetic ingredient INCI EU regulation safety assessment"
+      - "cosmetic notification CPNP Italy responsible person procedure cost compliance"

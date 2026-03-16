@@ -607,6 +607,20 @@ def main():
     candidates = dedup(candidates)
 
     # Domain saturation penalty (soft)
+    # Deduplicate by URL keeping the candidate with the highest score.
+    # When the same URL is found by queries from different focus areas, this
+    # ensures it gets assigned to the most relevant focus (highest scoring query)
+    # rather than whichever focus happened to find it first.
+    url_best: Dict[str, Dict[str, Any]] = {}
+    for c in candidates:
+        u = c.get("url") or ""
+        if not u:
+            continue
+        existing = url_best.get(u)
+        if existing is None or float(c.get("score") or 0) > float(existing.get("score") or 0):
+            url_best[u] = c
+    candidates = list(url_best.values())
+
     dom_counts: Dict[str, int] = {}
     for c in candidates:
         d = domain_of(c.get("url") or "")

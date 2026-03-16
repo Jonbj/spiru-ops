@@ -1,4 +1,42 @@
 focus:
+- name: pbr_technology_comparison_low_cost_startup
+  keywords:
+  - photobioreactor comparison
+  - plastic bag bioreactor
+  - PMMA column
+  - glass column
+  - tubular photobioreactor
+  - flat panel photobioreactor
+  - low-cost photobioreactor
+  - startup scale
+  - polyethylene sleeve
+  - transparent tube
+  openalex_query: '("photobioreactor" OR "PBR") AND ("comparison" OR "plastic bag" OR "PMMA" OR "tubular" OR "flat panel"
+    OR "glass column" OR "low-cost" OR "low cost") AND ("microalgae" OR "Spirulina" OR "Arthrospira")
+
+    '
+  brave_queries:
+  - photobioreactor comparison plastic bag PMMA tubular flat panel low-cost pdf
+  - Spirulina low-cost photobioreactor startup pilot scale comparison pdf
+  - '"plastic bag" bioreactor Spirulina Arthrospira polyethylene sleeve pdf'
+  - PMMA column photobioreactor Spirulina cultivation cost pdf
+  - transparent tube photobioreactor low cost microalgae pdf
+  - flat panel photobioreactor Spirulina comparison tubular pdf
+  - '"low-cost photobioreactor" Spirulina startup small scale DIY pdf'
+  - photobioreactor "plastic bag" PMMA tubular glass column (comparison OR review OR overview) filetype:pdf
+  - photobioreactor "plastic bag" PMMA tubular (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf
+  - photobioreactor "plastic bag" PMMA tubular (report OR "technical report" OR "working paper") filetype:pdf
+  - photobioreactor "plastic bag" PMMA tubular site:.edu filetype:pdf
+  - photobioreactor "plastic bag" PMMA tubular site:.gov filetype:pdf
+  - photobioreactor "plastic bag" PMMA tubular site:patents.google.com
+  - '"plastic bag photobioreactor" microalgae guida manuale protocollo filetype:pdf'
+  - '"plastic bag photobioreactor" microalgae guide protocole manuel filetype:pdf'
+  - low cost photobioreactor design build Spirulina pilot phase startup
+  - polyethylene sleeve photobioreactor Arthrospira outdoor indoor pdf
+  - sacca polietilene fotobioreattore spirulina coltivazione filetype:pdf
+  - fotobioreattore economico confronto colonna sacca tubolare spirulina filetype:pdf
+  - '"photobioreactor" "capital cost" "operating cost" comparison technology selection pdf'
+  - microalgae photobioreactor selection criteria startup scale-up review pdf
 - name: pbr_airlift_geometry_and_scale_down
   keywords:
   - airlift photobioreactor
@@ -514,3 +552,293 @@ focus:
   - Spirulina conservación duración degradación filetype:pdf
   - Spirulina phycocyanin stability storage temperature
   - Spirulina oxidation packaging atmosphere modified
+- name: downstream_drying_processing
+  keywords:
+  - spray drying
+  - drum drying
+  - freeze drying
+  - flash drying
+  - belt dryer
+  - moisture content
+  - drying temperature
+  - Spirulina powder
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("spray drying" OR "drum drying" OR "freeze drying" OR "flash drying"
+    OR "belt dryer" OR "drying" OR "moisture content")
+
+    '
+  brave_queries:
+  - Spirulina spray drying drum drying flash drying parameters pdf
+  - Arthrospira drying temperature moisture content powder quality pdf
+  - Spirulina freeze drying vs spray drying comparison pdf
+  - '"Spirulina drying" "spray drying" "drum drying" (guideline OR "best practices" OR protocol OR SOP OR manual) filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" (report OR "technical report" OR "working paper") filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" (review OR overview) filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" site:.edu filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" site:.gov filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" site:.int filetype:pdf'
+  - '"Spirulina drying" "spray drying" "drum drying" site:patents.google.com'
+  - Spirulina essiccazione spray drying filetype:pdf
+  - Spirulina séchage atomisation filetype:pdf
+  - Spirulina secado atomización filetype:pdf
+  - microalgae biomass drying processing downstream technology pdf
+  - belt dryer flash dryer microalgae biomass energy efficiency pdf
+- name: italian_regulatory_notification
+  keywords:
+  - integratori alimentari
+  - D.lgs. 169/2004
+  - Ministero della Salute
+  - notifica integratori
+  - novel food
+  - Reg. 2015/2283
+  - SIAN
+  - alimento nuovo
+  openalex_query: '("integratori alimentari" OR "food supplements" OR "novel food") AND ("Italy" OR "Italia" OR "Ministero della
+    Salute" OR "Reg. 2015/2283") AND ("notification" OR "notifica" OR "authorization")
+
+    '
+  brave_queries:
+  - '"integratori alimentari" Spirulina notifica Ministero della Salute site:salute.gov.it'
+  - '"D.lgs. 169/2004" integratori alimentari procedura notifica pdf'
+  - Spirulina "novel food" "Reg. 2015/2283" autorizzazione Italia pdf
+  - SIAN integratori alimentari notifica procedura pdf
+  - '"integratori alimentari" notifica (guideline OR procedura OR manuale OR SOP) filetype:pdf'
+  - '"integratori alimentari" notifica (report OR "working paper") filetype:pdf'
+  - '"integratori alimentari" notifica site:salute.gov.it filetype:pdf'
+  - '"integratori alimentari" notifica site:europa.eu filetype:pdf'
+  - '"integratori alimentari" notifica site:efsa.europa.eu filetype:pdf'
+  - '"novel food" Spirulina "2015/2283" authorization EU pdf'
+  - Spirulina food supplement Italy regulatory requirements notification
+  - alimento nuovo Spirulina Italia autorizzazione procedura
+  - '"food supplement" notification Italy SIAN Ministry Health procedure'
+  - Spirulina "novel food" EFSA opinion safety assessment pdf
+- name: unit_economics_financial_model
+  keywords:
+  - CAPEX
+  - OPEX
+  - cost per kg
+  - production cost
+  - financial model
+  - business plan
+  - break-even
+  - spirulina economics
+  openalex_query: '("Spirulina" OR "Arthrospira" OR "microalgae") AND ("production cost" OR "CAPEX" OR "OPEX" OR "cost per kg"
+    OR "financial model" OR "techno-economic" OR "break-even")
+
+    '
+  brave_queries:
+  - Spirulina production cost per kg CAPEX OPEX financial model pdf
+  - microalgae techno-economic analysis production scale pdf
+  - Arthrospira business plan break-even economic analysis pdf
+  - '"Spirulina production cost" CAPEX OPEX (report OR analysis OR "working paper") filetype:pdf'
+  - '"Spirulina production cost" CAPEX OPEX (thesis OR dissertation) filetype:pdf'
+  - '"Spirulina production cost" CAPEX OPEX (review OR overview) filetype:pdf'
+  - '"Spirulina production cost" CAPEX OPEX site:.edu filetype:pdf'
+  - '"Spirulina production cost" CAPEX OPEX site:.gov filetype:pdf'
+  - '"Spirulina production cost" CAPEX OPEX site:.int filetype:pdf'
+  - microalgae "techno-economic" analysis "cost per kg" pdf
+  - spirulina business plan model financier rentabilité filetype:pdf
+  - spirulina piano economico costo produzione break-even filetype:pdf
+  - microalgae pilot scale economic feasibility cost analysis pdf
+  - '"cost of production" spirulina microalgae benchmark industry pdf'
+- name: inhouse_qc_analytical_methods
+  keywords:
+  - HPLC
+  - spectrophotometry
+  - phycocyanin assay
+  - plate count
+  - microscopy
+  - rapid test
+  - in-house QC
+  - analytical methods
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("HPLC" OR "spectrophotometry" OR "phycocyanin assay" OR "plate count"
+    OR "microscopy" OR "analytical methods" OR "in-house QC")
+
+    '
+  brave_queries:
+  - Spirulina phycocyanin spectrophotometry HPLC in-house assay pdf
+  - Arthrospira microbiological plate count rapid test method pdf
+  - Spirulina analytical methods QC laboratory protocol pdf
+  - '"Spirulina QC" HPLC spectrophotometry (guideline OR protocol OR SOP OR manual) filetype:pdf'
+  - '"Spirulina QC" HPLC spectrophotometry (report OR "technical report") filetype:pdf'
+  - '"Spirulina QC" HPLC spectrophotometry (thesis OR dissertation) filetype:pdf'
+  - '"Spirulina QC" HPLC spectrophotometry site:.edu filetype:pdf'
+  - '"Spirulina QC" HPLC spectrophotometry site:.gov filetype:pdf'
+  - Spirulina phycocyanin protein quantification method comparison pdf
+  - microalgae biomass analytical method validation in-house pdf
+  - Spirulina metodi analitici controllo qualità laboratorio filetype:pdf
+  - Spirulina méthodes analytiques contrôle qualité laboratoire filetype:pdf
+  - '"ISO 17025" microalgae food analytical laboratory accreditation pdf'
+  - Arthrospira rapid test heavy metals microtoxins field analysis pdf
+- name: sales_channels_italy_b2b_b2c
+  keywords:
+  - B2B food industry
+  - B2C e-commerce
+  - distributori Italia
+  - health food store
+  - farmacia
+  - erboristeria
+  - Ho.Re.Ca
+  - online marketplace
+  openalex_query: '("Spirulina" OR "microalgae" OR "superfood") AND ("distribution" OR "retail" OR "B2B" OR "B2C" OR "e-commerce"
+    OR "health food" OR "Italy" OR "Italia")
+
+    '
+  brave_queries:
+  - Spirulina distribuzione Italia B2B B2C canali vendita pdf
+  - microalgae superfood distributori grossisti Italia salute
+  - Spirulina farmacia erboristeria Ho.Re.Ca canale vendita Italia
+  - '"spirulina" "distribuzione" "Italia" (report OR analisi OR "market analysis") filetype:pdf'
+  - spirulina superfood Italy B2B food industry buyer distributor
+  - spirulina "health food store" "e-commerce" Italy market channels
+  - spirulina Italy online marketplace Amazon retailer strategy
+  - spirulina B2C direct-to-consumer DTC Italy brand
+  - spirulina "Ho.Re.Ca" ristorazione Italy food service channel
+  - microalgae food ingredient B2B buyer specification Italy
+  - '"spirulina" "mercato italiano" canali distribuzione filetype:pdf'
+  - spirulina integratori farmacia parafarmacia mercato italia analisi
+  - superfood Italy distribution channel retail analysis pdf
+  - Spirulina Italy market size growth trends report pdf
+- name: spirulina_inoculation_scaleup_protocol
+  keywords:
+  - inoculum ratio
+  - seed culture
+  - scale-up protocol
+  - starter culture
+  - volumetric inoculation
+  - Arthrospira scale-up
+  - vial to flask
+  - exponential phase
+  - axenic culture maintenance
+  - contamination control scaleup
+  openalex_query: '("Arthrospira" OR "Spirulina") AND ("inoculum" OR "scale-up" OR "seed culture" OR "starter culture" OR "inoculation
+    protocol" OR "volumetric") AND ("photobioreactor" OR "cultivation" OR "protocol")
+
+    '
+  brave_queries:
+  - Arthrospira platensis inoculum ratio scale-up protocol vial flask photobioreactor pdf
+  - Spirulina starter culture inoculation procedure step-by-step guide pdf
+  - '"Arthrospira" "inoculum" "scale-up" protocol SOP laboratory cultivation pdf'
+  - Spirulina seed culture maintenance axenic contamination control protocol pdf
+  - '"Spirulina cultivation" inoculation "scale-up" protocol (SOP OR manual OR guideline) filetype:pdf'
+  - '"Spirulina cultivation" scale-up (thesis OR dissertation OR "master thesis" OR "PhD thesis") filetype:pdf'
+  - '"Spirulina cultivation" inoculation protocol site:.edu filetype:pdf'
+  - '"Arthrospira platensis" culture maintenance inoculum ratio exponential phase pdf'
+  - spirulina culture collection maintenance subculture protocol site:.edu
+  - Arthrospira platensis culture collection maintenance protocol SAG CCAP UTEX pdf
+  - '"inoculum ratio" microalgae photobioreactor scale-up protocol optimization pdf'
+  - spirulina scale-up pilot 100L 1000L inoculation procedure pdf
+  - Arthrospira "seed reactor" "production reactor" inoculation ratio scale-up pdf
+  - '"scale-up" "inoculum" spirulina arthrospira (protocol OR SOP OR procedure) filetype:pdf'
+  - spirulina coltivazione protocollo inoculo scala-up filetype:pdf
+  - Arthrospira inoculo ratio incremento volume coltivazione filetype:pdf
+  - '"starter culture" "production culture" spirulina algae photobioreactor guide pdf'
+  - contamination control spirulina scale-up bacterial protozoa protocol pdf
+  - spirulina home grower inoculation guide practical manual pdf
+  - spirulina damigiana inoculo volume rapporto coltivazione filetype:pdf
+- name: spirulina_novel_food_status_eu_it
+  keywords:
+  - Novel Food EU
+  - Reg. 2015/2283
+  - spirulina authorization
+  - EFSA safety assessment spirulina
+  - traditional food third country
+  - novel food catalogue
+  - integratori alimentari spirulina
+  - SIAN procedura piccoli produttori
+  - fresh spirulina biomass
+  - Arthrospira novel food status
+  openalex_query: '("Spirulina" OR "Arthrospira") AND ("Novel Food" OR "Reg. 2015/2283" OR "authorization" OR "EFSA" OR "food
+    safety assessment" OR "food supplement" OR "regulatory status")
+
+    '
+  brave_queries:
+  - Spirulina Arthrospira "novel food" EU status 2015/2283 authorization pdf
+  - '"novel food catalogue" Spirulina Arthrospira EU status site:ec.europa.eu'
+  - EFSA safety assessment Spirulina Arthrospira opinion 2016 pdf
+  - '"novel food" Spirulina traditional food "Article 10" notification EU pdf'
+  - Spirulina fresh biomass novel food supplement Italy regulatory classification pdf
+  - '"integratori alimentari" Spirulina Italia notifica SIAN piccolo produttore procedura'
+  - Spirulina novel food EU Italy small producer authorization procedure
+  - '"Reg. 2015/2283" Spirulina traditional third country food notification pdf'
+  - EFSA Spirulina opinion safety 4347 filetype:pdf
+  - Spirulina "novel food" EU authorization step-by-step guide small producer pdf
+  - spirulina fresh Italy "alimento nuovo" autorizzazione normativa pdf
+  - '"Arthrospira platensis" "novel food" EU catalogue status authorization 2023 2024 pdf'
+  - Spirulina supplement Italy D.lgs 169/2004 notifica procedura operativa pdf
+  - '"integratori" Spirulina Ministero Salute Italia registrazione notifica pdf'
+  - Spirulina "novel food" site:ec.europa.eu
+  - Spirulina "novel food" site:efsa.europa.eu filetype:pdf
+  - Spirulina "novel food" site:salute.gov.it filetype:pdf
+  - novel food spirulina traditional food history of use EU authorization guide pdf
+  - Arthrospira "novel food" "Union list" authorized EU pdf
+  - spirulina alimento tradizionale notifica semplificata UE Italia procedura filetype:pdf
+  - Spirulina supplement food Italy certification organic bio label requirement pdf
+- name: equipment_sanitization_cip_spirulina
+  keywords:
+  - sanitization photobioreactor
+  - CIP clean in place microalgae
+  - disinfection culture vessel spirulina
+  - contamination prevention equipment
+  - sterilization glass vessel algae
+  - cleaning protocol bioreactor
+  - sodium hypochlorite algae equipment
+  - biofilm removal photobioreactor
+  - material compatibility spirulina alkaline
+  - glass bottle sanitization culture
+  openalex_query: '("sanitization" OR "sterilization" OR "disinfection" OR "clean-in-place" OR "CIP") AND
+    ("photobioreactor" OR "bioreactor" OR "culture vessel" OR "cultivation system") AND
+    ("microalgae" OR "Spirulina" OR "Arthrospira" OR "algae")
+
+    '
+  brave_queries:
+  - sanitization photobioreactor microalgae spirulina protocol CIP pdf
+  - disinfection culture vessel spirulina contamination prevention pdf
+  - '"clean in place" bioreactor microalgae protocol pdf'
+  - sterilization glass photobioreactor spirulina arthrospira procedure pdf
+  - biofilm removal photobioreactor microalgae cleaning protocol pdf
+  - sodium hypochlorite hydrogen peroxide disinfection algae culture vessel pdf
+  - '"contamination prevention" spirulina photobioreactor sanitation pdf'
+  - material compatibility spirulina alkaline pH cleaning agent pdf
+  - spirulina culture crash recovery cleaning restart protocol pdf
+  - '"cleaning protocol" microalgae bioreactor (guideline OR procedure OR manual) filetype:pdf'
+  - '"cleaning protocol" microalgae bioreactor site:.edu filetype:pdf'
+  - sterilization aquaculture recirculating system equipment protocol pdf
+  - '"clean-in-place" fermentation bioreactor sanitization food grade pdf'
+  - spirulina damigiana sanificazione pulizia protocollo
+  - '"photobioreactor" cleaning disinfection maintenance (review OR protocol OR procedure) filetype:pdf'
+  - equipment sanitation small-scale microalgae home cultivation protocol pdf
+  - '"bioreactor" "sodium hypochlorite" OR "bleach" OR "H2O2" cleaning protocol pdf'
+
+- name: cosmetic_market_entry_barriers
+  keywords:
+  - cosmetic regulation EU
+  - Reg. 1223/2009
+  - CPSR
+  - responsible person
+  - SCCS opinion
+  - cosmetic notification portal CPNP
+  - stability testing cosmetic
+  - dermatological test
+  - market entry barriers
+  openalex_query: '("cosmetic" OR "cosmetics") AND ("Reg. 1223/2009" OR "CPSR" OR "responsible person" OR "CPNP" OR "SCCS"
+    OR "market entry" OR "barrier") AND ("Italy" OR "EU" OR "Europe")
+
+    '
+  brave_queries:
+  - '"Reg. 1223/2009" cosmetic responsible person CPSR CPNP notification pdf'
+  - EU cosmetic regulation market entry barriers investment requirements pdf
+  - CPSR cosmetic safety report requirements SCCS pdf
+  - cosmetic notification CPNP Italy responsible person procedure
+  - '"cosmetic regulation" "1223/2009" CPSR (guideline OR manual OR checklist) filetype:pdf'
+  - '"cosmetic regulation" "1223/2009" CPSR (report OR "working paper") filetype:pdf'
+  - '"cosmetic regulation" "1223/2009" CPSR site:europa.eu filetype:pdf'
+  - '"cosmetic regulation" "1223/2009" CPSR site:.gov filetype:pdf'
+  - Spirulina cosmetic ingredient INCI SCCS opinion safety assessment pdf
+  - microalgae cosmetic ingredient EU regulation barriers entry investment
+  - cosmetic startup Italy barriers regulatory compliance cost
+  - '"responsible person" cosmetic EU Italy cost compliance investment'
+  - stability testing preservative efficacy test cosmetic requirement pdf
+  - dermatological test patch test cosmetic market Italy requirement
+  - CPNP notification procedure cosmetic EU guide filetype:pdf
+  - Spirulina cosmetic claim regulation EU Italy authorization

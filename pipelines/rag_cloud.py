@@ -31,9 +31,20 @@ SENTENCE_MODEL = env("SENTENCE_MODEL", env("EMBED_MODEL", "sentence-transformers
 _BGE_M3_NAMES = {"baai/bge-m3", "bge-m3"}
 IS_BGE_M3 = SENTENCE_MODEL.lower() in _BGE_M3_NAMES
 
-# Generation (OpenAI) – raw HTTP (no SDK proxy surprises)
-OPENAI_API_KEY = env("OPENAI_API_KEY", required=True)
+# Generation backend — set LLM_BACKEND to switch without code changes:
+#   openai    → OpenAI API (default, needs OPENAI_API_KEY)
+#   anthropic → Anthropic Claude API (needs ANTHROPIC_API_KEY)
+#   ollama    → Local Ollama server, free (needs Ollama running on OLLAMA_URL)
+LLM_BACKEND = env("LLM_BACKEND", "openai").strip().lower()
+
+OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 OPENAI_MODEL = env("OPENAI_MODEL", "gpt-4o-mini")
+
+ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
+ANTHROPIC_MODEL = env("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+
+OLLAMA_URL = env("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_MODEL = env("OLLAMA_MODEL", "llama3.2")
 
 
 # Diversity controls (important!)
@@ -303,21 +314,69 @@ def build_evidence_block(evidence: List[Evidence], query: str, max_chars: int = 
     return "\n\n".join(blocks)
 
 
-def openai_chat(system: str, user: str) -> str:
-    url = "https://api.openai.com/v1/chat/completions"
-    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
-    payload = {
-        "model": OPENAI_MODEL,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        "temperature": 0.2,
-    }
-    r = requests.post(url, headers=headers, json=payload, timeout=120)
+def _openai_chat(system: str, user: str) -> str:
+    if not OPENAI_API_KEY:
+        raise RuntimeError("OPENAI_API_KEY not set. Add it to .env or switch LLM_BACKEND.")
+    r = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        headers={"Authorization": f"Bearer {OPENAI_API_KEY}"},
+        json={
+            "model": OPENAI_MODEL,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "temperature": 0.2,
+        },
+        timeout=120,
+    )
     r.raise_for_status()
-    data = r.json()
-    return (data["choices"][0]["message"]["content"] or "").strip()
+    return (r.json()["choices"][0]["message"]["content"] or "").strip()
+
+
+def _anthropic_chat(system: str, user: str) -> str:
+    if not ANTHROPIC_API_KEY:
+        raise RuntimeError("ANTHROPIC_API_KEY not set. Add it to .env or switch LLM_BACKEND.")
+    r = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json={
+            "model": ANTHROPIC_MODEL,
+            "max_tokens": 4096,
+            "temperature": 0.2,
+            "system": system,
+            "messages": [{"role": "user", "content": user}],
+        },
+        timeout=120,
+    )
+    r.raise_for_status()
+    return (r.json()["content"][0]["text"] or "").strip()
+
+
+def _ollama_chat(system: str, user: str) -> str:
+    # Ollama exposes an OpenAI-compatible endpoint at /v1/chat/completions
+    r = requests.post(
+        f"{OLLAMA_URL.rstrip('/')}/v1/chat/completions",
+        json={
+            "model": OLLAMA_MODEL,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "temperature": 0.2,
+            "stream": False,
+        },
+        timeout=300,  # local inference can be slow
+    )
+    r.raise_for_status()
+    return (r.json()["choices"][0]["message"]["content"] or "").strip()
+
+
+def llm_chat(system: str, user: str) -> str:
+    """Dispatch to the configured LLM backend (LLM_BACKEND env var)."""
+    if LLM_BACKEND == "anthropic":
+        return _anthropic_chat(system, user)
+    if LLM_BACKEND == "ollama":
+        return _ollama_chat(system, user)
+    return _openai_chat(system, user)
 
 
 def ask_copilot(question: str, focus: Optional[str] = None, topk_override: Optional[int] = None, doc_type: Optional[str] = None) -> Dict[str, Any]:
@@ -337,7 +396,7 @@ def ask_copilot(question: str, focus: Optional[str] = None, topk_override: Optio
         evidence=evidence_block,
     )
 
-    answer = openai_chat(system=system, user=user)
+    answer = llm_chat(system=system, user=user)
     latency_ms = int((time.time() - t0) * 1000)
 
     try:

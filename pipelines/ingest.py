@@ -53,6 +53,7 @@ import re
 import time
 from collections import Counter
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote, urlparse
 
@@ -685,9 +686,10 @@ def main() -> None:
                     cnt[dom] += 1
         return cnt
 
-    def _portfolio_select(cands: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _portfolio_select(cands: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], int]:
         # Remove already-seen URLs *before* sampling, otherwise we waste selection budget.
         # We keep this filter here (instead of inside the ingest loop) to improve yield.
+        # Returns (selected, n_prefiltered_seen) so caller can update skipped stats accurately.
         before = len(cands)
         cands = [c for c in cands if normalize_url(c.get("url", "")) and normalize_url(c.get("url", "")) not in seen]
         filtered = before - len(cands)
@@ -783,9 +785,9 @@ def main() -> None:
         for k, v in top:
             print(f"  - {k}: {v}")
 
-        return selected
+        return selected, filtered
 
-    items = _portfolio_select(items)
+    items, _prefilter_seen = _portfolio_select(items)
 
     # Also track seen DOIs globally (helps discovery + dedup across URL variants)
     seen_doi_path = STATE_DIR / "seen_doi.jsonl"
@@ -812,15 +814,44 @@ def main() -> None:
     new_seen_lines: List[Dict[str, Any]] = []
 
     skipped = {
-        "already_seen": 0,
+        "already_seen": _prefilter_seen,  # set by _portfolio_select prefilter
         "denied_domain": 0,
         "empty_url": 0,
         "domain_403_cooldown": 0,
         "domain_429_cooldown": 0,
     }
 
-    domain_403: Dict[str, int] = {}
-    domain_429: Dict[str, int] = {}
+    # Load domain fail counts persisted from previous runs.
+    # 403 (paywalls) cool down for 7 days; 429 (rate limit) cool down for 6 hours.
+    _DOMAIN_FAIL_CACHE_PATH = STATE_DIR / "domain_fail_cache.json"
+    _now_ts = datetime.now(timezone.utc).timestamp()
+    _TTL_403 = 7 * 86400
+    _TTL_429 = 6 * 3600
+
+    def _load_domain_fail_cache() -> Tuple[Dict[str, int], Dict[str, int]]:
+        d403: Dict[str, int] = {}
+        d429: Dict[str, int] = {}
+        if not _DOMAIN_FAIL_CACHE_PATH.exists():
+            return d403, d429
+        try:
+            cache = json.loads(_DOMAIN_FAIL_CACHE_PATH.read_text(encoding="utf-8"))
+            for dom_key, entry in cache.get("domain_403", {}).items():
+                if _now_ts - entry.get("ts", 0) < _TTL_403:
+                    d403[dom_key] = entry.get("count", 1)
+            for dom_key, entry in cache.get("domain_429", {}).items():
+                if _now_ts - entry.get("ts", 0) < _TTL_429:
+                    d429[dom_key] = entry.get("count", 1)
+        except Exception:
+            pass
+        return d403, d429
+
+    domain_403, domain_429 = _load_domain_fail_cache()
+    # Log how many domains we're skipping from cache
+    pre_403 = sum(1 for v in domain_403.values() if v >= MAX_403_PER_DOMAIN)
+    pre_429 = sum(1 for v in domain_429.values() if v >= MAX_429_PER_DOMAIN)
+    if pre_403 or pre_429:
+        print(f"[ingest] domain_fail_cache: loaded {pre_403} 403-cooled domains, {pre_429} 429-cooled domains")
+
     fb_stats = FallbackStats()
 
     for it in tqdm(items, desc="Ingest"):
@@ -893,10 +924,13 @@ def main() -> None:
             reason = "http_error"
             if status == 403:
                 reason = "http_403"
-                domain_403[dom] = domain_403.get(dom, 0) + 1
+                # domain_403 already incremented inside try_download_with_openalex_fallback;
+                # don't double-count here.
             elif status == 429:
                 reason = "http_429"
-                domain_429[dom] = domain_429.get(dom, 0) + 1
+                # same: domain_429 already incremented inside the download helper.
+            elif status:
+                reason = f"http_{status}"
             record_failure(failures_by_reason, failures_examples, reason, url, extra={"status": status})
             tmp_path.unlink(missing_ok=True)
             continue
@@ -1072,13 +1106,22 @@ def main() -> None:
                 except Exception:
                     pass
 
+            _text_chars = len(text.strip()) if text else 0
             record_failure(
                 failures_by_reason,
                 failures_examples,
                 "too_little_text",
                 final_url,
-                extra={"is_pdf": looks_pdf, "chars": len(text.strip()) if text else 0},
+                extra={"is_pdf": looks_pdf, "chars": _text_chars},
             )
+            # If response was completely empty (0 chars, not PDF) it's a persistent
+            # failure (paywall HTML, captcha page). Mark seen so we don't retry every run.
+            if _text_chars == 0 and not looks_pdf:
+                _ts = utc_now_iso()
+                for _u in dict.fromkeys(u for u in [final_url, url if url != final_url else None] if u):
+                    if _u not in seen:
+                        new_seen_lines.append({"url": _u, "first_seen_at": _ts})
+                        seen.add(_u)
             continue
 
         rel = compute_spirulina_relevance(url=final_url, title=str(meta.get("title") or ""), text=text[:120000])
@@ -1099,7 +1142,13 @@ def main() -> None:
         meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
 
         ingested.append(meta)
-        new_seen_lines.append({"url": final_url, "first_seen_at": utc_now_iso()})
+        _seen_ts = utc_now_iso()
+        # Only write URLs that aren't already in the seen set, to prevent bloating
+        # seen_urls.jsonl with duplicate lines across runs.
+        for _u in dict.fromkeys(u for u in [final_url, url if url != final_url else None] if u):
+            if _u not in seen:
+                new_seen_lines.append({"url": _u, "first_seen_at": _seen_ts})
+                seen.add(_u)  # update in-memory set so within-run dedup also works
 
         # Track seen DOI globally as well
         if meta.get("doi"):
@@ -1114,6 +1163,30 @@ def main() -> None:
         with open(seen_path, "a", encoding="utf-8") as f:
             for line in new_seen_lines:
                 f.write(json.dumps(line, ensure_ascii=False) + "\n")
+
+    # Persist domain fail cache for next run (merge with existing so old entries survive TTL)
+    try:
+        existing_cache: Dict[str, Any] = {}
+        if _DOMAIN_FAIL_CACHE_PATH.exists():
+            try:
+                existing_cache = json.loads(_DOMAIN_FAIL_CACHE_PATH.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+        merged_403 = dict(existing_cache.get("domain_403", {}))
+        for dom_key, count in domain_403.items():
+            merged_403[dom_key] = {"count": count, "ts": _now_ts}
+        # Prune expired entries to keep file small
+        merged_403 = {k: v for k, v in merged_403.items() if _now_ts - v.get("ts", 0) < _TTL_403}
+        merged_429 = dict(existing_cache.get("domain_429", {}))
+        for dom_key, count in domain_429.items():
+            merged_429[dom_key] = {"count": count, "ts": _now_ts}
+        merged_429 = {k: v for k, v in merged_429.items() if _now_ts - v.get("ts", 0) < _TTL_429}
+        _DOMAIN_FAIL_CACHE_PATH.write_text(
+            json.dumps({"domain_403": merged_403, "domain_429": merged_429}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except Exception:
+        pass
 
     # Persist seen DOIs
     if seen_doi:

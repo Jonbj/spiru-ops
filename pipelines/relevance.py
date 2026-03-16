@@ -123,7 +123,7 @@ def compute_spirulina_relevance(*, url: str = "", title: str = "", text: str = "
 
     # Convert weights to [0,1]
     # Higher pos_weight quickly saturates.
-    base = 1.0 - math.exp(-(pos_weight / 5.0))
+    base = 1.0 - math.exp(-(pos_weight / 4.0))
 
     # Penalize only if we don't see the core entity.
     penalty = 0.0

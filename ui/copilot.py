@@ -27,27 +27,16 @@ st.set_page_config(page_title="SpiruCopilot", layout="wide")
 st.title("SpiruCopilot — PBR 50L Design Chat (RAG + Cloud LLM)")
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
-FOCUS_OPTIONS = [
-    "(nessun filtro)",
-    "process_control_setpoints_ph_co2_temp",
-    "pbr_airlift_geometry_and_scale_down",
-    "gas_management_o2_stripping_kla",
-    "biomass_analytics_food_cosmetic_safety",
-    "harvesting_fresh_biomass_filtration",
-    "contamination_monitoring_response",
-    "illumination_led_commercial_roi",
-    "circular_economy_waste_streams",
-    "certifications_protocols_food_cosmetic",
-    "packaging_labeling_retail",
-    "quality_shelf_life_storage_degradation",
-    "diy_home_cultivation_kits",
-    "cip_cleaning_sanitation_material_compatibility",
-    "water_treatment_well_mains",
-    "spirulina_strains_eu_collections",
-    "marketing_branding_consumer_perception",
-    "network_partners_accelerators_suppliers",
-    "local_adaptation_marche_fermo_outdoor",
-]
+def _load_focus_options() -> list:
+    """Load focus names from configs/focus.yaml so the list stays in sync automatically."""
+    try:
+        import yaml
+        data = yaml.safe_load((ROOT / "configs" / "focus.yaml").read_text(encoding="utf-8"))
+        return ["(nessun filtro)"] + [f["name"] for f in (data.get("focus") or [])]
+    except Exception:
+        return ["(nessun filtro)"]
+
+FOCUS_OPTIONS = _load_focus_options()
 
 DOC_TYPE_OPTIONS = [
     "(tutti i tipi)",
@@ -104,10 +93,8 @@ def _build_focus_filter(focus: str | None, doc_type: str | None) -> dict | None:
     return must[0] if len(must) == 1 else ({"must": must} if must else None)
 
 
-# For retrieve() the focus arg drives the internal filter; doc_type is not yet
-# a native param → we pass it via the env-based filter extension below.
-# Simple solution: pass focus only; show doc_type in evidence table as info.
-# (Full doc_type filter wiring to rag_cloud.py left as next step.)
+# Both focus and doc_type are passed through to rag_cloud.retrieve() and ask_copilot()
+# which wire them into the Qdrant filter via _build_qfilter().
 
 if run_preview:
     if not q:
