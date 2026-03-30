@@ -132,3 +132,9 @@ bash "$ROOT_DIR/pipelines/prune_artifacts.sh" || echo "[daily] WARN: prune_artif
 
 # Update Obsidian diario with run summary (best-effort)
 "$PYBIN" scripts/update_obsidian_diario.py || echo "[daily] WARN: update_obsidian_diario failed (non-fatal)" >&2
+
+# Build competitor-aware query preview from registry (best-effort)
+"$PYBIN" scripts/build_competitor_queries.py || echo "[daily] WARN: build_competitor_queries failed (non-fatal)" >&2
+
+# Write competitor delta into Obsidian inbox (best-effort)
+"$PYBIN" scripts/write_competitor_inbox.py || echo "[daily] WARN: write_competitor_inbox failed (non-fatal)" >&2

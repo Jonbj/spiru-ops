@@ -1,0 +1,182 @@
+competitors:
+  - canonical_name: Sant'Egle
+    aliases:
+      - Sant Egle
+      - santegle
+      - Agriturismo biologico Sant'Egle
+    domain: santeglebioshop.it
+    category: producer_brand
+    country: Italy
+    region: Toscana
+    company_name: null
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Apulia Kundi
+    aliases:
+      - Apuliakundi
+      - ApuliaKundi Srl
+    domain: apuliakundi.it
+    category: producer_brand
+    country: Italy
+    region: Puglia
+    company_name: APULIAKUNDI S.R.L.
+    vat_number: "07855980723"
+    tracking_status: active
+
+  - canonical_name: Biospira Srl
+    aliases:
+      - Biospira
+    domain: biospira.it
+    category: producer_brand
+    country: Italy
+    region: null
+    company_name: BIOSPIRA S.R.L.
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Farmodena
+    aliases:
+      - Farmodena Spirulina
+    domain: farmodena.com
+    category: producer_brand
+    country: Italy
+    region: Emilia-Romagna
+    company_name: null
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Spireat
+    aliases:
+      - Spireat Spirulina
+    domain: spireat.it
+    category: producer_brand
+    country: Italy
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Spiripau
+    aliases:
+      - Spiripau Spirulina
+    domain: spiripau.com
+    category: brand_or_producer
+    country: Italy
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Salera / Spirulina Bio Salera
+    aliases:
+      - Salera
+      - Spirulina Bio Salera
+    domain: spirulinabio-salera.it
+    category: producer_brand
+    country: Italy
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Livegreen
+    aliases:
+      - Livegreen Sardegna
+    domain: null
+    category: producer_brand
+    country: Italy
+    region: Sardegna
+    company_name: LIVEGREEN SOCIETÀ AGRICOLA S.R.L.
+    vat_number: "03734480928"
+    tracking_status: active
+
+  - canonical_name: Spirù / Ethos
+    aliases:
+      - Spirù
+      - Ethos
+    domain: spirulina-online.it
+    category: network_or_brand
+    country: Italy
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: watch
+
+  - canonical_name: Ecospirulina
+    aliases:
+      - EcoSpirulina
+    domain: ecospirulina.com
+    category: producer_brand
+    country: Spain
+    region: Valencia
+    company_name: null
+    vat_number: null
+    tracking_status: active
+
+  - canonical_name: Severino Becagli / Spirulina Becagli
+    aliases:
+      - Spirulina Becagli
+      - Becagli
+    domain: spirulinabecagli.it
+    category: producer_brand
+    country: Italy
+    region: Toscana
+    company_name: SEVERINO BECAGLI S.R.L. SOCIETÀ AGRICOLA
+    vat_number: "01584930539"
+    tracking_status: active
+
+  - canonical_name: Archimede Ricerche
+    aliases:
+      - Archimede Ricerche Srl
+    domain: archimedericerche.it
+    category: adjacent_microalgae_player
+    country: Italy
+    region: Liguria
+    company_name: ARCHIMEDE RICERCHE S.R.L.
+    vat_number: "01664010996"
+    tracking_status: watch
+
+  - canonical_name: AlghItaly
+    aliases:
+      - Alghitaly
+    domain: null
+    category: producer_or_technical_player
+    country: Italy
+    region: Veneto
+    company_name: ALGHITALY S.R.L.
+    vat_number: null
+    tracking_status: watch
+
+  - canonical_name: Vehgro
+    aliases:
+      - Vehgroshop
+    domain: vehgroshop.com
+    category: wholesale_supplier
+    country: EU
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: watch
+
+  - canonical_name: Ekowarehouse
+    aliases:
+      - EkoWarehouse
+    domain: ekowarehouse.com
+    category: wholesale_supplier
+    country: EU
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: watch
+
+  - canonical_name: Europages suppliers
+    aliases:
+      - Europages
+    domain: europages.it
+    category: directory_marketplace
+    country: EU
+    region: null
+    company_name: null
+    vat_number: null
+    tracking_status: watch
