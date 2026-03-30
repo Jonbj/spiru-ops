@@ -38,7 +38,9 @@ def _f(x, default=0.0) -> float:
         return float(default)
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
-ART_DIR = pathlib.Path(env("ART_DIR", "storage/artifacts"))
+ART_DIR = pathlib.Path(env("ARTIFACTS_DIR", env("ART_DIR", "storage/artifacts")))
+# Must match QC_SPIRULINA_SCORE_THRESHOLD in evaluate.py
+SPIRULINA_SCORE_THRESHOLD = float(env("QC_SPIRULINA_SCORE_THRESHOLD", "0.35"))
 
 
 def load_state_json(suffix: str) -> Dict[str, Any]:
@@ -254,7 +256,7 @@ def main() -> None:
         s = _f(m.get("spirulina_score"), 0.0)
         if s > 0:
             spiru_scores.append(s)
-        if s >= 0.30:
+        if s >= SPIRULINA_SCORE_THRESHOLD:
             spiru_cnt += 1
         for t in (m.get("spirulina_terms") or [])[:20]:
             if not isinstance(t, str) or not t:

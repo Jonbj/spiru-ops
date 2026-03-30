@@ -99,3 +99,106 @@ seeds:
     # EFSA guidance on Novel Food applications
     - url: "https://www.efsa.europa.eu/en/applications/novel-food"
       title: "EFSA — Novel Food application guidance and templates"
+
+  public_grants_funding_agrifood_algae:
+    # --- Europeo: Horizon Europe ---
+    - url: "https://eic.ec.europa.eu/eic-funding-opportunities/eic-accelerator_en"
+      title: "EIC Accelerator — funding opportunities for deep tech startups"
+    - url: "https://eitfood.eu/startups-smes/programmes"
+      title: "EIT Food — accelerator and funding programmes for food startups"
+    - url: "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search;callCode=null;freeTextSearchKeyword=microalgae;matchWholeText=true;typeCodes=1,0;statusCodes=31094501,31094502,31094503;programmePeriod=null;programCcm2Id=43108390;programDivisionCode=null;focusAreaCode=null;destination=null;mission=null;geographicalZonesCode=null;programmeDivisionProspect=null;startDateLte=null;startDateGte=null;crossCuttingPriorityCode=null;cpvCode=null;performanceOfDelivery=null;sortQuery=startDate;orderBy=asc;onlyTenders=false;topicListKey=topicSearchTablePageState"
+      title: "Horizon Europe — open calls tagged 'microalgae' (Funding & Tenders Portal)"
+    - url: "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search;callCode=null;freeTextSearchKeyword=novel+protein;matchWholeText=true;typeCodes=1,0;statusCodes=31094501,31094502,31094503;programmePeriod=null;programCcm2Id=43108390"
+      title: "Horizon Europe — open calls tagged 'novel protein' (Funding & Tenders Portal)"
+    - url: "https://life.ec.europa.eu/funding/apply-funding/how-apply_en"
+      title: "LIFE Programme — how to apply (circular economy, bioeconomy)"
+    - url: "https://www.eib.org/en/products/equity/eif/index.htm"
+      title: "EIF — European Investment Fund guarantees and equity for SMEs"
+    - url: "https://cinea.ec.europa.eu/programmes/emfaf_en"
+      title: "EMFAF — European Maritime, Fisheries and Aquaculture Fund (microalgae eligible)"
+    - url: "https://agriculture.ec.europa.eu/common-agricultural-policy/rural-development/eip-agri_en"
+      title: "EIP-AGRI — European Innovation Partnership for Agriculture (operational groups)"
+    # --- Europeo: portali aggregatori bandi ---
+    - url: "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/home"
+      title: "EU Funding & Tenders Portal — entry point per tutte le call europee aperte"
+    - url: "https://www.f6s.com/programs?filter=food+tech+europe"
+      title: "F6S — aggregatore di acceleratori e grant per food tech Europe"
+    # --- Nazionale: Invitalia e MIMIT ---
+    - url: "https://www.invitalia.it/cosa-facciamo/sosteniamo-le-startup/smart-start-italia"
+      title: "Invitalia Smart&Start Italia — startup innovative (agrifood eligible)"
+    - url: "https://www.invitalia.it/cosa-facciamo/rafforziamo-le-imprese/nuova-sabatini"
+      title: "Invitalia Nuova Sabatini — contributi su macchinari e impianti"
+    - url: "https://www.invitalia.it/cosa-facciamo/sosteniamo-le-startup/resto-al-sud"
+      title: "Invitalia Resto al Sud — startup nelle regioni meridionali"
+    - url: "https://www.mimit.gov.it/it/incentivi"
+      title: "MIMIT — portale incentivi per imprese e startup"
+    - url: "https://www.mimit.gov.it/it/incentivi/brevetti-plus"
+      title: "MIMIT Brevetti+ — valorizzazione brevetti startup innovative"
+    - url: "https://www.simest.it/prodotti/finanziamenti-agevolati/"
+      title: "SIMEST — finanziamenti agevolati per internazionalizzazione PMI"
+    # --- Nazionale: PNRR e MiPAAF ---
+    - url: "https://www.italiadomani.gov.it/content/sogei-ng/it/it/catalogo-consulta-i-bandi.html"
+      title: "Italia Domani (PNRR) — catalogo bandi aperti per missioni 1-6"
+    - url: "https://www.reterurale.it/psr"
+      title: "Rete Rurale Nazionale — PSR regionali 2023-2027 (compresi Marche)"
+    - url: "https://www.politicheagricole.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/354"
+      title: "MiPAAF/MASAF — bandi nazionali per agroalimentare e innovazione"
+    # --- Regionale: Marche ---
+    - url: "https://www.regione.marche.it/Regione-Utile/Agricoltura/PSR-Marche-2023-2027"
+      title: "PSR Marche 2023-2027 — misure e bandi aperti"
+    - url: "https://www.regione.marche.it/Regione-Utile/Attivita-Produttive/Imprese-e-Lavoro/Bandi-e-Incentivi"
+      title: "Regione Marche — bandi e incentivi per imprese"
+    - url: "https://www.svim.it/bandi-e-agevolazioni/"
+      title: "SVIM Marche — bandi e agevolazioni per startup e PMI nelle Marche"
+    - url: "https://www.regione.marche.it/Regione-Utile/Fondi-Europei/POR-FESR-2021-2027"
+      title: "POR FESR Marche 2021-2027 — startup e innovazione"
+    # --- Camerale (Fermo / Macerata) ---
+    - url: "https://www.fm.camcom.gov.it/bandi-e-contributi"
+      title: "CCIAA Fermo — bandi e contributi per imprese"
+    - url: "https://www.mc.camcom.gov.it/bandi-e-contributi"
+      title: "CCIAA Macerata — bandi e contributi per imprese"
+    # --- Guide e report su finanziamenti microalghe ---
+    - url: "https://publications.jrc.ec.europa.eu/repository/handle/JRC136524"
+      title: "JRC — Algae for food and feed in the EU: state of play and future perspectives"
+    - url: "https://www.algae-europe.org/policy"
+      title: "European Algae Association — policy and EU funding advocacy"
+
+  cultivation_systems_comparative_reviews:
+    - url: "https://biotechnologyforbiofuels.biomedcentral.com/articles/10.1186/s13068-015-0400-2"
+      title: "Comparison of four outdoor pilot-scale photobioreactors"
+    - url: "https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2016.00029/full"
+      title: "Comparison of Microalgae Cultivation in Photobioreactor, Open Raceway Pond, and a Two-Stage Hybrid System"
+    - url: "https://www.sciencedirect.com/science/article/pii/S2666952823000584"
+      title: "Microalgae cultivation in photobioreactors: sustainable solutions for a greener future"
+
+  greenhouse_raceway_semi_closed:
+    - url: "https://www.enalgae.eu/media/37167/enalgae-working-paper-n6-raceway-ponds.pdf"
+      title: "ENALGAE working paper N6 raceway ponds"
+    - url: "https://univ-pau.hal.science/hal-04888850/file/1-s2.0-S2667041024000107-main.pdf"
+      title: "Microalgae cultivation in raceway ponds: advances, challenges and hydrodynamic considerations"
+
+  tubular_pbr_solar_scaleup:
+    - url: "https://pubmed.ncbi.nlm.nih.gov/21898367/"
+      title: "Kinetic and growth parameters of Arthrospira platensis cultivated in tubular photobioreactor"
+    - url: "https://link.springer.com/article/10.1023/A:1019924226457"
+      title: "Hydrodynamics and mass transfer in a tubular airlift photobioreactor"
+    - url: "https://www.academia.edu/13830761/Cultivation_of_Spirulina_platensis_in_a_combined_airlift_tubular_reactor_system"
+      title: "Cultivation of Spirulina platensis in a combined airlift tubular reactor system"
+
+  hybrid_pbr_open_pond_systems:
+    - url: "https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2016.00029/full"
+      title: "Comparison of Microalgae Cultivation in Photobioreactor, Open Raceway Pond, and a Two-Stage Hybrid System"
+    - url: "https://link.springer.com/article/10.1186/s13068-025-02670-1"
+      title: "Integrated hybrid Nested-bottled photobioreactor for enhanced mixing, mass transfer, and CO2 fixation in Arthrospira platensis raceway pond cultivation systems"
+
+  photobioreactor_vendors_modular_low_cost:
+    - url: "https://subitec.com/en/technology/photobioreactors/"
+      title: "Subitec photobioreactors overview"
+    - url: "https://lgem.com/algae-knowledge/"
+      title: "LGem algae knowledge and systems overview"
+
+  spirulina_equipment_price_cost_benchmark:
+    - url: "https://www.alibaba.com/showroom/algae-photobioreactor.html"
+      title: "Alibaba algae photobioreactor marketplace"
+    - url: "https://dir.indiamart.com/impcat/spirulina-cultivation-system.html"
+      title: "IndiaMART spirulina cultivation system marketplace"

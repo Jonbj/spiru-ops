@@ -6,10 +6,10 @@
 - [ ] Misurare diametro interno collo damigiana 50L (verifica stick LED)
 
 ## Hardware
-- [ ] Ordinare DFRobot SEN0169-V2 (pH industriale) ~35–45€
-- [ ] Ordinare DFRobot DFR0300 IP68 (EC K=1) ~50–60€
-- [ ] Ordinare DS18B20 impermeabile ~3–5€
-- [ ] Ordinare D4184 MOSFET module per dimmer LED ESP32
+- [x] Ordinare DFRobot SEN0169-V2 (pH industriale) ~35–45€
+- [x] Ordinare DFRobot DFR0300 IP68 (EC K=1) ~50–60€
+- [x] Ordinare DS18B20 impermeabile ~3–5€
+- [x] Ordinare D4184 MOSFET module per dimmer LED ESP32
 - [ ] Tappo silicone con foro (alcofermbrew.com) misura collo damigiana
 
 ## Coltura
@@ -23,5 +23,5 @@
 - [ ] Valutare implementazione query expansion LLM nel copilot
 
 ## Amministrativo
-- [ ] Scrivere email ACUF — FATTO ✅
-- [ ] Scrivere email BEA — FATTO ✅
+- [x] Scrivere email ACUF — FATTO ✅
+- [x] Scrivere email BEA — FATTO ✅

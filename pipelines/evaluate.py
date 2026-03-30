@@ -48,7 +48,7 @@ from pipelines.common import env, run_id, state_path, load_domains
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 QDRANT_URL = env("QDRANT_URL", "http://localhost:6333")
-QDRANT_COLLECTION = env("QDRANT_COLLECTION", "docs_chunks")
+QDRANT_COLLECTION = env("QDRANT_COLLECTION", "docs_chunks_v2")
 
 # ---- QC thresholds (tunable via env) ----
 MIN_CANDIDATES = int(env("QC_MIN_CANDIDATES", "200"))
@@ -66,6 +66,9 @@ MIN_UNIQUE_DOMAINS_SHARE = float(env("QC_MIN_UNIQUE_DOMAINS_SHARE", "0.55"))
 
 MIN_SPIRULINA_SHARE = float(env("QC_MIN_SPIRULINA_SHARE", "0.35"))
 MIN_AVG_SPIRULINA_SCORE = float(env("QC_MIN_AVG_SPIRULINA_SCORE", "0.28"))
+# Score threshold used to count a doc as "spirulina-centric" (for spirulina_share metric).
+# Must be consistent with the display threshold in report.py.
+SPIRULINA_SCORE_THRESHOLD = float(env("QC_SPIRULINA_SCORE_THRESHOLD", "0.35"))
 
 _YEAR_RE = re.compile(r"\b(19\d{2}|20\d{2})\b")
 
@@ -200,7 +203,7 @@ def main() -> None:
 
     # Spirulina relevance
     scores = [float(m.get("spirulina_score") or 0.0) for m in ingested]
-    spirulina_share = sum(1 for s in scores if s >= 0.50) / max(len(scores), 1)
+    spirulina_share = sum(1 for s in scores if s >= SPIRULINA_SCORE_THRESHOLD) / max(len(scores), 1)
     avg_spirulina_score = sum(scores) / max(len(scores), 1)
 
     print(f"[qc] run_id={rid}")

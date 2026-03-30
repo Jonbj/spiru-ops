@@ -50,7 +50,7 @@ def main() -> None:
     args = ap.parse_args()
 
     qdrant_url = env("QDRANT_URL", required=True)
-    collection = env("QDRANT_COLLECTION", "docs_chunks")
+    collection = env("QDRANT_COLLECTION", "docs_chunks_v2")
     model_name = env("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     is_bge_m3 = model_name.lower() in _BGE_M3_NAMES
 

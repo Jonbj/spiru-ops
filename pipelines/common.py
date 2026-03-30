@@ -270,7 +270,7 @@ def load_yaml(path: str) -> dict:
 
 def load_focus(path: str = "configs/focus.yaml") -> list[dict]:
     d = load_yaml(path) or {}
-    return d.get("focus", [])
+    return d.get("focuses", [])
 
 
 def load_domains(path: str = "configs/domains.yaml") -> dict:

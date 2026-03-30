@@ -1,201 +1,237 @@
 focuses:
-  - name: process_control_setpoints_ph_co2_temp
-    base_score: 30
-    queries:
-      - "Spirulina Arthrospira pH setpoint CO2 bicarbonate alkaline"
-      - "Zarrouk medium pH control CO2 dosing Spirulina"
-      - "alkaline photobioreactor pH control CO2 mass transfer kLa"
-      - "Spirulina Arthrospira temperature effect growth rate low temperature cold"
-      - "Arthrospira optimal temperature cultivation 20 25 degrees photobioreactor"
-      - "Spirulina temperature stress cold growth pigment production biomass"
 
-  - name: pbr_airlift_geometry_and_scale_down
-    base_score: 30
-    queries:
-      - "airlift photobioreactor internal loop draft tube riser downcomer"
-      - "bubble column airlift draft tube superficial gas velocity"
-      - "gas holdup circulation velocity internal loop airlift reactor"
+  # ============================================================
+  # P0 — DECISIONALI BLOCCANTI (risolvono il go/no-go iniziale)
+  # ============================================================
 
-  - name: harvesting_fresh_biomass_filtration
-    base_score: 25
+  # Fusione: pbr_technology_comparison_low_cost_startup + raceway_vs_pbr_italy_climate
+  # + local_adaptation_marche_fermo_outdoor + pbr_airlift_geometry_and_scale_down
+  - name: production_system_selection
+    base_score: 36
     queries:
-      - "Spirulina harvesting filtration microstrainer mesh micron"
-      - "Spirulina microstrainer 20 micron 30 micron 60 micron screen"
-      - "belt filter microalgae harvesting Spirulina filtration"
+      - "raceway pond vs photobioreactor comparison CAPEX OPEX startup Italy"
+      - "spirulina outdoor Mediterranean climate Italy productivity season raceway"
+      - "photobioreactor vs open pond comparison small scale startup food grade"
+      - "spirulina coltivazione outdoor Italia clima stagionalità raceway vasca"
+      - "spirulina raceway winter production cold climate contamination risk outdoor"
+      - "low-cost photobioreactor design startup spirulina comparison review"
+      - "PMMA column flat panel tubular photobioreactor cost comparison spirulina"
+      - "greenhouse raceway semi-closed spirulina Italy small scale"
+      - "fotobioreattore vasca spirulina scelta architettura impianto pilota"
+      - "spirulina outdoor Italy climate raceway PBR productivity benchmark comparison"
 
-  - name: certifications_protocols_food_cosmetic
-    base_score: 25
+  # Nuovo focus critico — copre il gap più importante emerso dalle due analisi
+  - name: seasonal_productivity_italy
+    base_score: 36
     queries:
-      - "ISO 22716 cosmetic GMP checklist"
-      - "ISO 22000 HACCP microalgae spirulina food safety"
-      - "EU microbiological criteria algae food supplement spirulina"
+      - "spirulina productivity monthly seasonal outdoor Italy Mediterranean"
+      - "Arthrospira growth rate temperature irradiance seasonal variation Italy"
+      - "spirulina produttività stagionale mese mese Italia Marche outdoor coltivazione"
+      - "microalgae outdoor raceway seasonal productivity Mediterranean climate months"
+      - "spirulina annual production outdoor Italy growing season duration"
+      - "spirulina coltivazione outdoor mesi produzione Italia centro Italia"
+      - "Arthrospira platensis outdoor winter low temperature Italy production halt"
+      - "microalgae outdoor culture seasonal variation irradiance temperature productivity"
 
-  - name: biomass_analytics_food_cosmetic_safety
-    base_score: 25
+  # Fusione: unit_economics_financial_model + startup_financial_runway_cashflow + capex_equipment_vendors
+  - name: capex_opex_economics
+    base_score: 36
+    queries:
+      - "Spirulina production cost per kg CAPEX OPEX pilot commercial scale Italy"
+      - "spirulina techno-economic analysis break-even small scale producer"
+      - "photobioreactor equipment price vendor supplier spirulina pilot commercial"
+      - "spirulina startup financial model break-even months cash flow projection"
+      - "Arthrospira pilot plant capital cost operating cost investment Italy"
+      - "spirulina small producer cost per kg energy labour nutrients drying"
+      - "microalgae startup working capital financing pre-revenue period runway"
+      - "spirulina production economics sensitivity analysis scale productivity price"
+      - "algae cultivation equipment vendor Europe cost installation quote pilot"
+      - "spirulina business plan investment return scale startup bootstrap Italy"
+
+  # Nuovo focus critico — nessun focus precedente copriva customer discovery reale
+  - name: customer_discovery_italy
+    base_score: 36
+    queries:
+      - "fornitore spirulina Italia conto terzi integratori buyer B2B -report -market -forecast"
+      - "azienda nutraceutica Italia acquisto spirulina ingrediente fornitore -report -market"
+      - "marchio integratori sportivi Italia spirulina ingrediente private label -report"
+      - "buyer cosmetica funzionale Italia microalgae ingredient sourcing -retail -shop"
+      - "cosmetic ingredient buyer spirulina Italy INCI algae extract supplier -retail"
+      - "spirulina fornitura B2B Italia MOQ lotto minimo ingrediente -shop -amazon"
+      - "distributore spirulina Italia farmacia erboristeria parafarmacia fornitore"
+      - "grossista spirulina Italia ingrediente nutraceutico distributore"
+      - "ristoranti chef Italia spirulina fresca ingrediente premium locale -ricetta"
+      - "spirulina customer decision criteria Italy traceability certification local origin -report"
+
+  # Fusione: competitor_landscape_italy_eu + market_size_pricing_eu
+  - name: competitor_pricing_italy_eu
+    base_score: 32
+    queries:
+      - "produttore spirulina Italia azienda coltivazione vendita prezzo -report -forecast"
+      - "spirulina azienda produttrice Italia coltivazione commerciale prezzo grossista -market"
+      - "spirulina made in Italy produttori Toscana Sicilia Sardegna Puglia -shop -amazon"
+      - "spirulina produttore italiano scheda azienda stabilimento coltivazione -retail"
+      - "spirulina competitor Italy who produces farm site:.it -report"
+      - "producer spirulina France Spain Portugal Italy organic arthrospira wholesale -market"
+      - "European spirulina producer list wholesale private label manufacturer -report"
+      - "spirulina fornitore ingrediente B2B Europa private label wholesale -retail"
+      - "spirulina farm Italy company profile arthrospira producer -forecast"
+      - "spirulina produttore europeo private label wholesale manufacturer -shop"
+
+  # Fusione: regulatory_italy_primary_sources + italian_regulatory_notification + certifications_protocols_food_cosmetic
+  - name: regulatory_pathway_italy
+    base_score: 34
+    queries:
+      - "integratori alimentari Spirulina notifica SIAN Ministero Salute Italia procedura"
+      - "D.lgs 169 2004 integratori alimentari notifica procedura requisiti"
+      - "spirulina novel food EU 2283 2015 autorizzazione lista Union"
+      - "spirulina food supplement Italy notification Ministry Health requirements 2024 2025"
+      - "Spirulina HACCP GMP food safety implementation supplement production Italy"
+      - "alga spirulina regolamento sicurezza alimentare Italia etichettatura normativa"
+      - "microalghe alimento integratore Italia normativa SIAN registrazione procedura"
+      - "spirulina Italy regulatory pathway timeline cost food supplement cosmetic"
+
+  # Fusione: food_vs_cosmetic_entry_comparison + cosmetic_market_entry_barriers
+  - name: food_vs_cosmetic_strategy
+    base_score: 32
+    queries:
+      - "spirulina food supplement vs cosmetic ingredient market entry comparison startup"
+      - "microalgae cosmetic ingredient vs food supplement regulatory timeline cost"
+      - "spirulina CPNP notification vs food supplement SIAN cost time comparison"
+      - "algae ingredient cosmetic vs nutraceutical margin business model comparison"
+      - "Arthrospira cosmetic food dual use ingredient certification strategy startup"
+      - "spirulina cosmetic INCI safety assessment dossier cost timeline Italy EU"
+
+  # ============================================================
+  # P1 — OPERATIVI PILOTA (necessari per validazione e dati reali)
+  # ============================================================
+
+  # Fusione: harvesting_fresh_biomass_filtration + downstream_drying_processing
+  - name: harvesting_and_drying
+    base_score: 28
+    queries:
+      - "Spirulina Arthrospira harvesting microstrainer mesh dewatering yield cost"
+      - "Spirulina filtration fresh paste concentration belt filter press"
+      - "Spirulina spray drying drum drying parameters quality energy cost"
+      - "Arthrospira drying temperature moisture content powder quality"
+      - "Spirulina freeze drying vs spray drying comparison quality cost energy"
+      - "spirulina harvesting downstream processing bottleneck small scale"
+      - "microalgae biomass harvesting loss yield recovery percentage"
+
+  # Fusione: contamination_identification_microscopy + contamination_monitoring_response
+  - name: contamination_management
+    base_score: 28
+    queries:
+      - "Spirulina culture contamination rotifers protozoa identification microscopy"
+      - "Arthrospira photobioreactor contaminants bacteria competitor algae identification"
+      - "spirulina culture crash cause identification recovery protocol"
+      - "protozoa rotifers microalgae culture control elimination pH salinity treatment"
+      - "Arthrospira trichome morphology stress indicators healthy culture microscopy"
+      - "photobioreactor contamination early warning detection protocol spirulina"
+      - "spirulina outdoor cultivation contamination mitigation pH salinity"
+
+  # Riscrittura: process_control_setpoints_ph_co2_temp + cip_cleaning_sanitation_material_compatibility
+  # (gas_management_o2_stripping_kla assorbito qui con scope limitato)
+  - name: process_control_and_cleaning
+    base_score: 24
+    queries:
+      - "Spirulina Arthrospira pH setpoint CO2 bicarbonate alkaline control"
+      - "Zarrouk medium pH control CO2 dosing Spirulina operating protocol"
+      - "photobioreactor CIP cleaning protocol food grade sanitizer peracetic acid"
+      - "PMMA chemical compatibility sodium hypochlorite ethanol peracetic acid"
+      - "spirulina daily operations protocol workload monitoring cleaning"
+      - "Arthrospira culture routine monitoring microscopy pH OD protocol"
+
+  # Fusione: biomass_analytics_food_cosmetic_safety + inhouse_qc_analytical_methods + quality_shelf_life_storage_degradation
+  - name: quality_qc_shelf_life
+    base_score: 26
     queries:
       - "spirulina heavy metals limits cadmium lead arsenic mercury regulation"
       - "spirulina microbiological limits Salmonella E. coli food supplement"
-      - "GRAS Spirulina Cyanotech FDA dossier"
-
-  - name: illumination_led_commercial_roi
-    base_score: 20
-    queries:
-      - "LED spectrum 660nm 450nm PPFD microalgae photobioreactor"
-      - "µmol per joule LED efficacy horticulture red blue 660 450"
-      - "light dark cycles mixing frequency photobioreactor growth"
-
-  - name: water_treatment_well_mains
-    base_score: 15
-    queries:
-      - "UV disinfection design drinking water toolkit"
-      - "reverse osmosis pretreatment turbidity SDI cartridge filter 5 micron"
-      - "microfiltration 0.1 10 micron water treatment pretreatment RO"
-
-  - name: spirulina_strains_eu_collections
-    base_score: 15
-    queries:
-      - "SAG Arthrospira platensis strain catalogue"
-      - "CCAP Limnospira maxima Spirulina strain"
-      - "DSMZ straininfo Arthrospira Spirulina culture collection"
-
-  - name: circular_economy_waste_streams
-    base_score: 15
-    queries:
-      - "olive mill wastewater microalgae cultivation Arthrospira"
-      - "digestate nutrient recovery microalgae cultivation"
-      - "wastewater treatment photobioreactor CO2 capture microalgae"
-
-  - name: network_partners_accelerators_suppliers
-    base_score: 10
-    queries:
-      - "European algae sector report JRC"
-      - "EU algae biomass production brief"
-      - "pilot scale microalgae best practices report"
-
-  - name: local_adaptation_marche_fermo_outdoor
-    base_score: 10
-    queries:
-      - "raceway pond operation efficient algal biomass cultivation"
-      - "outdoor microalgae raceway reactor process control benchmark"
-      - "microalgae cultivation in raceway ponds advances review"
-
-  # --- Added focus areas (ops gaps): CIP/cleaning, gas management, contamination ---
-  - name: cip_cleaning_sanitation_material_compatibility
-    base_score: 18
-    queries:
-      - "photobioreactor CIP cleaning protocol food grade sanitizer peracetic acid"
-      - "PMMA chemical compatibility sodium hypochlorite ethanol peracetic acid"
-      - "biofilm removal photobioreactor cleaning validation"
-      - "algae photobioreactor sterilization NaOH hydrogen peroxide cleaning in place"
-      - "microalgae culture biofilm PMMA acrylic alkaline cleaning compatibility pH 10"
-      - "photobioreactor sanitation protocol food safety microalgae production"
-
-  - name: gas_management_o2_stripping_kla
-    base_score: 18
-    queries:
-      - "airlift photobioreactor oxygen stripping CO2 transfer kLa"
-      - "gas holdup airlift reactor kLa superficial gas velocity"
-      - "photobioreactor degassing column oxygen inhibition microalgae"
-      - "dissolved oxygen inhibition Spirulina Arthrospira photosynthesis supersaturation"
-      - "kLa measurement dynamic gassing out method photobioreactor microalgae"
-      - "CO2 mass transfer sparger bubble size microalgae culture bioreactor"
-      - "oxygen accumulation airlift Spirulina productivity inhibition stripping"
-
-  - name: contamination_monitoring_response
-    base_score: 16
-    queries:
-      - "Spirulina culture contamination control rotifers protozoa bacteria"
-      - "spirulina outdoor cultivation contamination mitigation pH salinity"
-      - "cyanobacteria contamination monitoring microscopy protocol"
-
-  # --- Commercial / market-oriented focus areas ---
-  - name: packaging_labeling_retail
-    base_score: 20
-    queries:
-      - "Spirulina packaging labeling food supplement retail consumer"
-      - "microalgae nutraceutical packaging shelf appeal branding"
-      - "Spirulina food label requirements EU regulation health claims"
-
-  - name: marketing_branding_consumer_perception
-    base_score: 18
-    queries:
-      - "Spirulina consumer perception superfood marketing study"
-      - "microalgae brand strategy health claims social media marketing"
-      - "Spirulina market analysis consumer acceptance willingness to pay"
-
-  - name: diy_home_cultivation_kits
-    base_score: 15
-    queries:
-      - "Spirulina DIY home cultivation kit guide small-scale"
-      - "grow Spirulina at home aquarium indoor photobioreactor"
-      - "home Spirulina cultivation hobbyist manual setup"
-
-  - name: quality_shelf_life_storage_degradation
-    base_score: 22
-    queries:
+      - "Spirulina phycocyanin spectrophotometry HPLC in-house assay method"
+      - "Arthrospira biomass analytical method validation in-house rapid QC"
       - "Spirulina shelf life storage degradation phycocyanin stability"
       - "Spirulina powder oxidation moisture temperature storage conditions"
-      - "Arthrospira biomass degradation kinetics packaging atmosphere"
+      - "spirulina quality specification release testing food supplement"
 
-  - name: pbr_technology_comparison_low_cost_startup
+  # Riscrittura: temperature_cold_adaptation_arthrospira (orientata al pratico, non solo accademica)
+  - name: temperature_and_cold_management
     base_score: 28
     queries:
-      - "photobioreactor comparison plastic bag PMMA tubular flat panel low-cost microalgae"
-      - "Spirulina low-cost photobioreactor startup pilot scale comparison review"
-      - "plastic bag bioreactor Spirulina Arthrospira polyethylene sleeve cultivation"
-      - "PMMA column photobioreactor Spirulina cultivation cost comparison"
-      - "flat panel photobioreactor vs tubular low cost microalgae Spirulina"
-      - "low-cost photobioreactor design build Spirulina startup small scale DIY"
-      - "microalgae photobioreactor selection criteria capital cost comparison review"
-      - "polyethylene sleeve photobioreactor Arthrospira outdoor indoor"
-      - "fotobioreattore sacca polietilene spirulina coltivazione economico"
-      - "photobioreactor capital cost operating cost technology selection startup"
+      - "Arthrospira platensis low temperature 18 20 celsius growth rate productivity"
+      - "spirulina cold tolerance cultivation low temperature winter Italy"
+      - "spirulina indoor cellar greenhouse winter low temperature energy saving"
+      - "Arthrospira temperature stress response cold adaptation practical management"
+      - "spirulina production winter heating cost greenhouse management"
+      - "spirulina seasonal low temperature period management practical Italy"
 
-  - name: downstream_drying_processing
-    base_score: 24
-    queries:
-      - "Spirulina spray drying drum drying flash drying parameters quality"
-      - "Arthrospira drying temperature moisture content powder quality pdf"
-      - "Spirulina freeze drying vs spray drying comparison quality cost"
-      - "microalgae biomass drying downstream processing technology energy"
-
-  - name: italian_regulatory_notification
+  # Espansione: water_treatment_well_mains (include vincoli sito, scarichi)
+  - name: water_site_infrastructure
     base_score: 26
     queries:
-      - "integratori alimentari Spirulina notifica Ministero della Salute procedura"
-      - "D.lgs. 169/2004 integratori alimentari procedura notifica SIAN"
-      - "Spirulina novel food Reg. 2015/2283 autorizzazione Italia"
-      - "food supplement notification Italy Ministry Health SIAN procedure"
+      - "Spirulina cultivation water quality hardness alkalinity bicarbonate conductivity"
+      - "well water suitability Spirulina culture iron manganese hardness"
+      - "tap water dechlorination Spirulina culture chlorine toxicity"
+      - "spirulina impianto vincoli sito acqua energia scarichi locali Marche"
+      - "microalgae production site requirements water energy logistics infrastructure"
+      - "spirulina serra outdoor site selection constraints utilities water supply"
 
-  - name: unit_economics_financial_model
-    base_score: 26
+  # Mantenuto: spirulina_strains_eu_collections
+  - name: strains_inoculum
+    base_score: 18
     queries:
-      - "Spirulina production cost per kg CAPEX OPEX financial model analysis"
-      - "microalgae techno-economic analysis production cost scale pilot"
-      - "Arthrospira business plan break-even economic feasibility analysis"
-      - "spirulina cost of production benchmark industry report"
+      - "SAG Arthrospira platensis strain catalogue collection"
+      - "CCAP Limnospira maxima Spirulina strain culture"
+      - "DSMZ straininfo Arthrospira Spirulina culture collection"
+      - "Arthrospira strain selection inoculum protocol scale-up"
 
-  - name: inhouse_qc_analytical_methods
-    base_score: 22
+  # ============================================================
+  # P2 — SUPPORTO (utili, non bloccanti nelle fasi P0/P1)
+  # ============================================================
+
+  # Mantenuto con scope chiarito: solo se si sceglie indoor/ibrido
+  - name: illumination_led_indoor
+    base_score: 18
     queries:
-      - "Spirulina phycocyanin spectrophotometry HPLC in-house assay method"
-      - "Arthrospira microbiological plate count rapid test analytical method"
-      - "Spirulina analytical methods QC laboratory protocol in-house validation"
-      - "microalgae biomass analytical method validation in-house rapid"
+      - "LED spectrum 660nm 450nm PPFD microalgae photobioreactor indoor"
+      - "LED illumination cost OPEX microalgae indoor photobioreactor ROI"
+      - "spirulina LED supplemental light greenhouse productivity cost energy"
+      - "µmol per joule LED efficacy microalgae red blue spectrum"
 
-  - name: sales_channels_italy_b2b_b2c
+  # Mantenuto, posticipato: packaging_labeling_retail → P2
+  - name: packaging_labeling
+    base_score: 18
+    queries:
+      - "Spirulina packaging labeling food supplement retail EU requirements"
+      - "Spirulina food label EU regulation health claims integratore alimentare"
+      - "microalgae nutraceutical packaging format fresh dried powder"
+
+  # Mantenuto: fresh_spirulina_market_direct_sales (focus strategico fresco)
+  - name: fresh_spirulina_market
+    base_score: 28
+    queries:
+      - "fresh spirulina paste direct sales restaurant local market Italy price"
+      - "spirulina fresca pasta vendita diretta ristorante prezzo margine"
+      - "fresh spirulina shelf life refrigeration cold chain logistics"
+      - "spirulina fresca GAS biologico distribuzione locale consumo diretto"
+      - "fresh Arthrospira platensis harvest direct consumer premium price"
+      - "spirulina fresh product B2C HoReCa local food Italy market"
+
+  # Mantenuto con scope ridotto: sales_channels_italy_b2b_b2c
+  - name: sales_channels_italy
     base_score: 20
     queries:
       - "Spirulina distribuzione Italia B2B B2C canali vendita distributori"
       - "spirulina superfood Italy distribution channel retail health food"
-      - "Spirulina Italy B2C direct-to-consumer e-commerce brand strategy"
       - "spirulina Ho.Re.Ca food industry B2B Italy market channels"
+      - "spirulina e-commerce direct sales Italy small producer"
 
-  - name: cosmetic_market_entry_barriers
-    base_score: 24
+  # Mantenuto: public_grants_funding_agrifood_algae → P2, non P0
+  - name: grants_funding
+    base_score: 14
     queries:
-      - "EU cosmetic regulation 1223/2009 CPSR responsible person CPNP notification"
-      - "cosmetic market entry barriers investment requirements EU Italy startup"
-      - "CPSR cosmetic safety report requirements SCCS opinion regulation"
-      - "Spirulina cosmetic ingredient INCI EU regulation safety assessment"
-      - "cosmetic notification CPNP Italy responsible person procedure cost compliance"
+      - "PSR Marche microalghe agroalimentare innovazione impianto pilota finanziamento"
+      - "FESR Marche startup agrifood microalghe impianto pilota bando"
+      - "Horizon Europe microalgae food bioeconomy SME pilot scale"
+      - "Invitalia startup innovativa microalghe agrifood finanziamento"
+      - "bando spirulina microalghe finanziamento impianto pilota Italia 2024 2025"

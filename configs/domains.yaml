@@ -23,6 +23,12 @@ prefer_domains:
   - cnr.it
   - unibo.it
   - polimi.it
+  - frontiersin.org
+  - mdpi.com
+  - plos.org
+  - intechopen.com
+  - hindawi.com
+  - scielo.br
 
 pdf_bonus_domains:
   - mdpi.com

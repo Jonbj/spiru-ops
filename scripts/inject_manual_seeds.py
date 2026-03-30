@@ -19,7 +19,10 @@ from pipelines.common import env
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 SEEDS_CONFIG = pathlib.Path("configs/manual_seeds.yaml")
-CANDIDATES_PATH = STATE_DIR / "candidates.jsonl"
+# Use RUN_ID-scoped path if set by daily.sh, otherwise fall back to a fixed path
+# for standalone/manual runs.
+_default_candidates = str(STATE_DIR / "candidates.jsonl")
+CANDIDATES_PATH = pathlib.Path(env("CANDIDATES_PATH", _default_candidates))
 
 
 def load_seen_urls() -> set:

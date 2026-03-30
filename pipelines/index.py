@@ -42,7 +42,7 @@ from pipelines.qdrant_rest import (
 )
 
 QDRANT_URL = env("QDRANT_URL", required=True)
-COLLECTION = env("QDRANT_COLLECTION", "docs_chunks")
+COLLECTION = env("QDRANT_COLLECTION", "docs_chunks_v2")
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 

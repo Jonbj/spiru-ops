@@ -23,7 +23,7 @@ from pipelines.common import env, normalize_url
 from pipelines.qdrant_rest import QdrantConfig, search, hybrid_query
 
 QDRANT_URL = env("QDRANT_URL", "http://localhost:6333")
-QDRANT_COLLECTION = env("QDRANT_COLLECTION", "docs_chunks")
+QDRANT_COLLECTION = env("QDRANT_COLLECTION", "docs_chunks_v2")
 
 # Retrieval embedding model (local)
 SENTENCE_MODEL = env("SENTENCE_MODEL", env("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2"))

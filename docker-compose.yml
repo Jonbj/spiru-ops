@@ -1,14 +1,15 @@
 services:
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: spiru
-      POSTGRES_PASSWORD: spiru
-      POSTGRES_DB: spiru_ops
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./storage/pgdata:/var/lib/postgresql/data
+  # postgres: not used yet — uncomment when needed
+  # postgres:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_USER: spiru
+  #     POSTGRES_PASSWORD: spiru
+  #     POSTGRES_DB: spiru_ops
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./storage/pgdata:/var/lib/postgresql/data
 
   qdrant:
     image: qdrant/qdrant:v1.11.3
@@ -51,7 +52,7 @@ services:
     ports:
       - "8070:8070"
     environment:
-      - JAVA_OPTS=-Xms512m -Xmx2g
+      - "JAVA_OPTS=-Xms512m -Xmx2g"
     volumes:
       - ./storage/grobid:/opt/grobid/grobid-home/tmp
     mem_limit: 3g

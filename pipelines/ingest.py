@@ -640,6 +640,16 @@ def main() -> None:
     else:
         INGEST_EXPLORATION_PCT = float(_exp_raw or 0.0)  # 0..1
     INGEST_HISTORY_DAYS = int(env("INGEST_HISTORY_DAYS", "7"))
+    # Max fraction of target that a single focus can occupy (0 = no cap).
+    # E.g. "30%" means one focus can claim at most 30% of selected items.
+    _mf_raw = env("INGEST_MAX_PER_FOCUS_PCT", "30%").strip()
+    if _mf_raw.endswith("%"):
+        try:
+            INGEST_MAX_PER_FOCUS_PCT = float(_mf_raw[:-1].strip()) / 100.0
+        except Exception:
+            INGEST_MAX_PER_FOCUS_PCT = 0.0
+    else:
+        INGEST_MAX_PER_FOCUS_PCT = float(_mf_raw or 0.0)
 
     def _run_day_from_name(name: str) -> Optional[str]:
         # Supports both YYYY-MM-DD_ingested.json and RUN_ID-based names like 2026-02-27T071001Z_ingested.json
@@ -697,13 +707,14 @@ def main() -> None:
         if INGEST_TARGET <= 0:
             if filtered:
                 print(f"[ingest] prefilter_seen: removed={filtered} remaining={len(cands)}")
-            return cands
+            return cands, filtered
 
         if filtered:
             print(f"[ingest] prefilter_seen: removed={filtered} remaining={len(cands)}")
 
         target = min(INGEST_TARGET, len(cands))
         max_per_dom = INGEST_MAX_PER_DOMAIN if INGEST_MAX_PER_DOMAIN > 0 else 10**9
+        max_per_focus = int(round(target * INGEST_MAX_PER_FOCUS_PCT)) if INGEST_MAX_PER_FOCUS_PCT > 0 else 10**9
         exploration_n = int(round(target * max(0.0, min(1.0, INGEST_EXPLORATION_PCT))))
         exploitation_n = target - exploration_n
 
@@ -733,19 +744,24 @@ def main() -> None:
 
         selected: List[Dict[str, Any]] = []
         per_dom: Counter = Counter()
+        per_focus: Counter = Counter()
         used_urls: set[str] = set()
 
-        def try_add(it: Dict[str, Any]) -> bool:
+        def try_add(it: Dict[str, Any], relax_focus: bool = False) -> bool:
             url = normalize_url(it.get("url", ""))
             if not url:
                 return False
             fam = _domain_family(_domain(url))
             if per_dom[fam] >= max_per_dom:
                 return False
+            focus_key = it.get("focus") or ""
+            if not relax_focus and per_focus[focus_key] >= max_per_focus:
+                return False
             if url in used_urls:
                 return False
             used_urls.add(url)
             per_dom[fam] += 1
+            per_focus[focus_key] += 1
             selected.append(it)
             return True
 
@@ -761,7 +777,13 @@ def main() -> None:
                 break
             try_add(it)
 
-        # If we couldn't fill because of caps, relax caps for the remainder
+        # If we couldn't fill because of caps, relax focus cap first, then domain cap
+        if len(selected) < target:
+            for it in sorted(cands2, key=key_exploit):
+                if len(selected) >= target:
+                    break
+                try_add(it, relax_focus=True)
+
         if len(selected) < target:
             for it in sorted(cands2, key=key_exploit):
                 if len(selected) >= target:
@@ -770,6 +792,7 @@ def main() -> None:
                 if not url or url in used_urls:
                     continue
                 used_urls.add(url)
+                per_focus[it.get("focus") or ""] += 1
                 selected.append(it)
 
         # Telemetry
@@ -779,10 +802,14 @@ def main() -> None:
         print(
             f"[ingest] portfolio_select: candidates={len(cands)} -> selected={len(selected)} "
             f"target={target} exploration={exploration_n} exploitation={exploitation_n} "
-            f"unique_domain_families={len(set(fams))} max_per_domain={max_per_dom} history_days={INGEST_HISTORY_DAYS}"
+            f"unique_domain_families={len(set(fams))} max_per_domain={max_per_dom} "
+            f"max_per_focus={max_per_focus} history_days={INGEST_HISTORY_DAYS}"
         )
         print("[ingest] top_domain_families_selected:")
         for k, v in top:
+            print(f"  - {k}: {v}")
+        print("[ingest] top_focuses_selected:")
+        for k, v in per_focus.most_common(8):
             print(f"  - {k}: {v}")
 
         return selected, filtered

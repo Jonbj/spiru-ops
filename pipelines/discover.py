@@ -59,6 +59,13 @@ USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.4")
 BRAVE_API_KEY = env("BRAVE_API_KEY", required=False)
 OPENALEX_EMAIL = env("OPENALEX_EMAIL", required=False)
 CORE_API_KEY = env("CORE_API_KEY", required=False)
+# Seconds to sleep between CORE requests (free tier ~10-20 req/min → 3s ≈ 20 req/min)
+CORE_SLEEP_S = float(env("CORE_SLEEP_S", "3.0"))
+# After this many unrecovered 429s, CORE is disabled for the rest of the run
+CORE_MAX_429 = int(env("CORE_MAX_429", "3"))
+
+# Mutable run-level state for CORE rate-limit tracking (dict avoids `global`)
+_core_state: dict = {"streak_429": 0, "disabled": False}
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 # Output path is RUN_ID-scoped for determinism; daily.sh exports CANDIDATES_PATH
@@ -209,7 +216,7 @@ def _extract_year_best_effort(*texts: str) -> Optional[str]:
     blob = " ".join([t for t in texts if t]).strip()
     if not blob:
         return None
-    m = re.search(r"\b(19[9]\d|20[0-2]\d|203[0-5])\b", blob)
+    m = re.search(r"\b(19[89]\d|20[0-2]\d|203[0-5])\b", blob)
     if not m:
         return None
     y = m.group(1)
@@ -224,7 +231,7 @@ def _parse_date_any(x: Any) -> Optional[str]:
             v = float(x)
             if v > 10_000_000_000:
                 v = v / 1000.0
-            dt = datetime.utcfromtimestamp(v)
+            dt = datetime.fromtimestamp(v, tz=timezone.utc)
             return dt.strftime("%Y-%m-%d")
         except Exception:
             return None
@@ -300,6 +307,39 @@ def add_temporal_rotation(q: str, run_date: Optional[datetime] = None) -> str:
     after_clause = f' after:{cutoff.strftime("%Y-%m-%d")}'
     
     return (q or "").strip() + after_clause
+
+
+FOCUS_STRICT_TERMS: Dict[str, List[str]] = {
+    "cosmetic_market_entry_barriers": ["spirulina", "arthrospira", "limnospira"],
+    "certifications_protocols_food_cosmetic": ["spirulina", "arthrospira", "limnospira"],
+    "public_grants_funding_agrifood_algae": ["spirulina", "arthrospira", "microalgae"],
+    "water_treatment_well_mains": ["spirulina", "arthrospira", "limnospira"],
+    "sales_channels_italy_b2b_b2c": ["spirulina", "arthrospira"],
+    "marketing_branding_consumer_perception": ["spirulina", "arthrospira"],
+    "diy_home_cultivation_kits": ["spirulina", "arthrospira"],
+}
+
+
+def focus_gate_adjustment(*, focus: str, url: str, title: str, snippet: str, hint: float) -> float:
+    """Apply extra penalty to noisy focuses when they lack focus-specific anchors.
+
+    This is a soft guardrail: candidates are not dropped, but strongly de-ranked if
+    they come from historically noisy focuses and don't mention enough target terms.
+    """
+    strict_terms = FOCUS_STRICT_TERMS.get((focus or "").strip())
+    if not strict_terms:
+        return 0.0
+
+    blob = f"{url} {title} {snippet}".lower()
+    matches = sum(1 for t in strict_terms if t in blob)
+
+    if hint >= 0.55:
+        return 0.0
+    if matches >= 2:
+        return 0.0
+    if matches == 1:
+        return -8.0
+    return -18.0
 
 
 def enrich_score(url: str, base_score: float, dom_cfg: Dict[str, Any], *, is_doi: bool = False) -> float:
@@ -467,6 +507,7 @@ def main():
 
                         hint = compute_spirulina_relevance(url=url, title=title, text=snippet).score
                         score = enrich_score(url, base_score, dom_cfg) + (8.0 * float(hint))
+                        score += focus_gate_adjustment(focus=focus, url=url, title=title, snippet=snippet, hint=float(hint))
 
                         c = mk_candidate(
                             url=url,
@@ -493,9 +534,6 @@ def main():
                     if doi:
                         doi_norm = doi.replace("https://doi.org/", "").replace("http://doi.org/", "").strip()
                         doi_norm = doi_norm or None
-                        # if DOI already seen globally, down-rank heavily
-                        if doi_norm and doi_norm.lower() in seen_doi:
-                            base_score = max(0.0, base_score - 25.0)
 
                     url = _openalex_best_url(w)
 
@@ -531,8 +569,14 @@ def main():
                     except Exception:
                         snippet = ""
 
+                    # if DOI already seen globally, down-rank this work only (don't mutate base_score)
+                    work_score = base_score
+                    if doi_norm and doi_norm.lower() in seen_doi:
+                        work_score = max(0.0, work_score - 25.0)
+
                     hint = compute_spirulina_relevance(url=url, title=title, text=snippet).score
-                    score = enrich_score(url, base_score, dom_cfg, is_doi=is_doi) + (8.0 * float(hint))
+                    score = enrich_score(url, work_score, dom_cfg, is_doi=is_doi) + (8.0 * float(hint))
+                    score += focus_gate_adjustment(focus=focus, url=url, title=title, snippet=snippet, hint=float(hint))
 
                     c = mk_candidate(
                         url=url,
@@ -551,9 +595,11 @@ def main():
                 print(f"[discover] WARN: openalex search failed for query '{q[:60]}': {e}", flush=True)
 
             # 3) CORE
-            if CORE_API_KEY:
+            if CORE_API_KEY and not _core_state["disabled"]:
+                time.sleep(CORE_SLEEP_S)
                 try:
                     works = core_search(q, limit=15)
+                    _core_state["streak_429"] = 0  # reset streak on success
                     for w in works:
                         doi = (w.get("doi") or "").strip()
                         doi_norm: Optional[str] = None
@@ -586,6 +632,7 @@ def main():
 
                         hint = compute_spirulina_relevance(url=url, title=title, text=snippet).score
                         score = enrich_score(url, base_score, dom_cfg, is_doi=bool(doi_norm)) + (8.0 * float(hint))
+                        score += focus_gate_adjustment(focus=focus, url=url, title=title, snippet=snippet, hint=float(hint))
 
                         c = mk_candidate(
                             url=url,
@@ -600,7 +647,61 @@ def main():
                         )
                         c["spirulina_hint"] = round(float(hint), 4)
                         candidates.append(c)
-                    time.sleep(0.5)
+                except requests.HTTPError as e:
+                    if e.response is not None and e.response.status_code == 429:
+                        # Respect Retry-After header and retry once before counting as failure
+                        retry_after = 0
+                        try:
+                            retry_after = int(e.response.headers.get("Retry-After", 0))
+                        except (ValueError, TypeError):
+                            retry_after = 0
+                        if 0 < retry_after <= 120:
+                            print(
+                                f"[discover] WARN: CORE 429 — sleeping {retry_after}s (Retry-After) then retrying '{q[:60]}'",
+                                flush=True,
+                            )
+                            time.sleep(retry_after)
+                            try:
+                                works2 = core_search(q, limit=15)
+                                _core_state["streak_429"] = 0
+                                for w in works2:
+                                    _doi = (w.get("doi") or "").strip()
+                                    _doi_norm: Optional[str] = None
+                                    if _doi:
+                                        _doi_norm = _doi.replace("https://doi.org/", "").replace("http://doi.org/", "").strip() or None
+                                        if _doi_norm and _doi_norm.lower() in seen_doi:
+                                            continue
+                                    _url = normalize_url(_core_best_url(w))
+                                    if not _url or is_denied_domain(_url, dom_cfg):
+                                        continue
+                                    _title = (w.get("title") or "").strip() or _url
+                                    _year = w.get("yearPublished") or w.get("year")
+                                    _snippet = (w.get("abstract") or "")[:400]
+                                    _hint = compute_spirulina_relevance(url=_url, title=_title, text=_snippet).score
+                                    _score = enrich_score(_url, base_score, dom_cfg, is_doi=bool(_doi_norm)) + (8.0 * float(_hint))
+                                    _score += focus_gate_adjustment(focus=focus, url=_url, title=_title, snippet=_snippet, hint=float(_hint))
+                                    _c = mk_candidate(url=_url, title=_title, snippet=_snippet, focus=focus, source="core",
+                                                      score=_score, published_at=f"{_year}-01-01" if _year else None,
+                                                      is_pdf=looks_like_pdf_url(_url), doi=_doi_norm)
+                                    _c["spirulina_hint"] = round(float(_hint), 4)
+                                    candidates.append(_c)
+                                time.sleep(CORE_SLEEP_S)
+                            except Exception:
+                                _core_state["streak_429"] += 1
+                        else:
+                            _core_state["streak_429"] += 1
+                            print(
+                                f"[discover] WARN: CORE 429 #{_core_state['streak_429']}/{CORE_MAX_429} for query '{q[:60]}'",
+                                flush=True,
+                            )
+                        if _core_state["streak_429"] >= CORE_MAX_429:
+                            _core_state["disabled"] = True
+                            print(
+                                f"[discover] WARN: CORE API disabled after {_core_state['streak_429']} unrecovered 429s — skipping for this run",
+                                flush=True,
+                            )
+                    else:
+                        print(f"[discover] WARN: core search failed for query '{q[:60]}': {e}", flush=True)
                 except Exception as e:
                     print(f"[discover] WARN: core search failed for query '{q[:60]}': {e}", flush=True)
 
