@@ -598,7 +598,10 @@ def main():
             if CORE_API_KEY and not _core_state["disabled"]:
                 time.sleep(CORE_SLEEP_S)
                 try:
-                    works = core_search(q, limit=15)
+                    # CORE API does not support boolean OR syntax with parentheses → 500 errors.
+                    # Replace the suffix added by ensure_spirulina_in_query with plain "Spirulina".
+                    q_core = q.replace(_SPIRU_QUERY_SUFFIX, " Spirulina")
+                    works = core_search(q_core, limit=15)
                     _core_state["streak_429"] = 0  # reset streak on success
                     for w in works:
                         doi = (w.get("doi") or "").strip()
