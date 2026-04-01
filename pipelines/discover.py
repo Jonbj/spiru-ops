@@ -63,6 +63,9 @@ CORE_API_KEY = env("CORE_API_KEY", required=False)
 CORE_SLEEP_S = float(env("CORE_SLEEP_S", "3.0"))
 # After this many unrecovered 429s, CORE is disabled for the rest of the run
 CORE_MAX_429 = int(env("CORE_MAX_429", "3"))
+# Max Brave queries per run (0 = no limit). Safety cap to control API costs.
+# At ~$3/1000 queries: 50 queries/run × 30 days = ~$4.5/month
+BRAVE_MAX_QUERIES_PER_RUN = int(env("BRAVE_MAX_QUERIES_PER_RUN", "0"))
 
 # Mutable run-level state for CORE rate-limit tracking (dict avoids `global`)
 _core_state: dict = {"streak_429": 0, "disabled": False}
@@ -463,6 +466,7 @@ def main():
         raise SystemExit(f"No focuses found in {SCORING_PATH}. Expected key 'focuses' list.")
 
     candidates: List[Dict[str, Any]] = []
+    _brave_query_count = 0
 
     for f in focuses:
         focus = f.get("name") or "unknown"
@@ -476,11 +480,12 @@ def main():
             q = ensure_spirulina_in_query(q)
 
             # 1) Brave
-            if BRAVE_API_KEY:
+            if BRAVE_API_KEY and (BRAVE_MAX_QUERIES_PER_RUN == 0 or _brave_query_count < BRAVE_MAX_QUERIES_PER_RUN):
                 try:
                     # Apply temporal rotation for query diversity
                     q_rotated = add_temporal_rotation(q)
                     results = brave_search(q_rotated, count=20)
+                    _brave_query_count += 1
                     for r in results:
                         url = r.get("url") or ""
                         if not url:
@@ -707,6 +712,15 @@ def main():
                         print(f"[discover] WARN: core search failed for query '{q[:60]}': {e}", flush=True)
                 except Exception as e:
                     print(f"[discover] WARN: core search failed for query '{q[:60]}': {e}", flush=True)
+
+    if BRAVE_MAX_QUERIES_PER_RUN > 0 and _brave_query_count >= BRAVE_MAX_QUERIES_PER_RUN:
+        print(
+            f"[discover] INFO: Brave query cap reached ({_brave_query_count}/{BRAVE_MAX_QUERIES_PER_RUN}). "
+            f"Remaining focuses skipped. Increase BRAVE_MAX_QUERIES_PER_RUN to lift the limit.",
+            flush=True,
+        )
+    else:
+        print(f"[discover] INFO: Brave queries used this run: {_brave_query_count}", flush=True)
 
     candidates = dedup(candidates)
 
