@@ -57,6 +57,9 @@ from pipelines.relevance import compute_spirulina_relevance
 
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.4")
 BRAVE_API_KEY = env("BRAVE_API_KEY", required=False)
+# SearXNG self-hosted instance (primary web search, free). Set to empty string to disable.
+# When set, Brave is not used at all — BRAVE_MAX_QUERIES_PER_RUN cap is ignored.
+SEARXNG_URL = env("SEARXNG_URL", "").strip().rstrip("/")
 OPENALEX_EMAIL = env("OPENALEX_EMAIL", required=False)
 CORE_API_KEY = env("CORE_API_KEY", required=False)
 # Seconds to sleep between CORE requests (free tier ~10-20 req/min → 3s ≈ 20 req/min)
@@ -65,7 +68,11 @@ CORE_SLEEP_S = float(env("CORE_SLEEP_S", "3.0"))
 CORE_MAX_429 = int(env("CORE_MAX_429", "3"))
 # Max Brave queries per run (0 = no limit). Safety cap to control API costs.
 # At ~$3/1000 queries: 50 queries/run × 30 days = ~$4.5/month
+# Ignored when SEARXNG_URL is set (SearXNG is free, no cap needed).
 BRAVE_MAX_QUERIES_PER_RUN = int(env("BRAVE_MAX_QUERIES_PER_RUN", "0"))
+# Semantic Scholar (free academic API — complements OpenAlex/CORE)
+SEMANTIC_SCHOLAR_KEY = env("SEMANTIC_SCHOLAR_KEY", required=False)
+SEMANTIC_SCHOLAR_SLEEP_S = float(env("SEMANTIC_SCHOLAR_SLEEP_S", "1.0"))
 
 # Mutable run-level state for CORE rate-limit tracking (dict avoids `global`)
 _core_state: dict = {"streak_429": 0, "disabled": False}
@@ -205,6 +212,88 @@ def _core_best_url(work: Dict[str, Any]) -> str:
     if isinstance(fulltext, list) and fulltext:
         return (fulltext[0] or "").strip()
     doi = (work.get("doi") or "").strip()
+    if doi:
+        return "https://doi.org/" + doi.lstrip("/")
+    return ""
+
+
+def searxng_search(query: str, count: int = 20) -> List[Dict[str, Any]]:
+    """Search via local SearXNG instance (free, self-hosted).
+
+    Returns results in the same shape as brave_search() so callers are interchangeable.
+    SearXNG aggregates Google, Bing, DuckDuckGo and others depending on settings.yml.
+    """
+    url = f"{SEARXNG_URL}/search"
+    params = {
+        "q": query,
+        "format": "json",
+        "engines": "google,bing,duckduckgo",
+        "language": "en-US",
+        "pageno": "1",
+    }
+    try:
+        r = _SESSION.get(url, params=params, timeout=15)
+        r.raise_for_status()
+        results = r.json().get("results") or []
+    except Exception as e:
+        print(f"[discover] WARN: searxng failed: {e}", flush=True)
+        return []
+    return [
+        {
+            "url": hit.get("url", ""),
+            "title": hit.get("title", ""),
+            # SearXNG uses "content" where Brave uses "description"
+            "description": hit.get("content", ""),
+        }
+        for hit in results[:count]
+        if hit.get("url")
+    ]
+
+
+def web_search(query: str, count: int = 20) -> List[Dict[str, Any]]:
+    """Route web search: SearXNG (primary, free) → Brave (fallback, paid).
+
+    When SEARXNG_URL is set it takes priority regardless of BRAVE_API_KEY.
+    """
+    if SEARXNG_URL:
+        return searxng_search(query, count=count)
+    if BRAVE_API_KEY:
+        return brave_search(query, count=count)
+    return []
+
+
+def semantic_scholar_search(query: str, limit: int = 15) -> List[Dict[str, Any]]:
+    """Search Semantic Scholar for open-access academic papers (free API, 200M+ papers).
+
+    Complements OpenAlex and CORE: stronger on US/international papers with
+    full citation graph and open-access PDF links.
+    Optional API key (SEMANTIC_SCHOLAR_KEY) increases rate limits to 1 req/s.
+    Register at: https://www.semanticscholar.org/product/api
+    """
+    url = "https://api.semanticscholar.org/graph/v1/paper/search"
+    headers: Dict[str, str] = {"User-Agent": USER_AGENT}
+    if SEMANTIC_SCHOLAR_KEY:
+        headers["x-api-key"] = SEMANTIC_SCHOLAR_KEY
+    params = {
+        "query": query,
+        "limit": str(limit),
+        "fields": "title,abstract,year,publicationDate,openAccessPdf,externalIds",
+    }
+    try:
+        r = _SESSION.get(url, params=params, headers=headers, timeout=30)
+        r.raise_for_status()
+        return r.json().get("data") or []
+    except Exception as e:
+        print(f"[discover] WARN: semantic_scholar failed: {e}", flush=True)
+        return []
+
+
+def _semantic_scholar_best_url(paper: Dict[str, Any]) -> str:
+    """Prefer open-access PDF URL, fall back to DOI landing page."""
+    oa_pdf = ((paper.get("openAccessPdf") or {}).get("url") or "").strip()
+    if oa_pdf:
+        return oa_pdf
+    doi = ((paper.get("externalIds") or {}).get("DOI") or "").strip()
     if doi:
         return "https://doi.org/" + doi.lstrip("/")
     return ""
@@ -466,7 +555,9 @@ def main():
         raise SystemExit(f"No focuses found in {SCORING_PATH}. Expected key 'focuses' list.")
 
     candidates: List[Dict[str, Any]] = []
-    _brave_query_count = 0
+    _web_query_count = 0
+    # Cost cap applies only when using Brave (paid). SearXNG is free → no cap.
+    _web_cap = 0 if SEARXNG_URL else BRAVE_MAX_QUERIES_PER_RUN
 
     for f in focuses:
         focus = f.get("name") or "unknown"
@@ -479,13 +570,14 @@ def main():
                 continue
             q = ensure_spirulina_in_query(q)
 
-            # 1) Brave
-            if BRAVE_API_KEY and (BRAVE_MAX_QUERIES_PER_RUN == 0 or _brave_query_count < BRAVE_MAX_QUERIES_PER_RUN):
+            # 1) Web search (SearXNG primary → Brave fallback)
+            _web_source = "searxng" if SEARXNG_URL else "brave"
+            if (SEARXNG_URL or BRAVE_API_KEY) and (_web_cap == 0 or _web_query_count < _web_cap):
                 try:
                     # Apply temporal rotation for query diversity
                     q_rotated = add_temporal_rotation(q)
-                    results = brave_search(q_rotated, count=20)
-                    _brave_query_count += 1
+                    results = web_search(q_rotated, count=20)
+                    _web_query_count += 1
                     for r in results:
                         url = r.get("url") or ""
                         if not url:
@@ -519,16 +611,17 @@ def main():
                             title=title,
                             snippet=snippet,
                             focus=focus,
-                            source="brave",
+                            source=_web_source,
                             score=score,
                             published_at=pub,
                             is_pdf=looks_like_pdf_url(url),
                         )
                         c["spirulina_hint"] = round(float(hint), 4)
                         candidates.append(c)
-                    time.sleep(0.35)
                 except Exception as e:
-                    print(f"[discover] WARN: brave search failed for query '{q[:60]}': {e}", flush=True)
+                    print(f"[discover] WARN: {_web_source} search failed for query '{q[:60]}': {e}", flush=True)
+                finally:
+                    time.sleep(0.35)
 
             # 2) OpenAlex
             try:
@@ -670,7 +763,7 @@ def main():
                             )
                             time.sleep(retry_after)
                             try:
-                                works2 = core_search(q, limit=15)
+                                works2 = core_search(q_core, limit=15)
                                 _core_state["streak_429"] = 0
                                 for w in works2:
                                     _doi = (w.get("doi") or "").strip()
@@ -713,14 +806,77 @@ def main():
                 except Exception as e:
                     print(f"[discover] WARN: core search failed for query '{q[:60]}': {e}", flush=True)
 
-    if BRAVE_MAX_QUERIES_PER_RUN > 0 and _brave_query_count >= BRAVE_MAX_QUERIES_PER_RUN:
-        print(
-            f"[discover] INFO: Brave query cap reached ({_brave_query_count}/{BRAVE_MAX_QUERIES_PER_RUN}). "
-            f"Remaining focuses skipped. Increase BRAVE_MAX_QUERIES_PER_RUN to lift the limit.",
-            flush=True,
-        )
-    else:
-        print(f"[discover] INFO: Brave queries used this run: {_brave_query_count}", flush=True)
+            # 4) Semantic Scholar (free academic API)
+            try:
+                # Strip temporal filter and boolean suffix — not supported by S2
+                q_ss = re.sub(r"\s+after:\d{4}-\d{2}-\d{2}", "", q).strip()
+                q_ss = q_ss.replace(_SPIRU_QUERY_SUFFIX, " Spirulina")
+                papers = semantic_scholar_search(q_ss, limit=15)
+                for p in papers:
+                    doi = ((p.get("externalIds") or {}).get("DOI") or "").strip()
+                    doi_norm: Optional[str] = None
+                    if doi:
+                        doi_norm = doi.replace("https://doi.org/", "").replace("http://doi.org/", "").strip() or None
+                        if doi_norm and doi_norm.lower() in seen_doi:
+                            continue
+
+                    url = _semantic_scholar_best_url(p)
+                    url = normalize_url(url)
+                    if not url:
+                        continue
+
+                    d = domain_of(url)
+                    if DENY_RESEARCHGATE and d in RESEARCHGATE_DOMAINS:
+                        continue
+                    if is_denied_domain(url, dom_cfg):
+                        continue
+
+                    if RESOLVE_DOI_REDIRECTS and d in DOI_DOMAINS:
+                        resolved = resolve_final_url(url)
+                        resolved_n = normalize_url(resolved)
+                        if resolved_n:
+                            url = resolved_n
+
+                    title = (p.get("title") or "").strip() or url
+                    pub = _parse_date_any(p.get("publicationDate")) or (
+                        f"{p['year']}-01-01" if p.get("year") else None
+                    )
+                    snippet = (p.get("abstract") or "")[:400]
+
+                    hint = compute_spirulina_relevance(url=url, title=title, text=snippet).score
+                    score = enrich_score(url, base_score, dom_cfg, is_doi=bool(doi_norm)) + (8.0 * float(hint))
+                    score += focus_gate_adjustment(focus=focus, url=url, title=title, snippet=snippet, hint=float(hint))
+
+                    c = mk_candidate(
+                        url=url,
+                        title=title,
+                        snippet=snippet,
+                        focus=focus,
+                        source="semantic_scholar",
+                        score=score,
+                        published_at=pub,
+                        is_pdf=looks_like_pdf_url(url),
+                        doi=doi_norm,
+                    )
+                    c["spirulina_hint"] = round(float(hint), 4)
+                    candidates.append(c)
+            except Exception as e:
+                print(f"[discover] WARN: semantic_scholar failed for query '{q[:60]}': {e}", flush=True)
+            finally:
+                time.sleep(SEMANTIC_SCHOLAR_SLEEP_S)
+
+    # End-of-run web search summary
+    if SEARXNG_URL:
+        print(f"[discover] INFO: Web queries (SearXNG): {_web_query_count}", flush=True)
+    elif BRAVE_API_KEY:
+        if _web_cap > 0 and _web_query_count >= _web_cap:
+            print(
+                f"[discover] INFO: Brave query cap reached ({_web_query_count}/{_web_cap}). "
+                f"Increase BRAVE_MAX_QUERIES_PER_RUN to lift the limit.",
+                flush=True,
+            )
+        else:
+            print(f"[discover] INFO: Brave queries used this run: {_web_query_count}", flush=True)
 
     candidates = dedup(candidates)
 

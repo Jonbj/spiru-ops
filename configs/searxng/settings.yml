@@ -1,0 +1,71 @@
+# SearXNG configuration for spiru-ops
+# Docs: https://docs.searxng.org/admin/settings/
+#
+# IMPORTANT: change secret_key before exposing this instance outside localhost.
+# Generate one with: python3 -c "import secrets; print(secrets.token_hex(32))"
+
+use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "spiru-ops search"
+
+server:
+  # CHANGE THIS to a random secret before any non-local use
+  secret_key: "spiru-ops-change-me-in-production"
+  # Disable rate limiter — we're calling from localhost only
+  limiter: false
+  image_proxy: false
+  port: 8080
+  bind_address: "0.0.0.0"
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  default_lang: "en"
+  # Abort slow engines after N seconds (keeps discover.py responsive)
+  request_timeout: 8.0
+  max_request_timeout: 15.0
+  # Retry failed engines once
+  formats:
+    - html
+    - json
+
+ui:
+  # Minimal UI — we only use the JSON API
+  static_use_hash: true
+  default_theme: simple
+  query_in_title: false
+
+# Engines used by spiru-ops discovery.
+# Order matters for tiebreaking when multiple engines return the same URL.
+# We keep only reliable engines to avoid timeouts in the discover loop.
+engines:
+  - name: google
+    engine: google
+    shortcut: g
+    use_mobile_ui: false
+
+  - name: bing
+    engine: bing
+    shortcut: b
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: d
+
+  - name: startpage
+    engine: startpage
+    shortcut: sp
+
+  # Disable engines not useful for scientific/market discovery
+  - name: wikidata
+    disabled: true
+  - name: wikipedia
+    disabled: true
+  - name: currency
+    disabled: true
+  - name: qwant
+    disabled: true
+  - name: yahoo
+    disabled: true
