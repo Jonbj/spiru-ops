@@ -34,7 +34,10 @@ IS_BGE_M3 = SENTENCE_MODEL.lower() in _BGE_M3_NAMES
 # Generation backend — set LLM_BACKEND to switch without code changes:
 #   openai    → OpenAI API (default, needs OPENAI_API_KEY)
 #   anthropic → Anthropic Claude API (needs ANTHROPIC_API_KEY)
-#   ollama    → Local Ollama server, free (needs Ollama running on OLLAMA_URL)
+#   ollama    → Local llama-server (llama.cpp) o Ollama, API-compatibile OpenAI
+#               Avvio locale: ~/.models/start-server.sh
+#               Con llama-server: abbassare COPILOT_MAX_CONTEXT_CHARS a ~12000
+#               per stare nel limite di 8192 token del modello DeepSeek-R1-14B
 LLM_BACKEND = env("LLM_BACKEND", "openai").strip().lower()
 
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
@@ -43,8 +46,8 @@ OPENAI_MODEL = env("OPENAI_MODEL", "gpt-4o-mini")
 ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
 ANTHROPIC_MODEL = env("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 
-OLLAMA_URL = env("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = env("OLLAMA_MODEL", "llama3.2")
+OLLAMA_URL = env("OLLAMA_URL", "http://127.0.0.1:8080")
+OLLAMA_MODEL = env("OLLAMA_MODEL", "local")
 
 
 # Diversity controls (important!)

@@ -7,7 +7,7 @@
 # Functional role
 # ---------------
 # Cron should run this wrapper (not daily.sh directly) because it:
-# - starts required docker services (qdrant, unstructured, grobid)
+# - starts required docker services (qdrant, unstructured, grobid, searxng)
 # - waits for readiness (HTTP 200 checks)
 # - executes the daily pipeline
 # - retries once if Unstructured crashes (common failure mode)
@@ -58,7 +58,8 @@ source "$ROOT_DIR/pipelines/profiles.sh"
 export RUN_ID="${RUN_ID:-$(date -u +%Y-%m-%dT%H%M%SZ)}"
 
 # Services to run. Postgres is intentionally omitted by default (not used yet).
-SERVICES="${SERVICES:-qdrant unstructured grobid}"
+# searxng is required for web search in discover.py (replaces Brave Search at zero cost).
+SERVICES="${SERVICES:-qdrant unstructured grobid searxng}"
 
 # Readiness endpoints
 QDRANT_URL="${QDRANT_URL:-http://localhost:6333/}"
@@ -109,6 +110,8 @@ START_TS=$(date +%s)
 
   wait_http_200 "$QDRANT_URL" "qdrant" 60 1
   wait_http_200 "$UNSTRUCTURED_HEALTH_URL" "unstructured" 90 1
+  SEARXNG_HEALTH_URL="${SEARXNG_HEALTH_URL:-http://localhost:8888/}"
+  wait_http_200 "$SEARXNG_HEALTH_URL" "searxng" 60 1
   if [[ "${GROBID_ENABLE:-0}" == "1" ]]; then
     wait_http_200 "$GROBID_HEALTH_URL" "grobid" 60 1
   fi

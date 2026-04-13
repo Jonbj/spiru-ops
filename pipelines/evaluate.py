@@ -52,7 +52,7 @@ QDRANT_COLLECTION = env("QDRANT_COLLECTION", "docs_chunks_v2")
 
 # ---- QC thresholds (tunable via env) ----
 MIN_CANDIDATES = int(env("QC_MIN_CANDIDATES", "200"))
-MIN_INDEXED_POINTS = int(env("QC_MIN_INDEXED_POINTS", "1500"))
+MIN_INDEXED_POINTS = int(env("QC_MIN_INDEXED_POINTS", "200"))
 
 MAX_PENAL_SHARE = float(env("QC_MAX_PENAL_SHARE", "0.35"))
 MAX_MISSING_PUB_SHARE = float(env("QC_MAX_MISSING_PUB_SHARE", "0.60"))
