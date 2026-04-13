@@ -12,8 +12,8 @@ gantt
     Registro evidenze                  :done, a3, 2026-03-30, 2d
     File master artefatti progetto     :done, a3b, 2026-03-30, 2d
     Dati climatici                     :done, a4, 2026-03-30, 4d
-    Digest KB prioritari               :a5, 2026-03-31, 4d
-    Mappare 10 competitor              :a6, 2026-04-01, 4d
+    Digest KB prioritari               :done, a5, 2026-03-31, 4d
+    Mappare 10 competitor              :done, a6, 2026-04-01, 4d
     Preparare 10 contatti cliente      :a7, 2026-04-02, 3d
     Contattare consulente regolatorio  :a8, 2026-04-03, 2d
     Contattare 2 produttori italiani   :a9, 2026-04-03, 3d
@@ -61,8 +61,8 @@ gantt
 - [x] Creare Registro Evidenze
 - [x] Creare o aggiornare file master degli artefatti di progetto
 - [x] Raccogliere dati climatici Marche/Fermo
-- [ ] Estrarre digest KB dai focus prioritari
-- [ ] Mappare almeno 10 competitor / operatori
+- [x] Estrarre digest KB dai focus prioritari
+- [x] Mappare almeno 10 competitor / operatori
 - [ ] Preparare lista di almeno 10 contatti cliente
 - [ ] Contattare un consulente regolatorio
 - [ ] Contattare almeno 2 produttori italiani
@@ -108,3 +108,5 @@ gantt
 - [ ] Preparare le decisioni obbligatorie del 10 maggio:
   - [ ] food vs cosmetic
   - [ ] fresco vs secco
+
+- [ ] consolidare / aggiornare competitor map finale

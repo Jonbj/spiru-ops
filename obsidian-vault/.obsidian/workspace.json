@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "ad7cd5bb1fa1e822",
+        "id": "426722115fbb3d25",
         "type": "tabs",
         "children": [
           {
-            "id": "c4f3e4b5a1f2cc06",
+            "id": "32be5464d5305201",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "progetto/customers/inbox/2026-04-12T134327Z.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2026-04-12T134327Z"
             }
           }
         ]
@@ -70,8 +74,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -153,24 +156,35 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HOME.md",
+                "file": "progetto/competitors/competitor-map.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of HOME"
+              "title": "Outline of competitor-map"
+            }
+          },
+          {
+            "id": "c568590fef7bef8b",
+            "type": "leaf",
+            "state": {
+              "type": "mermaid-toolbar-view",
+              "state": {},
+              "icon": "trident-custom",
+              "title": "Mermaid Toolbar"
             }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
+      "mermaid-tools:Open Mermaid Toolbar": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -180,15 +194,44 @@
       "bases:Create new base": false
     }
   },
-  "active": "c4f3e4b5a1f2cc06",
+  "active": "32be5464d5305201",
   "lastOpenFiles": [
-    "hardware/sensori-ESP32.md",
-    "kb-digest/paper-temperatura-PLOS.md",
-    "fornitori/BEA.md",
-    "fornitori/ACUF.md",
-    "coltura/setup-damigiana-50L.md",
+    "progetto/customers/inbox/2026-04-12T181001Z.md",
+    "progetto/competitors/inbox/2026-04-12T181001Z.md",
+    "progetto/customers/inbox/2026-04-12T135306Z.md",
+    "progetto/customer-discovery.md",
+    "progetto/customers/inbox/2026-04-12T134327Z.md",
+    "progetto/customers/inbox",
+    "progetto/customers",
+    "progetto/dati-climatici-fermo-marche.md",
+    "progetto/competitors/inbox/2026-04-12T061001Z.md",
+    "progetto/competitors/inbox/2026-04-12T001001Z.md",
+    "progetto/competitors/inbox/2026-04-11T181001Z.md",
+    "progetto/customer-discovery.md.tmp.80041.1775916521688",
+    "progetto/competitors/inbox/2026-04-11T121001Z.md",
+    "progetto/competitors/inbox/2026-04-11T061001Z.md",
+    "progetto/competitors/inbox/2026-04-11T001001Z.md",
+    "progetto/competitors/inbox/2026-04-10T224911Z.md",
+    "progetto/operativo-aprile.md",
+    "progetto/competitors/inbox/2026-04-10T181001Z.md",
+    "progetto/competitors/inbox/2026-04-10T121001Z.md",
+    "progetto/competitors/competitor-map.md",
+    "progetto/competitors/inbox/2026-04-10T001001Z.md",
+    "progetto/competitors/inbox/2026-04-09T181001Z.md",
+    "progetto/competitors/inbox/2026-04-09T121001Z.md",
+    "progetto/competitors/inbox/2026-04-09T061001Z.md",
+    "progetto/competitors/inbox/2026-04-09T001001Z.md",
+    "progetto/competitors/competitor-map.md.tmp.657400.1775686580798",
+    "progetto/competitors/competitor-map.md.tmp.657400.1775686496614",
+    "progetto/competitors/competitor-map.md.tmp.657400.1775686456652",
+    "progetto/competitors/competitor-map.md.tmp.657400.1775686445589",
+    "progetto/competitors/inbox/2026-04-08T181001Z.md",
+    "progetto/gantt-piano-operativo-algavitae-aprile.md",
+    "progetto/agent-guide-pianificazione.md.tmp.657400.1775667075022",
+    "progetto/agent-guide-pianificazione.md",
+    "progetto/agent-guide-pianificazione.md.tmp.657400.1775667020167",
+    "progetto/operativo-aprile.md.tmp.657400.1775666960124",
     "coltura/setpoint-operativi.md",
-    "coltura/diario.md",
-    "HOME.md"
+    "Untitled.canvas"
   ]
 }
