@@ -54,6 +54,10 @@ CHUNK_OVERLAP = int(env("CHUNK_OVERLAP", 240))
 _BGE_M3_NAMES = {"baai/bge-m3", "bge-m3"}
 IS_BGE_M3 = EMBED_MODEL.lower() in _BGE_M3_NAMES
 
+# Device for embedding model. Default "cuda" if available, else "cpu".
+# Set EMBED_DEVICE=cpu to force CPU and avoid VRAM conflict with LLM server.
+EMBED_DEVICE = env("EMBED_DEVICE", "").strip().lower() or None
+
 INDEX_MIN_SPIRULINA_SCORE = float(env("INDEX_MIN_SPIRULINA_SCORE", "0.25"))
 INDEX_ALLOW_NON_SPIRULINA = env("INDEX_ALLOW_NON_SPIRULINA", "0").strip() in ("1", "true", "TRUE", "yes", "YES")
 
@@ -98,11 +102,15 @@ def main() -> None:
 
     if IS_BGE_M3:
         from FlagEmbedding import BGEM3FlagModel  # type: ignore
-        model = BGEM3FlagModel(EMBED_MODEL, use_fp16=True)
+        model = BGEM3FlagModel(
+            EMBED_MODEL,
+            use_fp16=(EMBED_DEVICE != "cpu"),
+            devices=[EMBED_DEVICE] if EMBED_DEVICE else None,
+        )
         ensure_collection_hybrid(qcfg, dense_dim=1024)
     else:
         from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer(EMBED_MODEL)
+        model = SentenceTransformer(EMBED_MODEL, device=EMBED_DEVICE)
         dim = model.get_sentence_embedding_dimension()
         ensure_collection(qcfg, dim=dim)
 

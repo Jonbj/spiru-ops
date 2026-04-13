@@ -31,6 +31,10 @@ SENTENCE_MODEL = env("SENTENCE_MODEL", env("EMBED_MODEL", "sentence-transformers
 _BGE_M3_NAMES = {"baai/bge-m3", "bge-m3"}
 IS_BGE_M3 = SENTENCE_MODEL.lower() in _BGE_M3_NAMES
 
+# Device for embedding model. Default: None (auto-detect GPU). Set EMBED_DEVICE=cpu
+# to force CPU and avoid VRAM conflict with the LLM server.
+EMBED_DEVICE = env("EMBED_DEVICE", "").strip().lower() or None
+
 # Generation backend — set LLM_BACKEND to switch without code changes:
 #   openai    → OpenAI API (default, needs OPENAI_API_KEY)
 #   anthropic → Anthropic Claude API (needs ANTHROPIC_API_KEY)
@@ -86,12 +90,16 @@ def get_embedder():
     if IS_BGE_M3:
         if _bgem3_model is None:
             from FlagEmbedding import BGEM3FlagModel  # type: ignore
-            _bgem3_model = BGEM3FlagModel(SENTENCE_MODEL, use_fp16=True)
+            _bgem3_model = BGEM3FlagModel(
+                SENTENCE_MODEL,
+                use_fp16=(EMBED_DEVICE != "cpu"),
+                devices=[EMBED_DEVICE] if EMBED_DEVICE else None,
+            )
         return _bgem3_model
     else:
         if _embedder is None:
             from sentence_transformers import SentenceTransformer
-            _embedder = SentenceTransformer(SENTENCE_MODEL)
+            _embedder = SentenceTransformer(SENTENCE_MODEL, device=EMBED_DEVICE)
         return _embedder
 
 
