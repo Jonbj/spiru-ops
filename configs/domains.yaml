@@ -11,6 +11,42 @@ deny_domains:
   - instructables.com
   - ntrs.nasa.gov
   - science.gov
+  - airbnb.com
+  - airbnb.fr
+  - airbnb.it
+  - virtualdj.com
+  - shropshirestar.com
+  - moneysavingexpert.com
+  - wordreference.com
+  # --- Garbage domains osservati nei run 2026-04-12 (spirulina_hint=0, completamente off-topic) ---
+  # Fix radice in ingest.py (prefilter_hint0 + INGEST_MIN_SPIRULINA_SCORE) risolve la causa;
+  # questi deny sono un fallback nel caso SearXNG li restituisca di nuovo.
+  - dailythemedcrosswordanswers.com   # crossword puzzle answers
+  - kahoot.com                         # quiz/learning platform
+  - board-de.drakensang.com           # game forum (DE)
+  - board-en.drakensang.com           # game forum (EN)
+  - spolecznosc.allegro.pl            # marketplace community (PL)
+  - forum.finanzen.at                 # finanza forum (AT)
+  - forum.pcastuces.com               # tech forum (FR)
+  - communaute.orange.fr              # ISP community (FR)
+  - forum.lowyat.net                  # tech forum (MY)
+  - oil-price.consumer.org.hk         # commodity prices (HK)
+  - geometrygames.io                  # browser games
+  - forum.missouriquiltco.com         # quilting forum (US)
+  - www.ford-koegler.de               # automotive (DE)
+  - www.dndbeyond.com                 # D&D game platform (US)
+  - www.taipei-101.com.tw             # tourist attraction (TW)
+  - www.origo.hu                      # news portal (HU)
+  - ais.cn                            # Chinese academic platform
+  - castlepeak.ru                     # Russian game guide
+  - stopgame.ru                       # Russian game reviews
+  - t3n.de                            # German tech news (off-topic)
+  - windows.atsit.in                  # Windows guides (off-topic)
+  - adnkronos.com                     # Italian news agency (non-spirulina)
+  - tuttigiornali.it                  # news aggregator (non-spirulina)
+  - pumppalworkoutscheduler.com       # workout scheduler
+  - blenderauthority.com              # blender recipes (non-spirulina B2B)
+  - www.thenaturalherbalist.com       # Etsy-like shop (non-EU, retail only)
 
 prefer_domains:
   - .edu

@@ -235,3 +235,24 @@ focuses:
       - "Horizon Europe microalgae food bioeconomy SME pilot scale"
       - "Invitalia startup innovativa microalghe agrifood finanziamento"
       - "bando spirulina microalghe finanziamento impianto pilota Italia 2024 2025"
+
+  # Nuovo: ricerca attiva di potenziali partner commerciali e co-branding in Italia
+  # Obiettivo: trovare aziende agroalimentari, pastifici, cosmetici, laboratori
+  # che usano ingredienti funzionali/bio e potrebbero integrare spirulina locale
+  - name: partnership_targets_italy
+    base_score: 26
+    queries:
+      - "pastificio artigianale Marche Abruzzo ingrediente funzionale biologico innovazione filiera"
+      - "Pastificio Mancini pasta Marche grano duro biologico filiera corta"
+      - "pasta spirulina partnership produttore locale ingrediente biologico Italia artigianale"
+      - "pastificio premium ingrediente superfood alga spirulina collaborazione co-branding"
+      - "azienda cosmetica italiana ingrediente naturale alga microalga spirulina private label partnership"
+      - "laboratorio cosmetico Italia formulazione ingrediente marino alga naturale -retail"
+      - "food startup ingrediente spirulina accordo filiera locale produttore Italia centro"
+      - "economia circolare spirulina pasta agroalimentare filiera integrata Italia -report"
+      - "ristorante stellato ingrediente locale Marche Abruzzo spirulina microalga chef"
+      - "bar juice smoothie spirulina superfood ingrediente locale Italia partner fornitura"
+      - "integratori sportivi italiano produttore ingrediente spirulina locale tracciabile partner"
+      - "La Terra e il Cielo Marche pasta biologica spirulina ingrediente partner"
+      - "Andriani ApuliaKundi modello economia circolare pasta spirulina replicabile"
+      - "spirulina pasta biologica Marche PSR progetto filiera agroalimentare"
