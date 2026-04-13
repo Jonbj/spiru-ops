@@ -80,20 +80,42 @@ echo "[daily] Using python: $PYBIN"
 echo "[daily] RUN_ID=$RUN_ID PROFILE=$PROFILE"
 echo "[daily] paths: candidates=$CANDIDATES_PATH ingested=$INGESTED_PATH indexed=$INDEXED_PATH report=$REPORT_PATH"
 
-# ── LLM server health check ────────────────────────────────────────────────
-# If any LLM feature is enabled (RELEVANCE_LLM_ENABLE, DISCOVER_LLM_EXPAND,
-# or REPORT_LLM_ENABLE), ensure the local server is running before the pipeline
-# starts. If not running, attempt to start it via ~/.models/start-server.sh.
-# On failure, warn and continue — all LLM functions degrade gracefully to None.
+# ── LLM server lifecycle management ───────────────────────────────────────
+# The LLM server (llama-server / Ollama) occupies most of the GPU VRAM.
+# The embedding step (index.py, BGE-M3) also needs GPU memory.
+# Running both at the same time causes CUDA OOM.
+#
+# Strategy:
+#   1. If LLM features are enabled and server is NOT running → start it,
+#      mark _llm_server_started_by_us=1 so we can stop it before index.
+#   2. If LLM features are enabled and server IS already running → warn that
+#      index.py may OOM; do NOT stop a server we didn't start.
+#   3. If LLM features are disabled but server IS running → warn and suggest
+#      stopping it manually before this pipeline run.
+#   4. Before pipelines.index → stop server if we started it (free VRAM).
+#   5. After pipelines.report (last LLM-using step) → no restart needed
+#      (report uses LLM only when REPORT_LLM_ENABLE=1, which runs before index).
+#
+# _llm_server_started_by_us: 1 if this script launched the server, 0 otherwise.
 _llm_any_enabled=0
 [[ "${RELEVANCE_LLM_ENABLE:-0}" == "1" ]] && _llm_any_enabled=1
 [[ "${DISCOVER_LLM_EXPAND:-0}"  == "1" ]] && _llm_any_enabled=1
 [[ "${REPORT_LLM_ENABLE:-0}"    == "1" ]] && _llm_any_enabled=1
 
+_llm_url="${OLLAMA_URL:-http://127.0.0.1:8080}"
+_llm_server_started_by_us=0
+_llm_stop="${HOME}/.models/stop-server.sh"
+
+_llm_is_running() {
+  curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1
+}
+
 if [[ "$_llm_any_enabled" == "1" ]]; then
-  _llm_url="${OLLAMA_URL:-http://127.0.0.1:8080}"
-  if curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1; then
+  if _llm_is_running; then
     echo "[daily] LLM server: already running at ${_llm_url}"
+    echo "[daily] WARN: LLM server was pre-existing — index.py (BGE-M3) may OOM if GPU is full." \
+         "Consider stopping the server before running the pipeline or set LLM_PIPELINE_GPU_SAFE=1 to auto-stop it." >&2
+    [[ "${LLM_PIPELINE_GPU_SAFE:-0}" == "1" ]] && _llm_server_started_by_us=1
   else
     echo "[daily] LLM server: not running — attempting to start..."
     _llm_start="${HOME}/.models/start-server.sh"
@@ -103,20 +125,28 @@ if [[ "$_llm_any_enabled" == "1" ]]; then
       while [[ $_llm_waited -lt 120 ]]; do
         sleep 5
         _llm_waited=$((_llm_waited + 5))
-        if curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1; then
+        if _llm_is_running; then
           echo "[daily] LLM server: ready after ${_llm_waited}s"
+          _llm_server_started_by_us=1
           break
         fi
       done
-      if ! curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1; then
-        echo "[daily] WARN: LLM server did not become ready within 120s — LLM features will be skipped (graceful fallback)" >&2
+      if ! _llm_is_running; then
+        echo "[daily] WARN: LLM server did not start within 120s — LLM features will be skipped (graceful fallback)" >&2
       fi
     else
       echo "[daily] WARN: LLM start script not found at ${_llm_start} — LLM features will be skipped" >&2
     fi
   fi
+else
+  # LLM features disabled — warn if server is running and would starve BGE-M3
+  if _llm_is_running; then
+    echo "[daily] WARN: LLM server is running at ${_llm_url} but LLM features are disabled." \
+         "GPU memory may be insufficient for BGE-M3 embedding (index step). Stop it or set LLM_PIPELINE_GPU_SAFE=1." >&2
+    [[ "${LLM_PIPELINE_GPU_SAFE:-0}" == "1" ]] && _llm_server_started_by_us=1
+  fi
 fi
-# ── end LLM server check ──────────────────────────────────────────────────
+# ── end LLM server startup ─────────────────────────────────────────────────
 
 # Optional seed strains
 SEED_STRAINS="${SEED_STRAINS:-0}"
@@ -138,6 +168,19 @@ fi
 
 # Enrich DOI/OA metadata (best-effort; may require UNPAYWALL_EMAIL)
 "$PYBIN" -m pipelines.enrich_doi_oa || echo "[daily] WARN: enrich_doi_oa failed (non-fatal)" >&2
+
+# ── Stop LLM server before index to free GPU VRAM for BGE-M3 ──────────────
+# BGE-M3 needs ~500 MiB of VRAM. If the LLM server is running it occupies
+# most of the GPU, causing CUDA OOM in the embedding step.
+if [[ "$_llm_server_started_by_us" == "1" ]]; then
+  echo "[daily] Stopping LLM server before index to free GPU VRAM..."
+  if [[ -x "$_llm_stop" ]]; then
+    bash "$_llm_stop" && echo "[daily] LLM server stopped." || echo "[daily] WARN: stop-server.sh failed." >&2
+  else
+    echo "[daily] WARN: stop script not found at ${_llm_stop} — LLM server may still be running." >&2
+  fi
+fi
+# ── end LLM stop ──────────────────────────────────────────────────────────
 
 "$PYBIN" -m pipelines.index
 "$PYBIN" -m pipelines.report
