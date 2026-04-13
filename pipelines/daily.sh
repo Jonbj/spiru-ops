@@ -223,3 +223,16 @@ bash "$ROOT_DIR/pipelines/prune_artifacts.sh" || echo "[daily] WARN: prune_artif
 # Customer discovery: cerca potenziali clienti B2B/B2C per AlgaVitae (best-effort)
 # Scrive un report markdown in obsidian-vault/progetto/customers/inbox/{RUN_ID}.md
 "$PYBIN" scripts/customer_discovery.py || echo "[daily] WARN: customer_discovery failed (non-fatal)" >&2
+
+# ── Restart LLM server if we stopped it earlier ───────────────────────────
+# If we stopped the server before index to free VRAM, restart it now so it
+# is available for the copilot UI after the pipeline finishes.
+if [[ "$_llm_server_started_by_us" == "1" ]]; then
+  _llm_start="${HOME}/.models/start-server.sh"
+  if [[ -x "$_llm_start" ]]; then
+    echo "[daily] Restarting LLM server after pipeline completion..."
+    bash "$_llm_start" &
+    echo "[daily] LLM server restart requested (background)."
+  fi
+fi
+# ── end LLM restart ───────────────────────────────────────────────────────
