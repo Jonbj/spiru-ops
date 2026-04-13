@@ -40,14 +40,15 @@ Il contesto operativo è la progettazione di un fotobioreattore (PBR) da 50L per
 │                                                                 │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │  SpiruCopilot (Streamlit — ui/copilot.py)                │  │
-│  │  RAG: query Qdrant → assemble context → OpenAI API       │  │
+│  │  RAG: query Qdrant → assemble context → LLM API          │  │
+│  │  (multi-backend: openai / anthropic / ollama)            │  │
 │  └──────────────────┘───────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
            ↑                        ↑
    API esterne (Discovery)   API esterne (Arricchimento)
-   - Brave Search API         - Crossref API
-   - OpenAlex API             - Unpaywall API
-                              - OpenAI API (copilot)
+   - SearXNG (self-hosted)    - Crossref API
+   - Brave Search API         - Unpaywall API
+   - OpenAlex API             - LLM API (openai/anthropic/ollama)
 ```
 
 ---
@@ -111,17 +112,17 @@ OpenAlex API      ──┤
 | Layer | Tecnologia | Note |
 |-------|-----------|------|
 | Orchestrazione | Bash (`cron_run_daily.sh`, `daily.sh`) | Set -euo pipefail, flock, trap EXIT |
-| Scheduling | cron (4×/giorno) | 02:10, 08:10, 14:10, 20:10 UTC |
-| Discovery | Python + requests | Brave Search API, OpenAlex REST |
+| Scheduling | cron (1×/giorno) | 06:10 UTC |
+| Discovery | Python + requests | SearXNG (primary), Brave Search API (fallback), OpenAlex REST, Semantic Scholar |
 | Parsing HTML | Python + BeautifulSoup | In `common.py` — soup_text() |
 | Parsing PDF/HTML avanzato | Unstructured API (Docker) | Fallback: local pypdf |
 | Parsing header paper | Grobid (Docker) | Solo se GROBID_ENABLE=1 |
 | Arricchimento bibliografico | requests + Crossref/Unpaywall | In `enrich_doi_oa.py` |
-| Embedding | sentence-transformers | Modello: all-MiniLM-L6-v2 (384 dim) |
-| Vector DB | Qdrant (Docker) | Collection: docs_chunks |
-| RAG Copilot | Streamlit + OpenAI Responses API | `ui/copilot.py` |
+| Embedding | sentence-transformers / FlagEmbedding | Default prod: `BAAI/bge-m3` (dense+sparse). Fallback: `all-MiniLM-L6-v2` (384 dim) |
+| Vector DB | Qdrant (Docker) | Collection: `docs_chunks_v2` |
+| RAG Copilot | Streamlit + Chat Completions API | `ui/copilot.py`; backend: openai/anthropic/ollama via `LLM_BACKEND` |
 | Config | YAML (configs/) + .env | Tutto configurabile via env |
-| Lingua principale | Python 3.10+ | typing, dataclasses, pathlib |
+| Lingua principale | Python 3.12+ | typing, dataclasses, pathlib |
 
 ---
 
@@ -150,10 +151,11 @@ spiru-ops/
 │   ├── analyze_sources_*.py # Utility: analisi sorgenti
 │   ├── qdrant_rest.py       # Client REST Qdrant (thin wrapper)
 │   ├── query.py             # CLI: query RAG senza LLM
-│   └── rag_cloud.py         # RAG + OpenAI Responses API
+│   └── rag_cloud.py         # RAG + LLM multi-backend (openai/anthropic/ollama)
 │
 ├── configs/                 # Configurazione dominio
-│   ├── focus.yaml           # 18 aree tematiche (query Brave + OpenAlex)
+│   ├── focus.yaml           # 18 aree tematiche (query SearXNG/Brave + OpenAlex)
+│   ├── searxng/             # Configurazione SearXNG (settings.yml)
 │   ├── scoring.yaml         # Pesi per Qdrant scoring
 │   ├── domains.yaml         # Domini preferiti/penalizzati/negati
 │   └── strain_seeds.yaml    # Seed ceppi iniziali
@@ -167,8 +169,8 @@ spiru-ops/
 │   └── deep_research_weekly.md
 │
 ├── ops/cron/                # Cron entries
-│   ├── daily.cron           # Entry produzione (4×/giorno)
-│   └── weekly.cron          # Entry settimanale
+│   ├── daily.cron           # Entry produzione (1×/giorno, 06:10 UTC)
+│   └── backup-weekly.cron   # Backup settimanale (domenica 03:00 UTC)
 │
 ├── tests/                   # Test unitari e smoke
 │

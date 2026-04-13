@@ -10,10 +10,10 @@ crontab -e
 
 Incollare (il file di riferimento è `ops/cron/daily.cron`):
 ```
-10 2,8,14,20 * * * cd /home/stefano/Documents/Projects/spiru-ops && PROFILE=kb_first /bin/bash /home/stefano/Documents/Projects/spiru-ops/pipelines/cron_run_daily.sh >> /home/stefano/Documents/Projects/spiru-ops/storage/logs/cron_crontab.log 2>&1
+10 6 * * * cd /home/stefano/Documents/Projects/spiru-ops && PROFILE=kb_first /bin/bash /home/stefano/Documents/Projects/spiru-ops/pipelines/cron_run_daily.sh >> /home/stefano/Documents/Projects/spiru-ops/storage/logs/cron_crontab.log 2>&1
 ```
 
-Il cron gira 4 volte al giorno: 02:10, 08:10, 14:10, 20:10 UTC.
+Il cron gira **1 volta al giorno alle 06:10 UTC** (ridotto da 4×/giorno per contenere i costi Brave Search API; con SearXNG il limite non è più necessario ma il cadenzamento è rimasto).
 
 ### 2. Verificare che il cron sia installato
 
@@ -97,7 +97,7 @@ Il log `cron_daily_YYYY-MM-DD.log` contiene:
 
 ```bash
 # Numero punti in Qdrant
-curl -s http://localhost:6333/collections/docs_chunks | python3 -m json.tool | grep points_count
+curl -s http://localhost:6333/collections/docs_chunks_v2 | python3 -m json.tool | grep points_count
 
 # Uso disco
 du -sh storage/
@@ -213,9 +213,9 @@ QC_MIN_SPIRULINA_SHARE=0.25  # se si vogliono anche doc meno focalizzati
 
 **Attenzione**: cambiare il modello invalida tutti i vettori esistenti in Qdrant!
 Se si cambia `EMBED_MODEL`:
-1. Eliminare la collection Qdrant: `curl -X DELETE http://localhost:6333/collections/docs_chunks`
+1. Eliminare la collection Qdrant: `curl -X DELETE http://localhost:6333/collections/docs_chunks_v2`
 2. Aggiornare `.env`: `EMBED_MODEL=nuovo/modello`
-3. Ri-indicizzare: il prossimo run ricrea la collection con la nuova dimensione
+3. Ri-indicizzare tutto: `python scripts/reindex_all.py` (oppure aspettare i prossimi run del cron)
 
 ---
 
@@ -228,7 +228,7 @@ Se si cambia `EMBED_MODEL`:
 du -sh storage/
 
 # Verifica integrità Qdrant
-curl -s http://localhost:6333/collections/docs_chunks | python3 -m json.tool
+curl -s http://localhost:6333/collections/docs_chunks_v2 | python3 -m json.tool
 
 # Leggi l'ultimo kb_dedup_report per trovare duplicati
 cat $(ls -t storage/artifacts/*_kb_dedup_report.md | head -1)
@@ -263,16 +263,16 @@ L'immagine è pinnata a un digest specifico in `docker-compose.yml`. Per aggiorn
 
 ```bash
 # Info collection
-curl -s http://localhost:6333/collections/docs_chunks | python3 -m json.tool
+curl -s http://localhost:6333/collections/docs_chunks_v2 | python3 -m json.tool
 
 # Cerca un documento per URL
-curl -s -X POST http://localhost:6333/collections/docs_chunks/points/scroll \
+curl -s -X POST http://localhost:6333/collections/docs_chunks_v2/points/scroll \
   -H "Content-Type: application/json" \
   -d '{"filter":{"must":[{"key":"url","match":{"value":"https://..."}}]},"limit":5,"with_payload":true}' \
   | python3 -m json.tool
 
 # Numero totale punti
-curl -s http://localhost:6333/collections/docs_chunks | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['result']['points_count'])"
+curl -s http://localhost:6333/collections/docs_chunks_v2 | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['result']['points_count'])"
 ```
 
 ### Docker

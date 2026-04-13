@@ -19,19 +19,28 @@ chmod 600 .env
 ### API Keys
 | Variabile | Obbligatoria | Descrizione |
 |-----------|-------------|-------------|
-| `BRAVE_API_KEY` | Raccomandata | Key per Brave Search API (discovery principale) |
-| `OPENAI_API_KEY` | Richiesta per copilot | Key OpenAI per SpiruCopilot (RAG + LLM) |
-| `UNPAYWALL_EMAIL` | Raccomandata | Email per Unpaywall API (OA PDF URLs via DOI) — gratuito, solo email |
+| `OPENAI_API_KEY` | Sì (se `LLM_BACKEND=openai`) | Key OpenAI per SpiruCopilot |
+| `ANTHROPIC_API_KEY` | Sì (se `LLM_BACKEND=anthropic`) | Key Anthropic per Claude |
+| `BRAVE_API_KEY` | Opzionale | Key Brave Search API (fallback a SearXNG se `SEARXNG_URL` è valorizzato) |
+| `UNPAYWALL_EMAIL` | Raccomandata | Email per Unpaywall API (OA PDF URLs via DOI) — gratuito |
 | `CROSSREF_MAILTO` | Opzionale | Email per Crossref API — aumenta rate limit |
+| `OPENALEX_EMAIL` | Opzionale | Email per OpenAlex polite pool — riduce rate limiting |
+| `SEMANTIC_SCHOLAR_KEY` | Opzionale | Key Semantic Scholar — aumenta rate limit (200M+ paper) |
+| `CORE_API_KEY` | Opzionale | Key CORE API — accesso paper aggiuntivi |
 
 ### Modelli e servizi
 | Variabile | Default | Descrizione |
 |-----------|---------|-------------|
-| `OPENAI_MODEL` | `gpt-5.2` | Modello OpenAI per il copilot |
-| `OPENAI_DEEP_RESEARCH_MODEL` | `o3-deep-research` | Modello per ricerca profonda settimanale |
-| `EMBED_MODEL` | `sentence-transformers/all-MiniLM-L6-v2` | Modello embedding (384 dim) |
+| `LLM_BACKEND` | `openai` | Backend LLM per il copilot: `openai`, `anthropic`, `ollama` |
+| `OPENAI_MODEL` | `gpt-4o` | Modello OpenAI per il copilot (se `LLM_BACKEND=openai`) |
+| `OPENAI_DEEP_RESEARCH_MODEL` | `o3-deep-research` | Modello per ricerca profonda settimanale (opzionale) |
+| `ANTHROPIC_MODEL` | `claude-sonnet-4-6` | Modello Anthropic (se `LLM_BACKEND=anthropic`) |
+| `OLLAMA_URL` | `http://localhost:11434` | URL server Ollama (se `LLM_BACKEND=ollama`) |
+| `OLLAMA_MODEL` | `mistral` | Modello Ollama (se `LLM_BACKEND=ollama`) |
+| `EMBED_MODEL` | `BAAI/bge-m3` | Modello embedding. Default prod: bge-m3 (1024 dim, dense+sparse). Alternativa: `sentence-transformers/all-MiniLM-L6-v2` (384 dim) |
+| `SEARXNG_URL` | `http://localhost:8888` | URL SearXNG self-hosted (primary web search, gratuito). Vuoto = usa Brave |
 | `QDRANT_URL` | `http://localhost:6333` | URL Qdrant |
-| `QDRANT_COLLECTION` | `docs_chunks` | Nome collection vettoriale |
+| `QDRANT_COLLECTION` | `docs_chunks_v2` | Nome collection vettoriale |
 | `UNSTRUCTURED_URL` | `http://localhost:8000` | URL Unstructured API |
 | `GROBID_URL` | `http://localhost:8070` | URL Grobid |
 
@@ -55,8 +64,8 @@ chmod 600 .env
 | Variabile | Default | Descrizione |
 |-----------|---------|-------------|
 | `PROFILE` | `balanced` | Profilo runtime. Cron usa `kb_first` |
-| `MAX_CANDIDATES_PER_FOCUS` | `80` | Max candidati per area tematica in discovery |
-| `MAX_TOTAL_CANDIDATES` | `800` | Cap globale candidati per run |
+| `MAX_CANDIDATES_PER_FOCUS` | `90` | Max candidati per area tematica in discovery |
+| `MAX_TOTAL_CANDIDATES` | `1200` | Cap globale candidati per run |
 | `DISCOVERY_SINCE_DAYS` | `120` | Finestra temporale per query OpenAlex (giorni) |
 | `USER_AGENT` | `spiru-ops-bot/0.3 (+...)` | User-Agent per download HTTP |
 | `DENY_RESEARCHGATE` | `1` | Skippa ResearchGate (paywall duro) |
@@ -67,7 +76,7 @@ chmod 600 .env
 ### Ingest
 | Variabile | Default | Descrizione |
 |-----------|---------|-------------|
-| `INGEST_TARGET` | `200` | Numero target documenti da ingestionare (portfolio selection) |
+| `INGEST_TARGET` | `300` | Numero target documenti da ingestionare (portfolio selection) |
 | `INGEST_MAX_PER_DOMAIN` | `10` | Max documenti per domain family in ingest |
 | `INGEST_EXPLORATION_PCT` | `70%` | % di documenti da domini nuovi (vs exploitation) |
 | `INGEST_HISTORY_DAYS` | `14` | Finestra storica per exploitation (run passati) |
@@ -206,15 +215,15 @@ Due profili pre-definiti. Il profilo viene scelto via `PROFILE` env var.
 ### `balanced` (default manuale)
 - `MAX_DOWNLOAD_MB=50`, `UNSTRUCTURED_MAX_MB=25`
 - Timeout: PDF 90s, HTML 40s, HEAD 20s
-- Circuit breaker: 5 × 403, 3 × 429
+- Circuit breaker: `MAX_403_PER_DOMAIN=5`, `MAX_429_PER_DOMAIN=3`
 - `GROBID_ENABLE=0`, `OPENALEX_ENRICH_ALWAYS=0`
 
 ### `kb_first` (produzione — cron)
 - `MAX_DOWNLOAD_MB=120`, `UNSTRUCTURED_MAX_MB=15`
   - Scarica file più grandi, ma li passa a pypdf (non Unstructured) per sicurezza
 - Timeout: PDF 120s, HTML 60s, HEAD 25s
-- Circuit breaker: 15 × 403, 5 × 429 (più tollerante)
-- `GROBID_ENABLE=0` (sovrascitto da `.env` che ha `GROBID_ENABLE=1`)
+- Circuit breaker: `MAX_403_PER_DOMAIN=15`, `MAX_429_PER_DOMAIN=5` (più tollerante)
+- `GROBID_ENABLE=0` (sovrascitto da `.env` se `GROBID_ENABLE=1`)
 - `OPENALEX_ENRICH_ALWAYS=1` — arricchisce DOI tramite OpenAlex anche senza richiesta esplicita
 
 > Le variabili nel profilo usano `${VAR:-default}`: se già definita in `.env`, il profilo non la sovrascrive. Il `.env` ha la precedenza.

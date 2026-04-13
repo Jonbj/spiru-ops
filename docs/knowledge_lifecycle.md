@@ -107,7 +107,9 @@ Se il documento ha un DOI, il `.meta.json` viene aggiornato con:
 Il testo viene chunkizzato e ogni chunk diventa un punto in Qdrant:
 - **ID punto**: `int(sha1(url + content_hash), 16) % 10^12 + chunk_index`
   → Stabile: stesso documento + chunk = stesso ID → upsert idempotente
-- **Vettore**: embedding 384-dim (all-MiniLM-L6-v2)
+- **Vettore**: dipende da `EMBED_MODEL`:
+  - `BAAI/bge-m3` (default prod): dense 1024 dim + sparse (hybrid retrieval)
+  - `all-MiniLM-L6-v2`: dense 384 dim
 - **Payload**: url, domain, focus, spirulina_score, title, testo del chunk
 
 ### 7. Stato "seen"
@@ -134,11 +136,11 @@ Tre livelli:
 
 ### Crescita attesa
 
-Con 4 run/giorno e ~27 doc/run (media osservata):
-- **`storage/raw/`** e **`storage/parsed/`**: ~108 doc/giorno × 30 giorni = ~3240 file/mese. Nessun pruning sui file grezzi.
-- **`storage/state/`**: ~12 file/giorno (3 artefatti × 4 run). Pruning automatico a 30 giorni → max ~360 file.
-- **`seen_urls.jsonl`**: ~27 URL/run × 4 run/giorno = ~108/giorno. Capped a 15000 righe (~4.5 mesi).
-- **Qdrant**: ~636 punti/run × 4 run/giorno = ~2544 punti/giorno. A 67000+ punti già (a marzo 2026).
+Con 1 run/giorno e ~27 doc/run (media osservata):
+- **`storage/raw/`** e **`storage/parsed/`**: ~27 doc/giorno × 30 giorni = ~810 file/mese. Nessun pruning sui file grezzi.
+- **`storage/state/`**: ~3 file/giorno (3 artefatti × 1 run). Pruning automatico a 30 giorni → max ~90 file.
+- **`seen_urls.jsonl`**: ~27 URL/run × 1 run/giorno = ~27/giorno. Capped a 15000 righe (~18 mesi).
+- **Qdrant**: ~636 punti/run × 1 run/giorno = ~636 punti/giorno. A 67000+ punti già (a marzo 2026).
 
 ### Pruning automatico
 

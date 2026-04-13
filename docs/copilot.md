@@ -8,8 +8,10 @@ Architettura: **RAG (Retrieval Augmented Generation)**
 1. La domanda viene embeddedta con lo stesso modello usato dall'indexing
 2. I K chunk più simili vengono recuperati da Qdrant
 3. I chunk vengono assemblati come contesto
-4. Il contesto + la domanda vengono inviati a OpenAI (Responses API)
+4. Il contesto + la domanda vengono inviati al backend LLM configurato
 5. Il modello genera una risposta citando le fonti
+
+Il backend LLM è selezionabile via `LLM_BACKEND` in `.env`: `openai` (default), `anthropic`, o `ollama` (locale, gratuito).
 
 ---
 
@@ -48,7 +50,7 @@ Apre su `http://localhost:8501`.
 retrieve(question, focus=None, topk=10)
 ```
 
-1. Embed la domanda con `all-MiniLM-L6-v2`
+1. Embed la domanda con il modello configurato in `EMBED_MODEL` (default prod: `BAAI/bge-m3`)
 2. Query Qdrant (filtro opzionale per `focus`)
 3. Deduplication per URL (stesso documento, chunk diverso → prende solo il chunk con score più alto)
 4. Ritorna lista di `Evidence(n, url, title, focus, score, text)`
@@ -68,17 +70,24 @@ score: 0.847
 
 Il contesto è troncato a `COPILOT_MAX_CONTEXT_CHARS=18000` caratteri.
 
-### Fase 3: LLM call (OpenAI Responses API)
+### Fase 3: LLM call (Chat Completions — multi-backend)
 
 Il system prompt è caricato da `prompts/copilot_system.md`.
 Il user template è `prompts/copilot_user_template.md`.
 
-La chiamata usa l'OpenAI Responses API:
+Il backend viene selezionato da `LLM_BACKEND` in `.env`. La chiamata usa la Chat Completions API:
+
 ```python
-client.responses.create(
-    model=OPENAI_MODEL,
-    instructions=system_prompt,
-    input=user_message_with_context
+# openai / anthropic / ollama — stesso schema, endpoint diverso
+requests.post(
+    llm_endpoint,
+    json={
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message_with_context},
+        ],
+    },
 )
 ```
 
@@ -119,11 +128,17 @@ Output: Markdown con titolo, score, URL, snippet di testo per ogni hit.
 
 ## Modello di embedding
 
-`sentence-transformers/all-MiniLM-L6-v2`:
-- 384 dimensioni
-- Ottimizzato per semantic similarity
-- Veloce (inference su CPU ~10ms/chunk)
-- Il modello viene scaricato la prima volta e cachato in `~/.cache/torch/sentence_transformers/`
+Configurato via `EMBED_MODEL` in `.env`. Deve coincidere con quello usato dall'indexing.
+
+**`BAAI/bge-m3`** (default produzione):
+- Dense (1024 dim) + sparse vectors — hybrid retrieval
+- Libreria: `FlagEmbedding`
+- Cache: `~/.cache/huggingface/`
+
+**`sentence-transformers/all-MiniLM-L6-v2`** (alternativa leggera):
+- 384 dimensioni, solo dense
+- Veloce su CPU (~10ms/chunk)
+- Cache: `~/.cache/torch/sentence_transformers/`
 
 ---
 
@@ -137,16 +152,28 @@ Output: Markdown con titolo, score, URL, snippet di testo per ogni hit.
 
 ---
 
-## Modello OpenAI
+## Modello LLM
 
-Configurato via `.env`:
-```
-OPENAI_MODEL=gpt-5.2
-OPENAI_DEEP_RESEARCH_MODEL=o3-deep-research
+Configurato via `.env`. Il backend è selezionabile senza modifiche al codice:
+
+```bash
+# OpenAI (default)
+LLM_BACKEND=openai
+OPENAI_MODEL=gpt-4o          # modello principale copilot
+OPENAI_API_KEY=sk-...
+
+# Anthropic Claude
+LLM_BACKEND=anthropic
+ANTHROPIC_MODEL=claude-sonnet-4-6
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Ollama (locale, gratuito)
+LLM_BACKEND=ollama
+OLLAMA_MODEL=mistral
+OLLAMA_URL=http://localhost:11434
 ```
 
-`gpt-5.2` è il modello principale per il copilot quotidiano.
-`o3-deep-research` è usato per sessioni di ricerca profonda (settimanale, `prompts/deep_research_weekly.md`).
+`OPENAI_DEEP_RESEARCH_MODEL=o3-deep-research` è opzionale e usato solo per sessioni di ricerca profonda (`prompts/deep_research_weekly.md`).
 
 ---
 
@@ -173,4 +200,4 @@ Se la KB non ha documenti su un argomento specifico, il copilot risponderà con 
 Con `COPILOT_MAX_CONTEXT_CHARS=18000` e chunk da ~2200 chars, il contesto include al massimo ~8 chunk "interi". Con `topk=10` e dedup per URL, si ottengono ~8-10 sorgenti distinte nel contesto.
 
 ### Costo API
-Ogni chiamata al copilot con `gpt-5.2` e ~18k chars di contesto corrisponde a ~5000-6000 token. Usare "Preview evidence" prima di "Run Copilot" per verificare che le sorgenti siano pertinenti.
+Ogni chiamata al copilot con `gpt-4o` e ~18k chars di contesto corrisponde a ~5000-6000 token. Usare "Preview evidence" prima di "Run Copilot" per verificare che le sorgenti siano pertinenti. Con `LLM_BACKEND=ollama` non ci sono costi API.

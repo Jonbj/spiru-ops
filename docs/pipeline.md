@@ -53,10 +53,16 @@ Output: `{RUN_ID}_strain_seeds.jsonl`
 
 ### Fonti di discovery
 
-**Brave Search API** (principale):
+**SearXNG** (principale — self-hosted, gratuito):
+- Se `SEARXNG_URL` è valorizzato, SearXNG sostituisce completamente Brave Search
+- Per ogni focus esegue N query SearXNG con le stesse varianti linguistiche/tipologia di Brave
+- Avviare con: `docker compose up -d searxng`
+
+**Brave Search API** (fallback — se `SEARXNG_URL` è vuoto):
 - Per ogni focus in `configs/focus.yaml` esegue N query Brave
 - Ogni query ha varianti in italiano/francese/spagnolo e versioni per PDF, tesi, review, siti istituzionali (`.edu`, `.gov`, `.int`, FAO, EFSA, WHO)
 - Risultati paginati, con diversificazione temporale (`since_days` rotante)
+- Cap: `BRAVE_MAX_QUERIES_PER_RUN` (0 = illimitato). Ignorato quando si usa SearXNG.
 
 **OpenAlex API** (secondaria, per paper accademici):
 - Usa la query OpenAlex definita per ogni focus in `configs/focus.yaml`
@@ -122,8 +128,9 @@ Per ogni URL candidato selezionato:
 ### Circuit breaker
 
 Per evitare di perdere minuti su domini problematici:
-- Se un dominio restituisce ≥ `MAX_403_PER_DOMAIN` errori 403 → quel dominio è "bloccato" per questo run
-- Stesso per `MAX_429_PER_DOMAIN` (rate limit)
+- Se un dominio restituisce ≥ `MAX_403_PER_DOMAIN` errori 403 → quel dominio è "bloccato" per questo run (`balanced`: 5, `kb_first`: 15)
+- Stesso per `MAX_429_PER_DOMAIN` (rate limit) (`balanced`: 3, `kb_first`: 5)
+- I domini bloccati vengono loggati come `domain_403_cooldown` / `domain_429_cooldown` nelle failure categories
 
 ### Parsing testo
 
@@ -221,9 +228,19 @@ Solo i documenti con `spirulina_score >= INDEX_MIN_SPIRULINA_SCORE` (default 0.2
 - Chunking character-based (no tokenizer) → stabile, senza dipendenze extra
 
 ### Embedding
-- Modello: `sentence-transformers/all-MiniLM-L6-v2`
+
+Il modello è configurabile via `EMBED_MODEL` in `.env`:
+
+**`BAAI/bge-m3`** (default di produzione):
+- Dimensioni: 1024 dense + sparse BM25-like (hybrid retrieval)
+- Libreria: `FlagEmbedding` (`BGEM3FlagModel`)
+- Qdrant usa `ensure_collection_hybrid()` + `upsert_points_hybrid()`
+
+**`sentence-transformers/all-MiniLM-L6-v2`** (fallback se `EMBED_MODEL` non impostato):
 - Dimensione vettore: 384
 - `normalize_embeddings=True` — vettori unit-norm, cosine similarity ≡ dot product
+
+> **Attenzione**: cambiare `EMBED_MODEL` richiede reindex completo. Vedere `scripts/reindex_all.py`.
 
 ### Upsert Qdrant
 
@@ -255,8 +272,8 @@ Batch size: `QDRANT_UPSERT_BATCH=64`
 `{RUN_ID}_indexed.json`:
 ```json
 {
-  "collection": "docs_chunks",
-  "embed_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "collection": "docs_chunks_v2",
+  "embed_model": "BAAI/bge-m3",
   "docs_indexed": 27,
   "docs_skipped_low_relevance": 0,
   "points_upserted": 636

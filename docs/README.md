@@ -21,12 +21,12 @@ Scritta per essere letta dopo mesi di inattività, da zero.
 
 ## Una-riga description
 
-**spiru-ops** è un sistema autonomo che ogni giorno:
-1. Cerca documenti tecnico-scientifici su Spirulina/Arthrospira via Brave Search e OpenAlex
+**spiru-ops** è un sistema autonomo che ogni giorno (06:10 UTC via cron):
+1. Cerca documenti tecnico-scientifici su Spirulina/Arthrospira via SearXNG (self-hosted) / Brave Search (fallback) e OpenAlex
 2. Scarica e parsifica HTML e PDF (Unstructured + Grobid)
 3. Arricchisce i metadati bibliografici (Crossref + Unpaywall)
-4. Embedded i chunk in un vettore e li indicizza in Qdrant
+4. Embedded i chunk in un vettore e li indicizza in Qdrant (`docs_chunks_v2`)
 5. Genera un report Markdown e controlla la qualità del run
-6. Espone una chat RAG (SpiruCopilot) per fare domande progettuali con citazioni
+6. Espone una chat RAG (SpiruCopilot) per fare domande progettuali con citazioni (multi-backend LLM: openai/anthropic/ollama)
 
-Il tutto gira localmente su un singolo host, senza cloud, 4 volte al giorno via cron.
+Il tutto gira localmente su un singolo host, senza cloud.

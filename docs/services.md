@@ -2,10 +2,12 @@
 
 ## Panoramica
 
-Tre container Docker supportano la pipeline. Sono definiti in `docker-compose.yml` e gestiti da `cron_run_daily.sh` (avvio + shutdown automatico).
+Quattro container Docker supportano la pipeline. Sono definiti in `docker-compose.yml`. Qdrant, Unstructured e Grobid sono gestiti da `cron_run_daily.sh` (avvio + shutdown automatico). SearXNG è un servizio separato che gira in modo persistente.
 
 ```bash
-docker compose up -d qdrant unstructured grobid    # avvio
+docker compose up -d qdrant unstructured grobid    # avvio pipeline (cron)
+docker compose up -d searxng                        # avvio SearXNG (persistente)
+docker compose up -d                                # avvio tutti i servizi
 docker compose down                                 # shutdown (automatico via trap EXIT)
 docker compose ps                                   # stato
 ```
@@ -23,12 +25,13 @@ docker compose ps                                   # stato
 
 ### Cosa fa
 
-Qdrant è il database vettoriale dove vivono tutti i chunk embeddati del KB. Ogni documento viene suddiviso in chunk di testo, ognuno embededdato con `all-MiniLM-L6-v2` (384 dimensioni) e inserito in Qdrant come "punto" con payload JSON.
+Qdrant è il database vettoriale dove vivono tutti i chunk embeddati del KB. Ogni documento viene suddiviso in chunk di testo, ognuno embeddato con il modello configurato in `EMBED_MODEL` (`BAAI/bge-m3` in produzione) e inserito in Qdrant come "punto" con payload JSON.
 
-### Collection: `docs_chunks`
+### Collection: `docs_chunks_v2`
 
-Configurazione:
-- Dimensione vettore: 384
+Configurazione (varia in base a `EMBED_MODEL`):
+- **bge-m3** (default prod): vettori dense 1024 dim + sparse — hybrid retrieval
+- **all-MiniLM-L6-v2** (alternativa): vettori 384 dim, solo dense
 - Metrica distanza: cosine (equivalente a dot product con vettori normalizzati)
 
 Ogni punto ha payload:
@@ -50,7 +53,7 @@ Ogni punto ha payload:
 
 - **`pipelines/qdrant_rest.py`**: thin wrapper REST (no qdrant-client SDK) — usato da `index.py`
 - **`qdrant-client` SDK**: usato da `rag_cloud.py` per query RAG
-- **URL diretto**: `http://localhost:6333/collections/docs_chunks` → info sulla collection
+- **URL diretto**: `http://localhost:6333/collections/docs_chunks_v2` → info sulla collection
 
 ### Stato attuale (marzo 2026)
 - Punti totali: ~67.000+
@@ -175,10 +178,45 @@ Grobid aggiunge valore principalmente per paper accademici con DOI dove Unstruct
 
 ---
 
+## SearXNG — Web Search Self-Hosted
+
+| Parametro | Valore |
+|-----------|--------|
+| Immagine | `searxng/searxng:latest` |
+| Porta | `8888` (mappa su container 8080) |
+| Configurazione | `configs/searxng/settings.yml` |
+| Health check | `wget -qO- http://localhost:8080/` |
+
+### Cosa fa
+
+SearXNG è un motore di ricerca meta-search self-hosted. Sostituisce completamente Brave Search API quando `SEARXNG_URL=http://localhost:8888` è impostato in `.env`. Vantaggi:
+- **Gratuito** — nessun costo per query
+- Aggrega risultati da più engine (Google, Bing, DuckDuckGo, ecc.)
+- Configurable via `configs/searxng/settings.yml`
+
+### Avvio
+
+```bash
+docker compose up -d searxng
+```
+
+SearXNG è pensato per girare **sempre** (non solo durante i run), a differenza degli altri servizi che vengono avviati e fermati dal cron.
+
+### Relazione con Brave
+
+In `discover.py`:
+```python
+SEARXNG_URL = env("SEARXNG_URL", "").strip()
+# Se valorizzato, Brave non viene usato. BRAVE_MAX_QUERIES_PER_RUN è ignorato.
+```
+
+Per usare Brave invece di SearXNG, impostare `SEARXNG_URL=` (vuoto) in `.env`.
+
+---
+
 ## PostgreSQL (non attivo)
 
-Il `docker-compose.yml` definisce anche un servizio `postgres:16` ma:
-- Non è incluso in `SERVICES="${SERVICES:-qdrant unstructured grobid}"`
+Il `docker-compose.yml` ha un servizio `postgres:16` commentato:
 - Non viene avviato dal cron
 - Non è usato da alcun modulo Python attualmente
 - Presente per future estensioni (es. metadata store relazionale)
