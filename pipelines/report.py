@@ -25,7 +25,8 @@ Report filenames are RUN_ID-scoped to avoid overwriting when running 3-4 times/d
 
 import json
 import pathlib
-from typing import Any, Dict, List, Tuple
+import re
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 from pipelines.common import day_stamp_utc, env, artifact_path, state_path
@@ -149,6 +150,77 @@ def pct(n: int, d: int) -> str:
     if d <= 0:
         return "0%"
     return f"{(100.0 * n / d):.1f}%"
+
+
+def llm_run_commentary(stats: Dict[str, Any]) -> Optional[str]:
+    """Generate a short narrative commentary on the pipeline run using the local LLM.
+
+    Activated when RELEVANCE_LLM_ENABLE=1 or REPORT_LLM_ENABLE=1.
+    Returns a Markdown string, or None on error/disabled.
+
+    The commentary is in Italian and focuses on interpretation (not repetition of numbers):
+    what went well, what needs attention, notable gaps.
+    """
+    import os as _os
+
+    enabled = (
+        _os.environ.get("RELEVANCE_LLM_ENABLE", "0").strip() in ("1", "true")
+        or _os.environ.get("REPORT_LLM_ENABLE", "0").strip() in ("1", "true")
+    )
+    if not enabled:
+        return None
+
+    try:
+        import requests as _req
+    except ImportError:
+        return None
+
+    url = (
+        _os.environ.get("RELEVANCE_LLM_URL")
+        or _os.environ.get("OLLAMA_URL", "http://127.0.0.1:8080")
+    ).rstrip("/")
+    model = (
+        _os.environ.get("RELEVANCE_LLM_MODEL")
+        or _os.environ.get("OLLAMA_MODEL", "local")
+    )
+    # Report commentary needs more time than relevance scoring (longer thinking + answer)
+    timeout = int(_os.environ.get("REPORT_LLM_TIMEOUT", _os.environ.get("RELEVANCE_LLM_TIMEOUT", "120")))
+
+    stats_text = "\n".join(f"- {k}: {v}" for k, v in stats.items())
+    system_prompt = (
+        "Sei un analista che esamina i risultati di un pipeline giornaliero per costruire "
+        "una knowledge base sulla coltivazione di Spirulina/Arthrospira.\n"
+        "Scrivi un commento operativo breve (4-6 frasi) in italiano.\n"
+        "Identifica: cosa ha funzionato bene, cosa richiede attenzione, anomalie o gap notevoli.\n"
+        "Sii specifico e operativo. Non ripetere i numeri — interpretali.\n"
+        "Usa formato markdown con punti elenco. Non aggiungere titolo."
+    )
+    user_prompt = f"Statistiche del run:\n{stats_text}"
+
+    try:
+        r = _req.post(
+            f"{url}/v1/chat/completions",
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "max_tokens": 900,
+                "temperature": 0.4,
+            },
+            timeout=timeout,
+        )
+        r.raise_for_status()
+        msg = r.json()["choices"][0]["message"]
+        content = (msg.get("content") or "").strip()
+        if not content:
+            content = (msg.get("reasoning_content") or "").strip()
+        content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
+        return content if content else None
+    except Exception as exc:
+        print(f"[report] WARN: llm_run_commentary failed: {exc}", flush=True)
+        return None
 
 
 def main() -> None:
@@ -385,6 +457,29 @@ def main() -> None:
     out_md.append("- Se **candidates_new_vs_seen** scende molto giorno su giorno, stai “ricercando gli stessi URL”: serve rotazione query, finestra temporale, o penalità per domini ricorrenti.")
     out_md.append("- Se `docs_ingested` è molto più basso di `candidates_found`, guarda `Failure categories` per capire il collo di bottiglia (fetch/parsing/pdf/robots/timeout).")
     out_md.append("")
+
+    # LLM narrative commentary (best-effort, requires RELEVANCE_LLM_ENABLE=1 or REPORT_LLM_ENABLE=1)
+    commentary_stats = {
+        "candidates_found": discover.get("candidates_found", len(candidates)),
+        "candidates_new_vs_seen": f"{cand_new}/{cand_unique}",
+        "docs_ingested": len(ing),
+        "failures_total": failures_total,
+        "spirulina_share": f"{spiru_cnt}/{len(ing)} ({pct(spiru_cnt, len(ing))})" if ing else "n/a",
+        "spirulina_avg_score": f"{(sum(spiru_scores)/len(spiru_scores)):.3f}" if spiru_scores else "0.000",
+        "top_failure_reason": top_failures[0][0] if top_failures else "none",
+        "top_failure_count": top_failures[0][1] if top_failures else 0,
+        "unique_domains_candidates": len(cand_by_domain),
+        "top5_domain_share": f"{top5_share}/{total_cand} ({pct(top5_share, total_cand)})",
+        "indexed_points": indexed.get("points_upserted", 0),
+        "boilerplate_share_avg": f"{(sum(boiler_share)/len(boiler_share)):.2%}" if boiler_share else "n/a",
+        "top_ingested_focuses": ", ".join(k for k, _ in top_k(ing_by_focus, 3)),
+        "low_spirulina_skipped": skipped.get("low_spirulina_score", 0),
+    }
+    commentary = llm_run_commentary(commentary_stats)
+    if commentary:
+        out_md.append("\n## Analisi LLM\n")
+        out_md.append(commentary)
+        out_md.append("")
 
     report_path = pathlib.Path(env("REPORT_PATH", artifact_path("report.md")))
     report_path.write_text("\n".join(out_md).strip() + "\n", encoding="utf-8")

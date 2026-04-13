@@ -80,6 +80,44 @@ echo "[daily] Using python: $PYBIN"
 echo "[daily] RUN_ID=$RUN_ID PROFILE=$PROFILE"
 echo "[daily] paths: candidates=$CANDIDATES_PATH ingested=$INGESTED_PATH indexed=$INDEXED_PATH report=$REPORT_PATH"
 
+# ── LLM server health check ────────────────────────────────────────────────
+# If any LLM feature is enabled (RELEVANCE_LLM_ENABLE, DISCOVER_LLM_EXPAND,
+# or REPORT_LLM_ENABLE), ensure the local server is running before the pipeline
+# starts. If not running, attempt to start it via ~/.models/start-server.sh.
+# On failure, warn and continue — all LLM functions degrade gracefully to None.
+_llm_any_enabled=0
+[[ "${RELEVANCE_LLM_ENABLE:-0}" == "1" ]] && _llm_any_enabled=1
+[[ "${DISCOVER_LLM_EXPAND:-0}"  == "1" ]] && _llm_any_enabled=1
+[[ "${REPORT_LLM_ENABLE:-0}"    == "1" ]] && _llm_any_enabled=1
+
+if [[ "$_llm_any_enabled" == "1" ]]; then
+  _llm_url="${OLLAMA_URL:-http://127.0.0.1:8080}"
+  if curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1; then
+    echo "[daily] LLM server: already running at ${_llm_url}"
+  else
+    echo "[daily] LLM server: not running — attempting to start..."
+    _llm_start="${HOME}/.models/start-server.sh"
+    if [[ -x "$_llm_start" ]]; then
+      bash "$_llm_start" &
+      _llm_waited=0
+      while [[ $_llm_waited -lt 120 ]]; do
+        sleep 5
+        _llm_waited=$((_llm_waited + 5))
+        if curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1; then
+          echo "[daily] LLM server: ready after ${_llm_waited}s"
+          break
+        fi
+      done
+      if ! curl -sf --max-time 3 "${_llm_url}/v1/models" > /dev/null 2>&1; then
+        echo "[daily] WARN: LLM server did not become ready within 120s — LLM features will be skipped (graceful fallback)" >&2
+      fi
+    else
+      echo "[daily] WARN: LLM start script not found at ${_llm_start} — LLM features will be skipped" >&2
+    fi
+  fi
+fi
+# ── end LLM server check ──────────────────────────────────────────────────
+
 # Optional seed strains
 SEED_STRAINS="${SEED_STRAINS:-0}"
 
@@ -138,3 +176,7 @@ bash "$ROOT_DIR/pipelines/prune_artifacts.sh" || echo "[daily] WARN: prune_artif
 
 # Write competitor delta into Obsidian inbox (best-effort)
 "$PYBIN" scripts/write_competitor_inbox.py || echo "[daily] WARN: write_competitor_inbox failed (non-fatal)" >&2
+
+# Customer discovery: cerca potenziali clienti B2B/B2C per AlgaVitae (best-effort)
+# Scrive un report markdown in obsidian-vault/progetto/customers/inbox/{RUN_ID}.md
+"$PYBIN" scripts/customer_discovery.py || echo "[daily] WARN: customer_discovery failed (non-fatal)" >&2

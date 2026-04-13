@@ -6,6 +6,11 @@ Design goals:
 - stable across HTML/PDF noise
 
 Score is in [0, 1].
+
+Optional LLM augmentation (RELEVANCE_LLM_ENABLE=1):
+- llm_spirulina_score() calls a local OpenAI-compatible server (e.g. llama-server)
+- Uses lazy imports so this file stays stdlib-only when LLM is disabled
+- Intended for borderline documents where keyword scoring is uncertain
 """
 
 from __future__ import annotations
@@ -13,7 +18,7 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, Optional
 
 
 @dataclass(frozen=True)
@@ -146,3 +151,93 @@ def compute_spirulina_relevance(*, url: str = "", title: str = "", text: str = "
 
 def is_spirulina_centric(score: float, threshold: float = 0.30) -> bool:
     return float(score or 0.0) >= float(threshold)
+
+
+def llm_spirulina_score(title: str, text_preview: str) -> Optional[float]:
+    """Call a local OpenAI-compatible LLM to score Spirulina relevance.
+
+    Activated only when RELEVANCE_LLM_ENABLE=1.
+    Uses lazy imports to keep this module stdlib-only when disabled.
+
+    Returns a float in [0, 1], or None on error/timeout/disabled.
+
+    Designed for borderline documents where keyword scoring is uncertain
+    (typically score in 0.05–0.50). The calling code decides whether to blend
+    this with the keyword score.
+    """
+    import json as _json
+    import os as _os
+    import re as _re
+
+    if _os.environ.get("RELEVANCE_LLM_ENABLE", "0").strip() not in ("1", "true"):
+        return None
+
+    try:
+        import requests as _req
+    except ImportError:
+        return None
+
+    url = (
+        _os.environ.get("RELEVANCE_LLM_URL")
+        or _os.environ.get("OLLAMA_URL", "http://127.0.0.1:8080")
+    ).rstrip("/")
+    model = (
+        _os.environ.get("RELEVANCE_LLM_MODEL")
+        or _os.environ.get("OLLAMA_MODEL", "local")
+    )
+    timeout = int(_os.environ.get("RELEVANCE_LLM_TIMEOUT", "45"))
+
+    system_prompt = (
+        "You are a strict relevance classifier for a knowledge base about "
+        "Spirulina (Arthrospira platensis/maxima) cultivation and production.\n"
+        "Score the document's relevance to Spirulina cultivation on a 0.0–1.0 scale:\n"
+        "  1.0 = exclusively about Spirulina/Arthrospira cultivation, biology, or production\n"
+        "  0.7 = Spirulina is the main subject alongside closely related topics\n"
+        "  0.4 = Spirulina discussed among other microalgae\n"
+        "  0.1 = Spirulina briefly mentioned or tangentially related\n"
+        "  0.0 = not about Spirulina at all\n"
+        'Respond with ONLY valid JSON on a single line, no other text: {"score": 0.0}'
+    )
+    user_prompt = (
+        f"Title: {(title or '').strip()[:300]}\n"
+        f"Text excerpt: {(text_preview or '').strip()[:700]}"
+    )
+
+    try:
+        r = _req.post(
+            f"{url}/v1/chat/completions",
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                # DeepSeek-R1 (llama-server) uses reasoning_content for thinking tokens
+                # and content for the actual answer. Budget: ~300 thinking + ~30 answer.
+                "max_tokens": 350,
+                "temperature": 0.0,
+            },
+            timeout=timeout,
+        )
+        r.raise_for_status()
+        msg = r.json()["choices"][0]["message"]
+
+        # llama-server (DeepSeek-R1): answer is in "content", thinking in "reasoning_content".
+        # Standard Ollama/OpenAI: everything is in "content" with optional <think> blocks.
+        content = (msg.get("content") or "").strip()
+
+        # Fallback: if content is empty (all tokens spent on reasoning), try reasoning_content
+        if not content:
+            content = (msg.get("reasoning_content") or "").strip()
+
+        # Strip any residual <think>...</think> blocks (non-llama-server format)
+        content = _re.sub(r"<think>.*?</think>", "", content, flags=_re.DOTALL).strip()
+
+        # Extract score from JSON — be lenient with surrounding whitespace/text
+        m = _re.search(r'\{[^{}]*"score"\s*:\s*([\d.]+)[^{}]*\}', content)
+        if m:
+            return float(min(1.0, max(0.0, float(m.group(1)))))
+    except Exception:
+        pass
+
+    return None

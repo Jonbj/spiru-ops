@@ -56,6 +56,12 @@ from pipelines.common import (
 from pipelines.relevance import compute_spirulina_relevance
 
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.4")
+
+# LLM query expansion (opt-in, DISCOVER_LLM_EXPAND=1).
+# Generates 3 extra search queries per focus via local LLM, cached for N days
+# so the LLM is not called on every run (only when cache expires or is missing).
+DISCOVER_LLM_EXPAND = env("DISCOVER_LLM_EXPAND", "0").strip() in ("1", "true")
+DISCOVER_LLM_CACHE_DAYS = int(env("DISCOVER_LLM_CACHE_DAYS", "3"))
 BRAVE_API_KEY = env("BRAVE_API_KEY", required=False)
 # SearXNG self-hosted instance (primary web search, free). Set to empty string to disable.
 # When set, Brave is not used at all — BRAVE_MAX_QUERIES_PER_RUN cap is ignored.
@@ -541,6 +547,102 @@ def _openalex_best_url(work: Dict[str, Any]) -> str:
     return ""
 
 
+def llm_expand_queries(focus_name: str, existing_queries: List[str]) -> List[str]:
+    """Generate 3 additional search queries for a focus using the local LLM.
+
+    Uses lazy imports to avoid hard dependency when LLM is disabled.
+    Returns an empty list on any error or timeout.
+    """
+    import os as _os
+    import re as _re
+
+    try:
+        import requests as _req
+    except ImportError:
+        return []
+
+    url = (
+        _os.environ.get("RELEVANCE_LLM_URL")
+        or _os.environ.get("OLLAMA_URL", "http://127.0.0.1:8080")
+    ).rstrip("/")
+    model = (
+        _os.environ.get("RELEVANCE_LLM_MODEL")
+        or _os.environ.get("OLLAMA_MODEL", "local")
+    )
+    timeout = int(_os.environ.get("RELEVANCE_LLM_TIMEOUT", "60"))
+
+    examples = "\n".join(f"- {q}" for q in existing_queries[:4])
+    system_prompt = (
+        "You are a search query generator for a Spirulina/Arthrospira cultivation research database.\n"
+        "Generate 3 additional web search queries for the given research focus.\n"
+        "Requirements:\n"
+        "- Each query must be specific and different from the examples shown\n"
+        "- Mix English and Italian as appropriate for the topic\n"
+        "- Target scientific papers, technical reports, or industry/market data\n"
+        "- Include precise technical terminology relevant to the focus\n"
+        'Output ONLY a JSON array of exactly 3 strings, nothing else: ["query1", "query2", "query3"]'
+    )
+    user_prompt = (
+        f"Focus: {focus_name}\n"
+        f"Example existing queries:\n{examples}\n"
+        "Generate 3 new and distinct queries:"
+    )
+
+    try:
+        r = _req.post(
+            f"{url}/v1/chat/completions",
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "max_tokens": 400,
+                "temperature": 0.7,
+            },
+            timeout=timeout,
+        )
+        r.raise_for_status()
+        msg = r.json()["choices"][0]["message"]
+        content = (msg.get("content") or "").strip()
+        if not content:
+            content = (msg.get("reasoning_content") or "").strip()
+        content = _re.sub(r"<think>.*?</think>", "", content, flags=_re.DOTALL).strip()
+
+        # Extract the JSON array — be lenient with extra text around it
+        m = _re.search(r'\[([^\[\]]+)\]', content, _re.DOTALL)
+        if m:
+            import json as _json
+            arr = _json.loads("[" + m.group(1) + "]")
+            return [str(q).strip() for q in arr if isinstance(q, str) and q.strip()][:3]
+    except Exception as exc:
+        print(f"[discover] WARN: llm_expand_queries failed for '{focus_name}': {exc}", flush=True)
+
+    return []
+
+
+def _load_query_cache(path: pathlib.Path, max_age_days: int) -> Dict[str, List[str]]:
+    """Load LLM-generated query cache; returns {} if missing or expired."""
+    if not path.exists():
+        return {}
+    try:
+        age_s = time.time() - path.stat().st_mtime
+        if age_s > max_age_days * 86400:
+            return {}
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _save_query_cache(path: pathlib.Path, cache: Dict[str, List[str]]) -> None:
+    """Persist LLM query cache to disk."""
+    try:
+        path.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as exc:
+        print(f"[discover] WARN: could not save query cache: {exc}", flush=True)
+
+
 def main():
     STATE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -554,6 +656,28 @@ def main():
     if not isinstance(focuses, list) or not focuses:
         raise SystemExit(f"No focuses found in {SCORING_PATH}. Expected key 'focuses' list.")
 
+    # LLM query expansion: generate extra queries per focus and cache them.
+    # Cache TTL = DISCOVER_LLM_CACHE_DAYS (default 3) to avoid calling LLM every run.
+    _query_cache_path = STATE_DIR / "llm_query_cache.json"
+    _query_cache: Dict[str, List[str]] = {}
+    if DISCOVER_LLM_EXPAND:
+        _query_cache = _load_query_cache(_query_cache_path, DISCOVER_LLM_CACHE_DAYS)
+        _cache_dirty = False
+        for f in focuses:
+            fname = f.get("name") or "unknown"
+            if fname not in _query_cache:
+                print(f"[discover] LLM: expanding queries for focus '{fname}'...", flush=True)
+                extra = llm_expand_queries(fname, f.get("queries") or [])
+                _query_cache[fname] = extra
+                _cache_dirty = True
+                if extra:
+                    print(f"[discover] LLM: got {len(extra)} extra queries for '{fname}'", flush=True)
+        if _cache_dirty:
+            _save_query_cache(_query_cache_path, _query_cache)
+            print(f"[discover] LLM: query cache saved to {_query_cache_path}", flush=True)
+        else:
+            print(f"[discover] LLM: query cache loaded from {_query_cache_path} (TTL valid)", flush=True)
+
     candidates: List[Dict[str, Any]] = []
     _web_query_count = 0
     # Cost cap applies only when using Brave (paid). SearXNG is free → no cap.
@@ -563,6 +687,10 @@ def main():
         focus = f.get("name") or "unknown"
         queries = f.get("queries") or []
         base_score = float(f.get("base_score") or 10)
+
+        # Append LLM-generated queries when expansion is enabled
+        if DISCOVER_LLM_EXPAND and _query_cache.get(focus):
+            queries = queries + _query_cache[focus]
 
         for q in queries:
             q = (q or "").strip()

@@ -73,7 +73,7 @@ from pipelines.common import (
     clean_text_with_stats,
     classify_doc_type,
 )
-from pipelines.relevance import compute_spirulina_relevance
+from pipelines.relevance import compute_spirulina_relevance, llm_spirulina_score
 
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.6")
 OPENALEX_EMAIL = env("OPENALEX_EMAIL", required=False)
@@ -101,6 +101,19 @@ MAX_403_PER_DOMAIN = int(env("MAX_403_PER_DOMAIN", 5))
 MAX_429_PER_DOMAIN = int(env("MAX_429_PER_DOMAIN", 3))
 
 SPIRULINA_MIN_TEXT_CHARS = int(env("SPIRULINA_MIN_TEXT_CHARS", 600))
+# Minimum spirulina relevance score after full-text parse to accept a document.
+# Documents below this threshold are rejected post-download (still marked seen so
+# we don't re-fetch them). Default 0.05 catches near-zero-relevance garbage while
+# leaving margin for legitimate pages whose first paragraphs don't mention spirulina.
+INGEST_MIN_SPIRULINA_SCORE = float(env("INGEST_MIN_SPIRULINA_SCORE", "0.05"))
+
+# LLM relevance augmentation (opt-in, RELEVANCE_LLM_ENABLE=1 to activate).
+# Calls the local LLM server for documents in the uncertain keyword-score range
+# [RELEVANCE_LLM_MIN_KW, RELEVANCE_LLM_MAX_KW] and blends the two scores.
+# Blending: 35% keyword + 65% LLM (LLM is semantically more reliable for gray zone).
+RELEVANCE_LLM_ENABLE = env("RELEVANCE_LLM_ENABLE", "0").strip() in ("1", "true")
+RELEVANCE_LLM_MIN_KW = float(env("RELEVANCE_LLM_MIN_KW", "0.05"))
+RELEVANCE_LLM_MAX_KW = float(env("RELEVANCE_LLM_MAX_KW", "0.50"))
 
 CURRENT_YEAR = int(env("CURRENT_YEAR", str(time.gmtime().tm_year)))
 MIN_YEAR = int(env("MIN_YEAR", "1980"))
@@ -704,6 +717,23 @@ def main() -> None:
         cands = [c for c in cands if normalize_url(c.get("url", "")) and normalize_url(c.get("url", "")) not in seen]
         filtered = before - len(cands)
 
+        # Pre-filter: drop SearXNG candidates with zero spirulina_hint.
+        # spirulina_hint=0 means the search-engine snippet contained no spirulina/arthrospira
+        # term at all — these are virtually always off-topic pages (game forums, crossword
+        # sites, telecom support pages, …) that happened to appear in search results for
+        # unrelated reasons. Academic sources (openalex, semantic_scholar, core) are exempt
+        # because their hint is computed from abstract/title differently.
+        _HINT_EXEMPT_SOURCES = {"openalex", "semantic_scholar", "core", "manual_seed", "strain_seed"}
+        _before_hint = len(cands)
+        cands = [
+            c for c in cands
+            if (c.get("source") or "") in _HINT_EXEMPT_SOURCES
+            or float(c.get("spirulina_hint") or 0.0) > 0.0
+        ]
+        _hint_dropped = _before_hint - len(cands)
+        if _hint_dropped:
+            print(f"[ingest] prefilter_hint0: dropped={_hint_dropped} (searxng candidates with spirulina_hint=0)")
+
         if INGEST_TARGET <= 0:
             if filtered:
                 print(f"[ingest] prefilter_seen: removed={filtered} remaining={len(cands)}")
@@ -846,6 +876,7 @@ def main() -> None:
         "empty_url": 0,
         "domain_403_cooldown": 0,
         "domain_429_cooldown": 0,
+        "low_spirulina_score": 0,
     }
 
     # Load domain fail counts persisted from previous runs.
@@ -1152,7 +1183,37 @@ def main() -> None:
             continue
 
         rel = compute_spirulina_relevance(url=final_url, title=str(meta.get("title") or ""), text=text[:120000])
-        meta["spirulina_score"] = round(float(rel.score), 4)
+        meta["spirulina_score_kw"] = round(float(rel.score), 4)
+
+        # Optional LLM augmentation for borderline documents.
+        # Only active when RELEVANCE_LLM_ENABLE=1 and score is in the uncertain range.
+        _llm_score: Optional[float] = None
+        if RELEVANCE_LLM_ENABLE and RELEVANCE_LLM_MIN_KW <= rel.score <= RELEVANCE_LLM_MAX_KW:
+            _llm_score = llm_spirulina_score(
+                title=str(meta.get("title") or ""),
+                text_preview=text[:800],
+            )
+            if _llm_score is not None:
+                meta["spirulina_score_llm"] = round(_llm_score, 4)
+
+        if _llm_score is not None:
+            meta["spirulina_score"] = round(0.35 * rel.score + 0.65 * _llm_score, 4)
+        else:
+            meta["spirulina_score"] = round(float(rel.score), 4)
+
+        _effective_score = meta["spirulina_score"]
+
+        # Post-parse relevance gate: reject documents that are clearly off-topic after
+        # full-text analysis. Mark them seen so we don't re-download on the next run.
+        if _effective_score < INGEST_MIN_SPIRULINA_SCORE:
+            skipped["low_spirulina_score"] += 1
+            _ts = utc_now_iso()
+            for _u in dict.fromkeys(u for u in [final_url, url if url != final_url else None] if u):
+                if _u not in seen:
+                    new_seen_lines.append({"url": _u, "first_seen_at": _ts})
+                    seen.add(_u)
+            continue
+
         meta["spirulina_terms"] = rel.positive_terms[:20]
         meta["spirulina_reasons"] = rel.reasons[:10]
         meta["doc_type"] = classify_doc_type(
