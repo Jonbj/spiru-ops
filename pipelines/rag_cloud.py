@@ -50,7 +50,8 @@ OPENAI_MODEL = env("OPENAI_MODEL", "gpt-4o-mini")
 ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
 ANTHROPIC_MODEL = env("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 
-OLLAMA_URL = env("OLLAMA_URL", "http://127.0.0.1:8080")
+OLLAMA_API_KEY = env("OLLAMA_API_KEY", "")
+OLLAMA_URL = env("OLLAMA_URL", "https://ollama.com" if OLLAMA_API_KEY else "http://127.0.0.1:8080")
 OLLAMA_MODEL = env("OLLAMA_MODEL", "local")
 
 
@@ -366,7 +367,21 @@ def _anthropic_chat(system: str, user: str) -> str:
 
 
 def _ollama_chat(system: str, user: str) -> str:
-    # Ollama exposes an OpenAI-compatible endpoint at /v1/chat/completions
+    if OLLAMA_API_KEY:
+        # Ollama cloud: native /api/chat format
+        r = requests.post(
+            f"{OLLAMA_URL.rstrip('/')}/api/chat",
+            headers={"Authorization": f"Bearer {OLLAMA_API_KEY}"},
+            json={
+                "model": OLLAMA_MODEL,
+                "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+                "stream": False,
+            },
+            timeout=300,
+        )
+        r.raise_for_status()
+        return (r.json()["message"]["content"] or "").strip()
+    # Local llama-server/Ollama: OpenAI-compatible /v1/chat/completions
     r = requests.post(
         f"{OLLAMA_URL.rstrip('/')}/v1/chat/completions",
         json={
@@ -375,7 +390,7 @@ def _ollama_chat(system: str, user: str) -> str:
             "temperature": 0.2,
             "stream": False,
         },
-        timeout=300,  # local inference can be slow
+        timeout=300,
     )
     r.raise_for_status()
     return (r.json()["choices"][0]["message"]["content"] or "").strip()

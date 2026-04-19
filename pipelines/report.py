@@ -175,9 +175,10 @@ def llm_run_commentary(stats: Dict[str, Any]) -> Optional[str]:
     except ImportError:
         return None
 
+    ollama_api_key = _os.environ.get("OLLAMA_API_KEY", "").strip()
     url = (
         _os.environ.get("RELEVANCE_LLM_URL")
-        or _os.environ.get("OLLAMA_URL", "http://127.0.0.1:8080")
+        or _os.environ.get("OLLAMA_URL", "https://ollama.com" if ollama_api_key else "http://127.0.0.1:8080")
     ).rstrip("/")
     model = (
         _os.environ.get("RELEVANCE_LLM_MODEL")
@@ -198,24 +199,43 @@ def llm_run_commentary(stats: Dict[str, Any]) -> Optional[str]:
     user_prompt = f"Statistiche del run:\n{stats_text}"
 
     try:
-        r = _req.post(
-            f"{url}/v1/chat/completions",
-            json={
-                "model": model,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                "max_tokens": 900,
-                "temperature": 0.4,
-            },
-            timeout=timeout,
-        )
-        r.raise_for_status()
-        msg = r.json()["choices"][0]["message"]
-        content = (msg.get("content") or "").strip()
-        if not content:
-            content = (msg.get("reasoning_content") or "").strip()
+        if ollama_api_key:
+            # Ollama cloud: native /api/chat format
+            r = _req.post(
+                f"{url}/api/chat",
+                headers={"Authorization": f"Bearer {ollama_api_key}"},
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    "stream": False,
+                },
+                timeout=timeout,
+            )
+            r.raise_for_status()
+            content = (r.json()["message"]["content"] or "").strip()
+        else:
+            # Local llama-server/Ollama: OpenAI-compatible /v1/chat/completions
+            r = _req.post(
+                f"{url}/v1/chat/completions",
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    "max_tokens": 900,
+                    "temperature": 0.4,
+                },
+                timeout=timeout,
+            )
+            r.raise_for_status()
+            msg = r.json()["choices"][0]["message"]
+            content = (msg.get("content") or "").strip()
+            if not content:
+                content = (msg.get("reasoning_content") or "").strip()
         content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
         return content if content else None
     except Exception as exc:
