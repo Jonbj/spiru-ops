@@ -408,13 +408,13 @@ def add_temporal_rotation(q: str, run_date: Optional[datetime] = None) -> str:
 
 
 FOCUS_STRICT_TERMS: Dict[str, List[str]] = {
-    "cosmetic_market_entry_barriers": ["spirulina", "arthrospira", "limnospira"],
-    "certifications_protocols_food_cosmetic": ["spirulina", "arthrospira", "limnospira"],
-    "public_grants_funding_agrifood_algae": ["spirulina", "arthrospira", "microalgae"],
-    "water_treatment_well_mains": ["spirulina", "arthrospira", "limnospira"],
-    "sales_channels_italy_b2b_b2c": ["spirulina", "arthrospira"],
-    "marketing_branding_consumer_perception": ["spirulina", "arthrospira"],
-    "diy_home_cultivation_kits": ["spirulina", "arthrospira"],
+    "food_vs_cosmetic_strategy": ["spirulina", "arthrospira", "limnospira"],
+    "regulatory_pathway_italy": ["spirulina", "arthrospira", "limnospira"],
+    "grants_funding": ["spirulina", "arthrospira", "microalgae"],
+    "water_site_infrastructure": ["spirulina", "arthrospira", "limnospira"],
+    "sales_channels_italy": ["spirulina", "arthrospira"],
+    "packaging_labeling": ["spirulina", "arthrospira"],
+    "partnership_targets_italy": ["spirulina", "arthrospira"],
 }
 
 

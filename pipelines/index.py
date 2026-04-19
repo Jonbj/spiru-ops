@@ -156,7 +156,7 @@ def main() -> None:
         if IS_BGE_M3:
             enc = model.encode(
                 chunks,
-                batch_size=12,
+                batch_size=32,
                 max_length=512,
                 return_dense=True,
                 return_sparse=True,
