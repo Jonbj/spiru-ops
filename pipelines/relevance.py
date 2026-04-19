@@ -177,9 +177,10 @@ def llm_spirulina_score(title: str, text_preview: str) -> Optional[float]:
     except ImportError:
         return None
 
+    ollama_api_key = _os.environ.get("OLLAMA_API_KEY", "").strip()
     url = (
         _os.environ.get("RELEVANCE_LLM_URL")
-        or _os.environ.get("OLLAMA_URL", "http://127.0.0.1:8080")
+        or _os.environ.get("OLLAMA_URL", "https://ollama.com" if ollama_api_key else "http://127.0.0.1:8080")
     ).rstrip("/")
     model = (
         _os.environ.get("RELEVANCE_LLM_MODEL")
@@ -204,33 +205,42 @@ def llm_spirulina_score(title: str, text_preview: str) -> Optional[float]:
     )
 
     try:
-        r = _req.post(
-            f"{url}/v1/chat/completions",
-            json={
-                "model": model,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                # DeepSeek-R1 (llama-server) uses reasoning_content for thinking tokens
-                # and content for the actual answer. Budget: ~300 thinking + ~30 answer.
-                "max_tokens": 350,
-                "temperature": 0.0,
-            },
-            timeout=timeout,
-        )
-        r.raise_for_status()
-        msg = r.json()["choices"][0]["message"]
+        if ollama_api_key:
+            r = _req.post(
+                f"{url}/api/chat",
+                headers={"Authorization": f"Bearer {ollama_api_key}"},
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    "stream": False,
+                },
+                timeout=timeout,
+            )
+            r.raise_for_status()
+            content = (r.json()["message"]["content"] or "").strip()
+        else:
+            r = _req.post(
+                f"{url}/v1/chat/completions",
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    "max_tokens": 350,
+                    "temperature": 0.0,
+                },
+                timeout=timeout,
+            )
+            r.raise_for_status()
+            msg = r.json()["choices"][0]["message"]
+            content = (msg.get("content") or "").strip()
+            if not content:
+                content = (msg.get("reasoning_content") or "").strip()
 
-        # llama-server (DeepSeek-R1): answer is in "content", thinking in "reasoning_content".
-        # Standard Ollama/OpenAI: everything is in "content" with optional <think> blocks.
-        content = (msg.get("content") or "").strip()
-
-        # Fallback: if content is empty (all tokens spent on reasoning), try reasoning_content
-        if not content:
-            content = (msg.get("reasoning_content") or "").strip()
-
-        # Strip any residual <think>...</think> blocks (non-llama-server format)
         content = _re.sub(r"<think>.*?</think>", "", content, flags=_re.DOTALL).strip()
 
         # Extract score from JSON — be lenient with surrounding whitespace/text
