@@ -72,7 +72,7 @@ Intermediate state files live in `storage/state/` and are all named `{RUN_ID}_*`
 | `pipelines/daily.sh` | Main orchestrator — entry point for manual runs |
 | `pipelines/cron_run_daily.sh` | Production cron wrapper (Docker health checks, flock, retries) |
 | `pipelines/profiles.sh` | Runtime presets (`balanced` / `kb_first`) |
-| `pipelines/discover.py` | Brave Search + OpenAlex → `{RUN_ID}_candidates.jsonl` |
+| `pipelines/discover.py` | SearXNG (primary) / Brave (fallback) + OpenAlex → `{RUN_ID}_candidates.jsonl` |
 | `pipelines/enrich_doi_oa.py` | Backfills missing DOI/abstract metadata via OpenAlex (best-effort) |
 | `pipelines/ingest.py` | Download + parse (Unstructured → Grobid → pypdf/BS4 cascade) |
 | `pipelines/index.py` | Chunk → embed (BAAI/bge-m3) → upsert Qdrant |
@@ -89,7 +89,7 @@ Intermediate state files live in `storage/state/` and are all named `{RUN_ID}_*`
 
 ### Config files (all YAML in `configs/`)
 
-- `focus.yaml` — ~24 knowledge topics, prioritized P0/P1/P2
+- `focus.yaml` — 21 knowledge topics, prioritized P0/P1/P2
 - `domains.yaml` — deny/prefer/pdf_bonus domain lists
 - `scoring.yaml` — per-focus discovery scoring weights
 - `competitors.yaml` — competitor intelligence registry
@@ -110,7 +110,7 @@ All runtime artifacts live under `storage/`:
 
 | Directory | Contents |
 |-----------|----------|
-| `storage/state/` | Run artifacts: `{RUN_ID}_candidates.jsonl`, `_ingested.jsonl`, `_indexed.jsonl`, `_report.md` |
+| `storage/state/` | Run artifacts: `{RUN_ID}_candidates.jsonl`, `_ingested.json`, `_indexed.json`, `_report.md` |
 | `storage/raw/` | Downloaded HTML/PDFs |
 | `storage/parsed/` | Cleaned text + metadata |
 | `storage/artifacts/` | Final outputs: daily reports, living spec |
@@ -133,6 +133,7 @@ Critical knobs for tuning and debugging (full list in `.env.example`):
 | `QC_MIN_SPIRULINA_SHARE` | `0.35` | FAIL threshold: off-topic content |
 | `LLM_BACKEND` | `openai` | Switch to `anthropic` or `ollama` at runtime |
 | `EMBED_MODEL` | `BAAI/bge-m3` | Change requires full reindex (`scripts/reindex_all.py`) |
+| `EMBED_DEVICE` | _(empty = auto)_ | Force embedding device: `cpu` to avoid CUDA OOM when VRAM is shared with LLM |
 | `QDRANT_COLLECTION` | `docs_chunks_v2` | Collection name used by index, query, rag, evaluate — must match across all steps |
 | `SEED_STRAINS` | `0` | Set to `1` to run `seed_strains.py` before discover |
 | `GROBID_ENABLE` | `0` | Enable Grobid for PDF parsing (fragile on corrupt PDFs; off by default in both profiles) |

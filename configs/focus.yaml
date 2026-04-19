@@ -7,6 +7,7 @@ focus:
 - name: competitor_pricing_italy_eu
 - name: regulatory_pathway_italy
 - name: food_vs_cosmetic_strategy
+- name: organic_bio_certification
 # P1 — OPERATIVI PILOTA
 - name: harvesting_and_drying
 - name: contamination_management

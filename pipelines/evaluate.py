@@ -57,7 +57,7 @@ MIN_INDEXED_POINTS = int(env("QC_MIN_INDEXED_POINTS", "200"))
 MAX_PENAL_SHARE = float(env("QC_MAX_PENAL_SHARE", "0.35"))
 MAX_MISSING_PUB_SHARE = float(env("QC_MAX_MISSING_PUB_SHARE", "0.60"))
 
-MIN_PREFER_SHARE = float(env("QC_MIN_PREFER_SHARE", "0.10"))
+MIN_PREFER_SHARE = float(env("QC_MIN_PREFER_SHARE", "0.05"))
 MAX_TOP5_DOMAIN_SHARE = float(env("QC_MAX_TOP5_DOMAIN_SHARE", "0.70"))
 MIN_UNIQUE_DOMAINS = int(env("QC_MIN_UNIQUE_DOMAINS", "60"))
 # When a run ingests few docs, an absolute unique-domains threshold is impossible.
@@ -183,7 +183,7 @@ def main() -> None:
     # Prefer / penal shares from domain config
     dom_cfg = load_domains("configs/domains.yaml") or {}
     prefer_domains = dom_cfg.get("prefer_domains", []) or []
-    penal_domains = dom_cfg.get("penalize_domains", []) or []
+    penal_domains = dom_cfg.get("deny_domains", []) or []
 
     prefer = sum(1 for d in domains if _matches_any_suffix(d, prefer_domains))
     penal = sum(1 for d in domains if _matches_any_suffix(d, penal_domains))

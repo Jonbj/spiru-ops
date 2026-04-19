@@ -102,6 +102,24 @@ focuses:
       - "Arthrospira cosmetic food dual use ingredient certification strategy startup"
       - "spirulina cosmetic INCI safety assessment dossier cost timeline Italy EU"
 
+  # Nuovo focus P0 — certificabilità bio del medium di coltura
+  # Domanda bloccante: NPK sintetici vietati per spirulina bio alimentare in Italia
+  - name: organic_bio_certification
+    base_score: 34
+    queries:
+      - "spirulina organic certification Italy EU Reg 2018/848 microalgae permitted nutrients"
+      - "Arthrospira platensis coltivazione biologica certificazione ICEA Bioagricert Italia requisiti"
+      - "spirulina biologica medium nutrienti consentiti NPK fertilizzanti sintetici divieto"
+      - "organic spirulina nutrient solution permitted inputs EU organic regulation microalgae"
+      - "Zarrouk medium organic compliance mineral salts allowed organic certification spirulina"
+      - "microalgae organic production permitted nitrogen phosphorus source EU regulation 2018/848"
+      - "spirulina bio certificato Italia ente certificatore procedura costo timeline"
+      - "organic spirulina nutrient source alternative synthetic minerals Italy producer"
+      - "spirulina coltivazione biologica normativa italiana microalga azoto fosforo ammesso"
+      - "nitrogen source organic spirulina sodium nitrate urea permitted organic certification microalgae"
+      - "spirulina biologica alimentare Italia produttore certificato biologico ente certificatore"
+      - "EU organic aquaculture regulation microalgae algae spirulina applicability 2018/848 annex"
+
   # ============================================================
   # P1 — OPERATIVI PILOTA (necessari per validazione e dati reali)
   # ============================================================
@@ -178,7 +196,7 @@ focuses:
 
   # Mantenuto: spirulina_strains_eu_collections
   - name: strains_inoculum
-    base_score: 18
+    base_score: 24
     queries:
       - "SAG Arthrospira platensis strain catalogue collection"
       - "CCAP Limnospira maxima Spirulina strain culture"
@@ -208,7 +226,7 @@ focuses:
 
   # Mantenuto: fresh_spirulina_market_direct_sales (focus strategico fresco)
   - name: fresh_spirulina_market
-    base_score: 28
+    base_score: 20
     queries:
       - "fresh spirulina paste direct sales restaurant local market Italy price"
       - "spirulina fresca pasta vendita diretta ristorante prezzo margine"
@@ -240,7 +258,7 @@ focuses:
   # Obiettivo: trovare aziende agroalimentari, pastifici, cosmetici, laboratori
   # che usano ingredienti funzionali/bio e potrebbero integrare spirulina locale
   - name: partnership_targets_italy
-    base_score: 26
+    base_score: 20
     queries:
       - "pastificio artigianale Marche Abruzzo ingrediente funzionale biologico innovazione filiera"
       - "Pastificio Mancini pasta Marche grano duro biologico filiera corta"
