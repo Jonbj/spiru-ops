@@ -105,6 +105,42 @@ def env_bool(name: str, default: bool = False) -> bool:
     return v.strip().lower() in ("1", "true", "yes", "on")
 
 
+def llm_log_call(step: str, model: str, prompt_tokens: int, output_tokens: int) -> None:
+    """Log one LLM call to the run stats file and stdout.
+
+    Appends a JSONL entry to storage/state/{RUN_ID}_llm_stats.jsonl so that
+    the end-of-run summary can report total calls and tokens consumed.
+    """
+    import json as _json
+    import threading
+    import pathlib as _pathlib
+
+    total = prompt_tokens + output_tokens
+    print(
+        f"[llm] step={step} model={model} "
+        f"prompt={prompt_tokens} output={output_tokens} total={total}",
+        flush=True,
+    )
+    try:
+        rid = os.getenv("RUN_ID", "unknown")
+        state = _pathlib.Path(os.getenv("STATE_DIR", "storage/state"))
+        state.mkdir(parents=True, exist_ok=True)
+        entry = _json.dumps({
+            "step": step, "model": model,
+            "prompt_tokens": prompt_tokens, "output_tokens": output_tokens,
+        })
+        _LLM_LOCK.acquire()
+        try:
+            with open(state / f"{rid}_llm_stats.jsonl", "a", encoding="utf-8") as f:
+                f.write(entry + "\n")
+        finally:
+            _LLM_LOCK.release()
+    except Exception:
+        pass
+
+_LLM_LOCK = __import__("threading").Lock()
+
+
 def utc_now_iso() -> str:
     """Return current UTC timestamp as ISO8601 string."""
 

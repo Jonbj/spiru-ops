@@ -220,7 +220,13 @@ def llm_spirulina_score(title: str, text_preview: str) -> Optional[float]:
                 timeout=timeout,
             )
             r.raise_for_status()
-            content = (r.json()["message"]["content"] or "").strip()
+            j = r.json()
+            try:
+                from pipelines.common import llm_log_call
+                llm_log_call("relevance", model, j.get("prompt_eval_count", 0), j.get("eval_count", 0))
+            except Exception:
+                pass
+            content = (j["message"]["content"] or "").strip()
         else:
             r = _req.post(
                 f"{url}/v1/chat/completions",
@@ -236,7 +242,14 @@ def llm_spirulina_score(title: str, text_preview: str) -> Optional[float]:
                 timeout=timeout,
             )
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            j = r.json()
+            try:
+                from pipelines.common import llm_log_call
+                usage = j.get("usage") or {}
+                llm_log_call("relevance", model, usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0))
+            except Exception:
+                pass
+            msg = j["choices"][0]["message"]
             content = (msg.get("content") or "").strip()
             if not content:
                 content = (msg.get("reasoning_content") or "").strip()

@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 import requests
 
-from pipelines.common import env, env_bool, normalize_url
+from pipelines.common import env, env_bool, normalize_url, llm_log_call
 from pipelines.qdrant_rest import QdrantConfig, search, hybrid_query
 
 QDRANT_URL = env("QDRANT_URL", "http://localhost:6333")
@@ -380,7 +380,9 @@ def _ollama_chat(system: str, user: str) -> str:
             timeout=300,
         )
         r.raise_for_status()
-        return (r.json()["message"]["content"] or "").strip()
+        j = r.json()
+        llm_log_call("copilot", OLLAMA_MODEL, j.get("prompt_eval_count", 0), j.get("eval_count", 0))
+        return (j["message"]["content"] or "").strip()
     # Local llama-server/Ollama: OpenAI-compatible /v1/chat/completions
     r = requests.post(
         f"{OLLAMA_URL.rstrip('/')}/v1/chat/completions",
@@ -393,7 +395,10 @@ def _ollama_chat(system: str, user: str) -> str:
         timeout=300,
     )
     r.raise_for_status()
-    return (r.json()["choices"][0]["message"]["content"] or "").strip()
+    j = r.json()
+    usage = j.get("usage") or {}
+    llm_log_call("copilot", OLLAMA_MODEL, usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0))
+    return (j["choices"][0]["message"]["content"] or "").strip()
 
 
 def llm_chat(system: str, user: str) -> str:

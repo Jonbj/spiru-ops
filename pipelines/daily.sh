@@ -224,6 +224,26 @@ bash "$ROOT_DIR/pipelines/prune_artifacts.sh" || echo "[daily] WARN: prune_artif
 # Scrive un report markdown in obsidian-vault/progetto/customers/inbox/{RUN_ID}.md
 "$PYBIN" scripts/customer_discovery.py || echo "[daily] WARN: customer_discovery failed (non-fatal)" >&2
 
+# ── LLM usage summary (best-effort) ───────────────────────────────────────
+LLM_STATS="$STATE_DIR/${RUN_ID}_llm_stats.jsonl"
+if [[ -f "$LLM_STATS" ]]; then
+  python3 - "$LLM_STATS" <<'PYEOF'
+import json, sys, collections
+path = sys.argv[1]
+calls, prompt, output = 0, 0, 0
+by_step = collections.defaultdict(lambda: {"calls": 0, "prompt": 0, "output": 0})
+with open(path) as f:
+    for line in f:
+        r = json.loads(line)
+        calls += 1; prompt += r.get("prompt_tokens", 0); output += r.get("output_tokens", 0)
+        s = by_step[r.get("step","?")]
+        s["calls"] += 1; s["prompt"] += r.get("prompt_tokens", 0); s["output"] += r.get("output_tokens", 0)
+print(f"[llm_summary] calls={calls} prompt_tokens={prompt} output_tokens={output} total_tokens={prompt+output}")
+for step, d in sorted(by_step.items()):
+    print(f"[llm_summary]   {step}: calls={d['calls']} tokens={d['prompt']+d['output']}")
+PYEOF
+fi
+
 # ── Stop LLM server at end of pipeline ────────────────────────────────────
 # If we started (or took ownership of) the server, stop it now that all
 # pipeline steps are complete.

@@ -215,7 +215,10 @@ def llm_run_commentary(stats: Dict[str, Any]) -> Optional[str]:
                 timeout=timeout,
             )
             r.raise_for_status()
-            content = (r.json()["message"]["content"] or "").strip()
+            j = r.json()
+            from pipelines.common import llm_log_call
+            llm_log_call("report", model, j.get("prompt_eval_count", 0), j.get("eval_count", 0))
+            content = (j["message"]["content"] or "").strip()
         else:
             # Local llama-server/Ollama: OpenAI-compatible /v1/chat/completions
             r = _req.post(
@@ -232,7 +235,11 @@ def llm_run_commentary(stats: Dict[str, Any]) -> Optional[str]:
                 timeout=timeout,
             )
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            j = r.json()
+            usage = j.get("usage") or {}
+            from pipelines.common import llm_log_call
+            llm_log_call("report", model, usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0))
+            msg = j["choices"][0]["message"]
             content = (msg.get("content") or "").strip()
             if not content:
                 content = (msg.get("reasoning_content") or "").strip()
