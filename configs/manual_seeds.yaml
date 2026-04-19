@@ -15,6 +15,23 @@ seeds:
       title: "UTEX 1926 Spirulina platensis"
     - url: "https://www.sccap.dk/strain/SAG-85.79/"
       title: "SAG 85.79 Arthrospira platensis"
+    # FAO spirulina cultivation manual (Belay 1997) — classic practitioner reference
+    - url: "https://www.fao.org/3/w6374e/w6374e00.htm"
+      title: "FAO Spirulina Production and Research 1997 — Belay"
+    # UTEX culture collection growing notes for Arthrospira/Spirulina
+    - url: "https://utex.org/pages/algae-guides"
+      title: "UTEX Algae Culture Guides — maintenance and scale-up protocols"
+    # SAG culture collection handling instructions PDF
+    - url: "https://sagdb.uni-goettingen.de/infos/HandlingInstructions.pdf"
+      title: "SAG Algae Culture Collection — Handling Instructions PDF"
+    # WorldSpirulinaOrganization practitioner guide
+    - url: "https://www.worldspirulina.com/index.php/spirulina-tech"
+      title: "WorldSpirulina — technical growing guide"
+    # Practical guide by Spirulina Source (Ripley Fox lineage)
+    - url: "https://www.spirulinasource.com/earthfoodch8.html"
+      title: "Spirulina Source — scale-up and inoculum protocol chapter"
+    - url: "https://www.spirulinasource.com/earthfoodch7.html"
+      title: "Spirulina Source — starter culture and daily management"
 
   quality_qc_shelf_life:
     - url: "https://www.efsa.europa.eu/en/efsajournal/pub/4409"
@@ -53,26 +70,6 @@ seeds:
       title: "JRC Algae for food and feed in the EU 2023"
     - url: "https://algaebiomass.org/resource-center/technical-standards/"
       title: "Algae Biomass Organization technical standards"
-
-  strains_inoculum:
-    # FAO spirulina cultivation manual (Belay 1997) — classic practitioner reference
-    - url: "https://www.fao.org/3/w6374e/w6374e00.htm"
-      title: "FAO Spirulina Production and Research 1997 — Belay"
-    # UTEX culture collection growing notes for Arthrospira/Spirulina
-    - url: "https://utex.org/pages/algae-guides"
-      title: "UTEX Algae Culture Guides — maintenance and scale-up protocols"
-    # SAG culture collection handling instructions PDF
-    - url: "https://sagdb.uni-goettingen.de/infos/HandlingInstructions.pdf"
-      title: "SAG Algae Culture Collection — Handling Instructions PDF"
-    # WorldSpirulinaOrganization practitioner guide
-    - url: "https://www.worldspirulina.com/index.php/spirulina-tech"
-      title: "WorldSpirulina — technical growing guide"
-    # Practical guide by Spirulina Source (Ripley Fox lineage)
-    - url: "https://www.spirulinasource.com/earthfoodch8.html"
-      title: "Spirulina Source — scale-up and inoculum protocol chapter"
-    # Spirulina Sourcebook — inoculum and production volume chapter
-    - url: "https://www.spirulinasource.com/earthfoodch7.html"
-      title: "Spirulina Source — starter culture and daily management"
 
   regulatory_pathway_italy:
     # EU Novel Food catalogue — Spirulina/Arthrospira entry
@@ -170,24 +167,16 @@ seeds:
       title: "Comparison of Microalgae Cultivation in Photobioreactor, Open Raceway Pond, and a Two-Stage Hybrid System"
     - url: "https://www.sciencedirect.com/science/article/pii/S2666952823000584"
       title: "Microalgae cultivation in photobioreactors: sustainable solutions for a greener future"
-
-  production_system_selection:
     - url: "https://www.enalgae.eu/media/37167/enalgae-working-paper-n6-raceway-ponds.pdf"
       title: "ENALGAE working paper N6 raceway ponds"
     - url: "https://univ-pau.hal.science/hal-04888850/file/1-s2.0-S2667041024000107-main.pdf"
       title: "Microalgae cultivation in raceway ponds: advances, challenges and hydrodynamic considerations"
-
-  production_system_selection:
     - url: "https://pubmed.ncbi.nlm.nih.gov/21898367/"
       title: "Kinetic and growth parameters of Arthrospira platensis cultivated in tubular photobioreactor"
     - url: "https://link.springer.com/article/10.1023/A:1019924226457"
       title: "Hydrodynamics and mass transfer in a tubular airlift photobioreactor"
     - url: "https://www.academia.edu/13830761/Cultivation_of_Spirulina_platensis_in_a_combined_airlift_tubular_reactor_system"
       title: "Cultivation of Spirulina platensis in a combined airlift tubular reactor system"
-
-  production_system_selection:
-    - url: "https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2016.00029/full"
-      title: "Comparison of Microalgae Cultivation in Photobioreactor, Open Raceway Pond, and a Two-Stage Hybrid System"
     - url: "https://link.springer.com/article/10.1186/s13068-025-02670-1"
       title: "Integrated hybrid Nested-bottled photobioreactor for enhanced mixing, mass transfer, and CO2 fixation in Arthrospira platensis raceway pond cultivation systems"
 
@@ -196,8 +185,6 @@ seeds:
       title: "Subitec photobioreactors overview"
     - url: "https://lgem.com/algae-knowledge/"
       title: "LGem algae knowledge and systems overview"
-
-  capex_opex_economics:
     - url: "https://www.alibaba.com/showroom/algae-photobioreactor.html"
       title: "Alibaba algae photobioreactor marketplace"
     - url: "https://dir.indiamart.com/impcat/spirulina-cultivation-system.html"
