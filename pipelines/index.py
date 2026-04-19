@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 
 from tqdm import tqdm
 
-from pipelines.common import env, chunk_text, safe_id, normalize_url, state_path
+from pipelines.common import env, env_bool, chunk_text, safe_id, normalize_url, state_path
 from pipelines.qdrant_rest import (
     QdrantConfig,
     ensure_collection,
@@ -59,7 +59,7 @@ IS_BGE_M3 = EMBED_MODEL.lower() in _BGE_M3_NAMES
 EMBED_DEVICE = env("EMBED_DEVICE", "").strip().lower() or None
 
 INDEX_MIN_SPIRULINA_SCORE = float(env("INDEX_MIN_SPIRULINA_SCORE", "0.25"))
-INDEX_ALLOW_NON_SPIRULINA = env("INDEX_ALLOW_NON_SPIRULINA", "0").strip() in ("1", "true", "TRUE", "yes", "YES")
+INDEX_ALLOW_NON_SPIRULINA = env_bool("INDEX_ALLOW_NON_SPIRULINA", False)
 
 UPSERT_BATCH = int(env("QDRANT_UPSERT_BATCH", 64))
 MAX_CHUNKS_PER_DOC = int(env("MAX_CHUNKS_PER_DOC", "50"))  # cap per-doc chunks to prevent single page bloat

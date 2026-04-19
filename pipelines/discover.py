@@ -43,6 +43,7 @@ import requests
 
 from pipelines.common import (
     env,
+    env_bool,
     day_stamp_utc,
     run_id,
     state_path,
@@ -60,7 +61,7 @@ USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.4")
 # LLM query expansion (opt-in, DISCOVER_LLM_EXPAND=1).
 # Generates 3 extra search queries per focus via local LLM, cached for N days
 # so the LLM is not called on every run (only when cache expires or is missing).
-DISCOVER_LLM_EXPAND = env("DISCOVER_LLM_EXPAND", "0").strip() in ("1", "true")
+DISCOVER_LLM_EXPAND = env_bool("DISCOVER_LLM_EXPAND", False)
 DISCOVER_LLM_CACHE_DAYS = int(env("DISCOVER_LLM_CACHE_DAYS", "3"))
 BRAVE_API_KEY = env("BRAVE_API_KEY", required=False)
 # SearXNG self-hosted instance (primary web search, free). Set to empty string to disable.
@@ -90,12 +91,12 @@ OUT_PATH = pathlib.Path(env("CANDIDATES_PATH", state_path("candidates.jsonl")))
 SCORING_PATH = env("SCORING_CONFIG", "configs/scoring.yaml")
 
 # De-saturation controls
-DENY_RESEARCHGATE = env("DENY_RESEARCHGATE", "1").strip() in ("1", "true", "TRUE", "yes", "YES")
-RESOLVE_DOI_REDIRECTS = env("RESOLVE_DOI_REDIRECTS", "1").strip() in ("1", "true", "TRUE", "yes", "YES")
+DENY_RESEARCHGATE = env_bool("DENY_RESEARCHGATE", True)
+RESOLVE_DOI_REDIRECTS = env_bool("RESOLVE_DOI_REDIRECTS", True)
 RESOLVE_DOI_TIMEOUT_S = int(env("RESOLVE_DOI_TIMEOUT_S", "8"))
 
 # Prefer OA/pdf URLs from OpenAlex to reduce paywall/403 problems
-OPENALEX_OA_FIRST = env("OPENALEX_OA_FIRST", "1").strip() in ("1", "true", "TRUE", "yes", "YES")
+OPENALEX_OA_FIRST = env_bool("OPENALEX_OA_FIRST", True)
 
 DOI_DOMAINS = {"doi.org", "dx.doi.org"}
 RESEARCHGATE_DOMAINS = {"researchgate.net", "www.researchgate.net"}

@@ -49,7 +49,7 @@ from urllib.parse import quote
 
 import requests
 
-from pipelines.common import env, state_path
+from pipelines.common import env, state_path, normalize_doi
 
 
 UNPAYWALL_EMAIL = (env("UNPAYWALL_EMAIL", "") or "").strip()
@@ -70,10 +70,7 @@ def _write_json(path: pathlib.Path, obj: Any) -> None:
 
 
 def _norm_doi(doi: str) -> str:
-    d = (doi or "").strip()
-    d = d.replace("https://doi.org/", "").replace("http://doi.org/", "")
-    d = d.replace("doi:", "").strip()
-    return d
+    return normalize_doi(doi)
 
 
 def crossref_lookup(doi: str) -> Optional[Dict[str, Any]]:
@@ -145,6 +142,9 @@ def main() -> None:
             continue
         if ENRICH_LIMIT and n >= ENRICH_LIMIT:
             break
+
+        if meta.get("doi_oa_enriched"):
+            continue
 
         doi = (meta.get("doi") or "").strip()
         if not doi:

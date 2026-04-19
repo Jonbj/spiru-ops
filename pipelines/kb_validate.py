@@ -38,7 +38,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from pipelines.common import env
+from pipelines.common import env, normalize_doi
 
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
@@ -64,10 +64,7 @@ def _write_json(path: pathlib.Path, obj: Any) -> None:
 
 
 def _norm_doi(doi: str) -> str:
-    d = (doi or "").strip().lower()
-    d = d.replace("https://doi.org/", "").replace("http://doi.org/", "")
-    d = d.replace("doi:", "").strip()
-    return d
+    return normalize_doi(doi).lower()
 
 
 def _key(meta: Dict[str, Any]) -> Tuple[Optional[str], Optional[str]]:

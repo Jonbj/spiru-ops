@@ -62,11 +62,13 @@ from tqdm import tqdm
 
 from pipelines.common import (
     env,
+    env_bool,
     day_stamp_utc,
     run_id,
     state_path,
     utc_now_iso,
     normalize_url,
+    normalize_doi,
     is_private_url,
     load_domains,
     denied,
@@ -80,12 +82,12 @@ USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.6")
 OPENALEX_EMAIL = env("OPENALEX_EMAIL", required=False)
 
 UNSTRUCTURED_URL = env("UNSTRUCTURED_URL", required=True)
-UNSTRUCTURED_ENABLE = env("UNSTRUCTURED_ENABLE", default="1").strip().lower() in ("1", "true", "yes")
+UNSTRUCTURED_ENABLE = env_bool("UNSTRUCTURED_ENABLE", True)
 UNSTRUCTURED_MAX_MB = int(env("UNSTRUCTURED_MAX_MB", 25))
 
 GROBID_URL = env("GROBID_URL", default="http://localhost:8070", required=False)
-GROBID_ENABLE = env("GROBID_ENABLE", default="0").strip().lower() in ("1", "true", "yes")
-GROBID_FULLTEXT = env("GROBID_FULLTEXT", default="0").strip().lower() in ("1", "true", "yes")
+GROBID_ENABLE = env_bool("GROBID_ENABLE", False)
+GROBID_FULLTEXT = env_bool("GROBID_FULLTEXT", False)
 
 RAW_DIR = pathlib.Path(env("RAW_DIR", "storage/raw"))
 PARSED_DIR = pathlib.Path(env("PARSED_DIR", "storage/parsed"))
@@ -112,7 +114,7 @@ INGEST_MIN_SPIRULINA_SCORE = float(env("INGEST_MIN_SPIRULINA_SCORE", "0.05"))
 # Calls the local LLM server for documents in the uncertain keyword-score range
 # [RELEVANCE_LLM_MIN_KW, RELEVANCE_LLM_MAX_KW] and blends the two scores.
 # Blending: 35% keyword + 65% LLM (LLM is semantically more reliable for gray zone).
-RELEVANCE_LLM_ENABLE = env("RELEVANCE_LLM_ENABLE", "0").strip() in ("1", "true")
+RELEVANCE_LLM_ENABLE = env_bool("RELEVANCE_LLM_ENABLE", False)
 RELEVANCE_LLM_MIN_KW = float(env("RELEVANCE_LLM_MIN_KW", "0.05"))
 RELEVANCE_LLM_MAX_KW = float(env("RELEVANCE_LLM_MAX_KW", "0.50"))
 
@@ -473,11 +475,7 @@ def pub_year_from_published_at(published_at: Any) -> Optional[int]:
 
 
 def _normalize_doi(doi: str) -> str:
-    d = (doi or "").strip()
-    d = d.replace("https://doi.org/", "").replace("http://doi.org/", "")
-    d = d.replace("doi:", "").replace("DOI:", "").strip()
-    d = d.strip().strip(_TRAIL_PUNCT)
-    return d
+    return normalize_doi(doi).strip(_TRAIL_PUNCT)
 
 
 def extract_doi_from_text(text: str) -> Optional[str]:

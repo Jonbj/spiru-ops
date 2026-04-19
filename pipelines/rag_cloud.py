@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 import requests
 
-from pipelines.common import env, normalize_url
+from pipelines.common import env, env_bool, normalize_url
 from pipelines.qdrant_rest import QdrantConfig, search, hybrid_query
 
 QDRANT_URL = env("QDRANT_URL", "http://localhost:6333")
@@ -55,7 +55,7 @@ OLLAMA_MODEL = env("OLLAMA_MODEL", "local")
 
 
 # Diversity controls (important!)
-DIVERSIFY = env("COPILOT_DIVERSIFY", "1").strip() in ("1", "true", "TRUE", "yes", "YES")
+DIVERSIFY = env_bool("COPILOT_DIVERSIFY", True)
 MAX_PER_DOMAIN = int(env("COPILOT_MAX_PER_DOMAIN", 2))
 OVERFETCH_MULT = int(env("COPILOT_OVERFETCH_MULT", 6))  # fetch topk*mult then prune
 MIN_UNIQUE_DOMAINS = int(env("COPILOT_MIN_UNIQUE_DOMAINS", 4))

@@ -93,6 +93,18 @@ def env(name: str, default=None, required: bool = False):
     return v
 
 
+def env_bool(name: str, default: bool = False) -> bool:
+    """Read a boolean environment variable.
+
+    Truthy values: "1", "true", "yes", "on" (case-insensitive).
+    Everything else (including empty string) is falsy.
+    """
+    v = os.getenv(name)
+    if v is None:
+        return default
+    return v.strip().lower() in ("1", "true", "yes", "on")
+
+
 def utc_now_iso() -> str:
     """Return current UTC timestamp as ISO8601 string."""
 
@@ -278,6 +290,16 @@ def is_private_url(url: str) -> bool:
             return addr.is_private or addr.is_loopback or addr.is_link_local
         except Exception:
             return False
+
+
+def normalize_doi(doi: str) -> str:
+    """Return bare DOI (e.g. '10.1234/abc') stripping any prefix variant."""
+    d = (doi or "").strip()
+    for prefix in ("https://doi.org/", "http://doi.org/", "https://dx.doi.org/",
+                   "http://dx.doi.org/", "doi:", "DOI:"):
+        if d.startswith(prefix):
+            d = d[len(prefix):]
+    return d.strip()
 
 
 def domain(url: str) -> str:
