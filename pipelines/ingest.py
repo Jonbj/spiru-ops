@@ -67,6 +67,7 @@ from pipelines.common import (
     state_path,
     utc_now_iso,
     normalize_url,
+    is_private_url,
     load_domains,
     denied,
     extract_html_text,
@@ -208,6 +209,8 @@ def safe_filename(url: str) -> str:
 
 
 def http_head(url: str) -> requests.Response:
+    if is_private_url(url):
+        raise ValueError(f"SSRF blocked: private/loopback URL {url!r}")
     return _SESSION.head(url, headers=_base_headers(url), timeout=HEAD_TIMEOUT_S, allow_redirects=True)
 
 
@@ -218,6 +221,8 @@ def _request_timeout_for(url: str, hinted_pdf: bool) -> int:
 
 
 def http_get_stream(url: str, *, timeout_s: int) -> requests.Response:
+    if is_private_url(url):
+        raise ValueError(f"SSRF blocked: private/loopback URL {url!r}")
     r = _SESSION.get(url, headers=_base_headers(url), timeout=timeout_s, allow_redirects=True, stream=True)
     r.raise_for_status()
     return r

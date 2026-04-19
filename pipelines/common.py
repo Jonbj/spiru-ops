@@ -251,6 +251,35 @@ def normalize_url(url: str) -> str:
         return u
 
 
+def is_private_url(url: str) -> bool:
+    """Return True if the URL resolves to a private/loopback address.
+
+    Blocks fetches to localhost, LAN ranges, and link-local to prevent
+    ingest.py from reading local services (Qdrant, Unstructured, etc.)
+    if a crafted URL appears in discovered candidates.
+    """
+    import ipaddress
+    try:
+        parsed = urlparse(url)
+        host = parsed.hostname or ""
+        if not host:
+            return True
+        addr = ipaddress.ip_address(host)
+        return addr.is_private or addr.is_loopback or addr.is_link_local
+    except ValueError:
+        # hostname is a domain name, not an IP — resolve it
+        import socket
+        try:
+            host = urlparse(url).hostname or ""
+            if host in ("localhost",):
+                return True
+            ip = socket.gethostbyname(host)
+            addr = ipaddress.ip_address(ip)
+            return addr.is_private or addr.is_loopback or addr.is_link_local
+        except Exception:
+            return False
+
+
 def domain(url: str) -> str:
     return urlparse(url).netloc.lower()
 
