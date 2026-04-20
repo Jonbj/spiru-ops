@@ -181,26 +181,26 @@ seeds:
       title: "Integrated hybrid Nested-bottled photobioreactor for enhanced mixing, mass transfer, and CO2 fixation in Arthrospira platensis raceway pond cultivation systems"
 
   organic_bio_certification:
-    # Reg. UE 2018/848 — testo integrale in italiano (include Allegato II Parte IV acquacoltura)
-    - url: "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32018R0848"
-      title: "Reg. UE 2018/848 — Produzione biologica e etichettatura (testo integrale IT)"
-    # Reg. delegato UE 2021/1165 — lista completa input ammessi (fertilizzanti, fitosanitari)
-    # Allegato I = input per la produzione vegetale/acquacoltura biologica
-    - url: "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32021R1165"
-      title: "Reg. delegato UE 2021/1165 — Allegato I: input ammessi produzione biologica"
-    # EGTOP Final Report on Algae II (2019) — gruppo esperti CE su microalghe bio
-    # Raccomanda quali nutrienti possono essere ammessi per spirulina biologica
-    - url: "https://agriculture.ec.europa.eu/system/files/2019-12/egtop-final-report-algae-ii_en.pdf"
-      title: "EGTOP 2019 — Final Report on Organic Algae II (microalgae nutrient inputs)"
-    # Reg. esecuzione UE 2021/1842 — produzione biologica acquacoltura (microalghe incluse)
-    - url: "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32021R1842"
-      title: "Reg. esecuzione UE 2021/1842 — norme dettagliate produzione biologica acquacoltura"
-    # ICEA — schema certificazione biologica microalghe Italia
-    - url: "https://www.icea.bio/produzione-biologica/acquacoltura-biologica/"
-      title: "ICEA — Acquacoltura biologica: schema certificazione microalghe Italia"
-    # Bioagricert — certificazione bio acquacoltura microalghe
-    - url: "https://www.bioagricert.org/it/acquacoltura"
-      title: "Bioagricert — Certificazione biologica acquacoltura (spirulina)"
+    # Royal Spirulina — analisi critica certificazione bio spirulina (include limiti NaNO3, alternative)
+    - url: "https://www.royalspirulina.com/organic-spirulina-misleading-label"
+      title: "Royal Spirulina — Why organic spirulina certification is misleading (NaNO3 limits)"
+    # Nutrex Hawaii — 14/16 nutrienti OMRI-listed, analisi componente per componente
+    - url: "https://www.nutrex-hawaii.com/blogs/learn/organic-spirulina-truth"
+      title: "Nutrex Hawaii — Organic spirulina truth: OMRI inputs analysis per component"
+    # Grow Organic Spirulina — marketplace input bio certificati + guide
+    - url: "https://grow-organic-spirulina.com/product-category/spirulina-culture-nutrients"
+      title: "Grow Organic Spirulina — certified organic culture nutrients marketplace"
+    - url: "https://grow-organic-spirulina.com/organic-spirulina-certification/"
+      title: "Grow Organic Spirulina — certification guide for organic spirulina producers"
+    # OrganicsEurope — guida pratica Reg 2018/848 per produttori
+    - url: "https://www.organicseurope.bio/content/uploads/2020/06/IFOAM_EU_Guide_Organic_Regulation_2020.pdf"
+      title: "OrganicsEurope — Guide to EU Organic Regulation 2018/848 (practical guide)"
+    # Springer paper: organic spirulina C/N sources effect on biomass (già in KB ma vale reingest)
+    - url: "https://link.springer.com/article/10.1007/s12223-025-01397-8"
+      title: "Organic culture of Spirulina: C and N sources for biomass and phycocyanin"
+    # Can spirulina be organic — nutri.it.com (già in KB, focus organic certification)
+    - url: "https://nutri.it.com/can-spirulina-be-organic-a-deep-dive-into-certification-and-quality"
+      title: "Can Spirulina Be Organic? EU certification deep dive"
 
   capex_opex_economics:
     - url: "https://subitec.com/en/technology/photobioreactors/"
