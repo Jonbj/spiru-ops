@@ -180,6 +180,28 @@ seeds:
     - url: "https://link.springer.com/article/10.1186/s13068-025-02670-1"
       title: "Integrated hybrid Nested-bottled photobioreactor for enhanced mixing, mass transfer, and CO2 fixation in Arthrospira platensis raceway pond cultivation systems"
 
+  organic_bio_certification:
+    # Reg. UE 2018/848 — testo integrale in italiano (include Allegato II Parte IV acquacoltura)
+    - url: "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32018R0848"
+      title: "Reg. UE 2018/848 — Produzione biologica e etichettatura (testo integrale IT)"
+    # Reg. delegato UE 2021/1165 — lista completa input ammessi (fertilizzanti, fitosanitari)
+    # Allegato I = input per la produzione vegetale/acquacoltura biologica
+    - url: "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32021R1165"
+      title: "Reg. delegato UE 2021/1165 — Allegato I: input ammessi produzione biologica"
+    # EGTOP Final Report on Algae II (2019) — gruppo esperti CE su microalghe bio
+    # Raccomanda quali nutrienti possono essere ammessi per spirulina biologica
+    - url: "https://agriculture.ec.europa.eu/system/files/2019-12/egtop-final-report-algae-ii_en.pdf"
+      title: "EGTOP 2019 — Final Report on Organic Algae II (microalgae nutrient inputs)"
+    # Reg. esecuzione UE 2021/1842 — produzione biologica acquacoltura (microalghe incluse)
+    - url: "https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32021R1842"
+      title: "Reg. esecuzione UE 2021/1842 — norme dettagliate produzione biologica acquacoltura"
+    # ICEA — schema certificazione biologica microalghe Italia
+    - url: "https://www.icea.bio/produzione-biologica/acquacoltura-biologica/"
+      title: "ICEA — Acquacoltura biologica: schema certificazione microalghe Italia"
+    # Bioagricert — certificazione bio acquacoltura microalghe
+    - url: "https://www.bioagricert.org/it/acquacoltura"
+      title: "Bioagricert — Certificazione biologica acquacoltura (spirulina)"
+
   capex_opex_economics:
     - url: "https://subitec.com/en/technology/photobioreactors/"
       title: "Subitec photobioreactors overview"
