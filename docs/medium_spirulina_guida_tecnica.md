@@ -150,6 +150,11 @@ A pH > 10,8: inibizione della crescita
 
 **Aggiunta di Na₂CO₃**: tampona a pH più alto (pKa₂ = 10,33); utile nei sistemi con iniezione di CO₂ per evitare abbassamento brusco del pH.
 
+**DIC ottimale per sistemi produttivi (Frontiers 2019, raceway pond 605 m²)**:  
+Lo Zarrouk standard carica 200 mM DIC (16,8 g/L NaHCO₃), ma studi su larga scala indicano che **DIC = 0,1 mol/L** (≈ 8,4 g/L NaHCO₃) è sufficiente per massimizzare produttività e fissazione CO₂. Caricare oltre 0,1 mol/L non aumenta la resa e incrementa il costo. Il pH ottimale per ORP produttivi è **9,5** (non 10,4 da Zarrouk lab), dove HCO₃⁻ è dominante e CO₂ più accessibile.
+
+> **Implicazione pratica**: in sistemi con CO₂ supplementare, usare DIC 0,1 mol/L a pH 9,5. In sistemi senza CO₂ (solo bicarbonato), alzare a pH 10,0–10,4 per compensare il minore trasferimento gassoso.
+
 ---
 
 ### 3.2 Azoto — NaNO₃ / KNO₃ / urea
@@ -167,6 +172,8 @@ A pH > 10,8: inibizione della crescita
 
 **Concentrazione operativa di N**: 0,3–0,5 g/L N (= 2–3,5 g/L NaNO₃) come limite superiore in batch.  
 In fed-batch/semicontinuo: mantenere 0,1–0,3 g/L N residuo per non limitare la crescita.
+
+**N residuo e qualità biomassa**: la ficocianina è la prima proteina catabolizzata in carenza di azoto (Frontiers 2025). Per produzione orientata alla ficocianina mantenere N-NO₃⁻ residuo **> 100–150 mg/L**; per sola biomassa/proteina il limite > 50 mg/L è sufficiente.
 
 **Calcolo rifornimento**: per una produttività di 10 g/m²/day (vasca 200 L):  
 → Biomassa/giorno ≈ 2 g/L/10gg = 0,2 g/L/day  
@@ -186,6 +193,8 @@ In fed-batch/semicontinuo: mantenere 0,1–0,3 g/L N residuo per non limitare la
 | Acido fosforico H₃PO₄ | — | Usato da Jourdan come alternativa; pericoloso conc. | ❌ (sintetico) |
 
 **Rapporto N:P di Zarrouk** ≈ 10:1 molare → leggermente P-limitante rispetto al Redfield 16:1. Non critico per spirulina.
+
+**Fosfato ottimale per ORP produttivi** (Frontiers 2019): la concentrazione ottimale di P in raceway pond su larga scala è **200 mg/L P** (≈ 0,90 g/L K₂HPO₄), il doppio dello Zarrouk standard (0,5 g/L = ~87 mg/L P). Concentrazioni oltre 225 mg/L P non migliorano ulteriormente la produttività.
 
 **Struvite per bio**: contiene NH₄⁺ che a pH 10 si libera come NH₃ — verificare dose e solubilità. Non ancora nell'elenco EU 2021/1165, ma in discussione normativa.
 
@@ -409,13 +418,99 @@ Per 0,2 g/L/day × 200 L = 40 g biomassa secca/day:
 | Temperatura | 30–38°C | Continua | Termometro/sonda |
 | OD₆₈₀ | 0,3–1,5 (growth) | 1x/day | Spettrofotometro o app calibrata |
 | Conducibilità | 20–40 mS/cm | Settimanale | Conduttimetro |
-| N-NO₃⁻ residuo | > 50 mg/L | 2x/settimana | Kit colorimetrico (Nitrachek o simili) |
+| N-NO₃⁻ residuo | > 50 mg/L (proteina) / > 150 mg/L (ficocianina) | 2x/settimana | Kit colorimetrico (Nitrachek o simili) |
 | Alcalinità totale | > 3000 mg/L CaCO₃ | Settimanale | Titolazione HCl 0,1N |
 | Metalli pesanti | Pb < 3, Cd < 1, As < 3 mg/kg DW | Per lotto | Laboratorio accreditato (obbligatorio per vendita) |
 
 ---
 
-## 10. Confronto economico sintesi
+## 10. Effetti del medium sulla qualità della biomassa
+
+La composizione del medium non influenza solo la produttività volumetrica, ma determina direttamente il profilo biochimico del prodotto finale.
+
+### 10.1 Azoto e ficocianina
+
+La ficocianina (C-PC, ~10–25% DW in condizioni ottimali) è la prima proteina catabolizzata quando N diventa limitante. Il meccanismo è documentato e selettivo: prima degrada C-PC, poi alloficoanina, infine le proteine strutturali.
+
+**Implicazione formulativa**:
+- Per massimizzare **ficocianina**: mantenere N-NO₃⁻ residuo > 150 mg/L, DIC adeguato (carbonio non limitante), raccogliere tra mezzogiorno e tramonto (picco C-PC intraday per irraggiamento)
+- Per massimizzare **proteina totale**: C:N molare basso (5–8:1), N non limitante, raccogliere a prima mattina (massimo proteine + aminoacidi essenziali)
+- **C:N:P ottimale per alta proteina**: 24:14:1 molare (spirulinafarming.com)
+
+### 10.2 Stagionalità e composizione (dati industriali, Portogallo 2025)
+
+Da un impianto industriale a ciclo annuale (ScienceDirect 2025, *Limnospira platensis*):
+
+| Parametro | Inverno (dic–feb) | Estate (apr–set) | Annuale medio |
+|---|---|---|---|
+| Produttività | ~3 g/m²/day | 7,5–7,6 g/m²/day | 5,1–5,6 g/m²/day |
+| Proteina (% DW) | 58–65% | 58–65% | **stabile tutto l'anno** |
+| Ficocianina (% DW) | **10,4%** | **15,2%** | stagionale (+46% estate) |
+| Calo produttività inverno | > 60% vs. picco estivo | — | — |
+
+**Implicazioni per la formulazione**:
+- La proteina è stabile → il medium può rimanere invariato stagionalmente
+- La ficocianina dipende dall'irraggiamento solare, non dal medium → non è ottimizzabile solo con la nutrizione
+- In inverno a temperatura < 18°C la crescita si arresta → ridurre o sospendere il dosaggio di N e P per non accumulare nutrienti in eccesso
+
+### 10.3 Finestra di raccolta ottimale
+
+| Obiettivo | Momento raccolta | Razionale |
+|---|---|---|
+| Max proteina + aminoacidi essenziali | Prima mattina (6–9h) | Accumulo notturno di proteine strutturali |
+| Max ficocianina | Mezzogiorno–tramonto (12–19h) | Sintesi C-PC correlata a irraggiamento diurno |
+| Max biomassa secca | Sera (dopo picco fotosintetico) | Massima densità cellulare |
+
+### 10.4 Effetto del C:N sul profilo biochimico
+
+| C:N molare | Effetto predominante |
+|---|---|
+| 5:1 – 8:1 (N abbondante) | Alta proteina, alta ficocianina |
+| 10:1 – 15:1 (N moderato) | Bilanciamento proteina/carboidrati |
+| > 15:1 (N limitante) | Accumulo carboidrati/EPS, degradazione ficocianina |
+
+---
+
+## 11. Caso studio italiano — produzione bio (Frontiers 2026)
+
+Paper appena pubblicato (aprile 2026, *Frontiers in Sustainable Food Systems*): analisi di sostenibilità tripartita (LCA + CBA + sociale) di un impianto italiano di spirulina bio. È il riferimento più aggiornato e geograficamente rilevante disponibile in KB.
+
+### 11.1 Parametri produttivi
+
+| Parametro | Valore |
+|---|---|
+| Produttività annuale media | 5,1–5,6 g/m²/day |
+| Picco aprile–settembre | 7,5–7,6 g/m²/day |
+| Calo invernale | > 60% (dic–feb) |
+| Scenario LCA produzione stagionale | 15,5 kg CO₂-eq/kg spirulina |
+| Scenario LCA produzione annua (riscaldamento) | 28,2 kg CO₂-eq/kg spirulina |
+
+### 11.2 Consumi energetici (impianto di riferimento)
+
+| Voce | kWh/anno |
+|---|---|
+| Mixing e aerazione | 15.574 |
+| Lab e illuminazione | 7.784 (2 voci) |
+| **Essiccazione** | **31.148** (voce dominante, 40% del totale) |
+| Pompaggio e trattamento acque | 23.360 |
+| **Totale** | **77.866 kWh/anno** |
+
+> Nota: l'essiccazione è la voce energetica dominante. Impianti bio premium usano essiccatori a rullo (RWD) o liofilizzatori; entrambi energivori. Al costo baseline di 0,20 €/kWh → ~15.573 €/anno solo in elettricità.
+
+### 11.3 Indicatori economici
+
+| KPI | Valore |
+|---|---|
+| Reddito netto annuo baseline | ~110.872 € |
+| GM per ora lavorativa | **48,26 €/h** (vs. ~8 €/h media agricoltura italiana) |
+| Sensitivity: stop produzione invernale (3 mesi) | −25% ricavi → reddito netto ~83.000–90.000 € |
+| Sensitivity: costo energia +50% | riduzione reddito netto proporzionale |
+
+**Nota**: il reddito netto di ~110k€ assume produzione annua continua. In pratica, nella maggior parte del Sud Italia la produzione si sospende in inverno → scenario realistico è 83–90k€ netti.
+
+---
+
+## 12. Confronto economico sintesi
 
 | Formula | Costo medio €/m³ | Bio EU | Scalabilità | Qualità prodotto |
 |---|---|---|---|---|
@@ -434,7 +529,10 @@ Per 0,2 g/L/day × 200 L = 40 g biomassa secca/day:
 | ENHANCE Microalgae Strain Catalogue (2020) | Manuale tecnico | Zarrouk composizione completa + A5 |
 | Jourdan "Grow Your Own Spirulina" (2001) | Guida pratica | Formula rifornimento, pH management |
 | Springer "LCMA medium" — Annals Microbiology (2019) | Paper | NPK fertilizzante come alternativa |
-| Frontiers Bioeng Biotech (2019) | Paper | Zarrouk modificato con Na₂CO₃ |
+| Frontiers Bioeng Biotech (2019) | Paper | Zarrouk modificato con Na₂CO₃; DIC ottimale 0,1 mol/L, pH 9,5, P 200 mg/L per ORP |
+| Frontiers Bioeng Biotech (2025) | Paper | N deficiency e phycocyanin degradation; effetto harvesting strategy |
+| ScienceDirect (2025) — Limnospira, Portogallo | Paper | Dati industriali stagionali: produttività, proteina, ficocianina annuali |
+| Frontiers Sustainable Food Systems (2026) — Italia bio | Paper | LCA+CBA impianto italiano bio: 77.866 kWh/anno, 110k€ reddito, 48 €/h GM |
 | Reg. (UE) 2018/848 | Normativa | Regole produzione biologica microalghe |
 | Reg. delegato (UE) 2021/1165 Allegato I | Normativa | Lista ufficiale input bio ammessi |
 | Risposta PE E-004875/21 (2021) | Normativa/FAQ | NaNO₃ naturale, esclusione N animale |
