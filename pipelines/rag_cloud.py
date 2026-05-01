@@ -55,13 +55,22 @@ OLLAMA_URL = env("OLLAMA_URL", "https://ollama.com" if OLLAMA_API_KEY else "http
 OLLAMA_MODEL = env("OLLAMA_MODEL", "local")
 
 
-# Diversity controls (important!)
+# Result diversity controls.
+# Without diversification Qdrant returns the top-k by cosine similarity, which
+# often means 8 of 10 results from the same domain (e.g. all frontiersin.org).
+# Strategy: over-fetch topk * OVERFETCH_MULT candidates from Qdrant, then prune
+# to at most MAX_PER_DOMAIN results per domain-family, until topk is filled.
+# OVERFETCH_MULT=6 gives enough headroom: even if the top results are all from
+# 3 domains, fetching 6× still yields enough variety to fill topk after pruning.
 DIVERSIFY = env_bool("COPILOT_DIVERSIFY", True)
 MAX_PER_DOMAIN = int(env("COPILOT_MAX_PER_DOMAIN", 2))
-OVERFETCH_MULT = int(env("COPILOT_OVERFETCH_MULT", 6))  # fetch topk*mult then prune
+OVERFETCH_MULT = int(env("COPILOT_OVERFETCH_MULT", 6))
 MIN_UNIQUE_DOMAINS = int(env("COPILOT_MIN_UNIQUE_DOMAINS", 4))
 
-# Hard preference for Spirulina-centric content
+# Minimum spirulina relevance score for copilot retrieval. Set slightly lower than
+# INDEX_MIN_SPIRULINA_SCORE (0.25) because the collection is already pre-filtered
+# at index time; allowing 0.22 here lets borderline-relevant chunks through when
+# the query is highly specific (e.g. a niche topic with few strongly-scored docs).
 MIN_SPIRULINA_SCORE = float(env("COPILOT_MIN_SPIRULINA_SCORE", "0.22"))
 
 
@@ -135,6 +144,13 @@ def qdrant_hybrid_search(
     focus: Optional[str] = None,
     doc_type: Optional[str] = None,
 ) -> Dict[str, Any]:
+    # BGE-M3 hybrid search: dense vector (semantic similarity) + sparse vector
+    # (BM25-style lexical weights from the model's "lexical_weights" output).
+    # Qdrant implements this via a two-phase query:
+    #   1. prefetch: retrieve prefetch_limit candidates using the dense vector
+    #   2. re-rank: score those candidates with the sparse vector and return top limit
+    # prefetch_limit = max(limit*2, 30) ensures the re-ranker has enough candidates
+    # to promote lexically-matched results even when the dense prefetch misses them.
     cfg = QdrantConfig(url=QDRANT_URL, collection=QDRANT_COLLECTION)
     return hybrid_query(
         cfg,

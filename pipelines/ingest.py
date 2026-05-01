@@ -100,6 +100,11 @@ PDF_REQUEST_TIMEOUT_S = int(env("PDF_REQUEST_TIMEOUT_S", 90))
 HTML_REQUEST_TIMEOUT_S = int(env("HTML_REQUEST_TIMEOUT_S", 40))
 HEAD_TIMEOUT_S = int(env("HEAD_TIMEOUT_S", 20))
 
+# Circuit-breaker thresholds: skip a domain for the rest of the run after N consecutive errors.
+# 403 threshold is higher (5) because some sites return 403 for specific URLs but not others
+# (e.g. paywalled individual papers while the journal landing page is accessible).
+# 429 threshold is lower (3) because rate-limit errors compound — retrying burns more quota
+# and risks a temporary IP ban; better to abandon the domain early and come back next run.
 MAX_403_PER_DOMAIN = int(env("MAX_403_PER_DOMAIN", 5))
 MAX_429_PER_DOMAIN = int(env("MAX_429_PER_DOMAIN", 3))
 
@@ -673,6 +678,11 @@ def main() -> None:
         return m.group(1) if m else None
 
     def _load_history_domain_counts(days: int) -> Counter:
+        # Returns how many documents per domain-family were ingested in the last N days.
+        # Used by _portfolio_select to down-weight already-saturated domains in the
+        # exploration pass — domains we have ingested heavily recently get fewer new slots.
+        # We read from *_ingested.json state files rather than querying Qdrant, because
+        # this runs before the network phase and must be fast and offline.
         cnt: Counter = Counter()
         if days <= 0:
             return cnt
@@ -748,6 +758,23 @@ def main() -> None:
         target = min(INGEST_TARGET, len(cands))
         max_per_dom = INGEST_MAX_PER_DOMAIN if INGEST_MAX_PER_DOMAIN > 0 else 10**9
         max_per_focus = int(round(target * INGEST_MAX_PER_FOCUS_PCT)) if INGEST_MAX_PER_FOCUS_PCT > 0 else 10**9
+
+        # Two-pass portfolio selection: exploration first, then exploitation.
+        #
+        # EXPLORATION (default 70% of target): prioritise domain-families with low
+        # historical presence. Rationale: the KB is built incrementally over many runs;
+        # without this bias, high-scoring domains (e.g. frontiersin.org, pubmed) would
+        # be re-fetched every run while under-represented sources never get a slot.
+        # key_explore sorts by (history_count ASC, score DESC) — new domains first,
+        # tie-broken by relevance score.
+        #
+        # EXPLOITATION (remaining 30%): pure quality — pick the highest-scoring
+        # candidates regardless of source diversity. This ensures each run still ingests
+        # the best available content even if all top results are from familiar domains.
+        #
+        # The 70/30 split reflects the project stage: the KB is not yet saturated, so
+        # breadth matters more than marginal quality improvements from top-scored pages
+        # we might have partially indexed already.
         exploration_n = int(round(target * max(0.0, min(1.0, INGEST_EXPLORATION_PCT))))
         exploitation_n = target - exploration_n
 

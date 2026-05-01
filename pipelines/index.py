@@ -47,7 +47,12 @@ COLLECTION = env("QDRANT_COLLECTION", "docs_chunks_v2")
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 
 EMBED_MODEL = env("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+# 2200 chars ≈ 350-400 tokens at ~5.5 chars/token — fits inside BGE-M3's 512-token
+# encoding window with room for special tokens. Using chars (not tokens) avoids a
+# tokenizer dependency at chunking time and is fast enough for our throughput.
 CHUNK_MAX = int(env("CHUNK_MAX_CHARS", 2200))
+# 240 chars ≈ 11% overlap. Enough to preserve sentence-boundary context across
+# adjacent chunks so retrieval doesn't miss passages that span a chunk boundary.
 CHUNK_OVERLAP = int(env("CHUNK_OVERLAP", 240))
 
 # Detect bge-m3 mode: uses FlagEmbedding, produces dense+sparse hybrid vectors
@@ -58,11 +63,21 @@ IS_BGE_M3 = EMBED_MODEL.lower() in _BGE_M3_NAMES
 # Set EMBED_DEVICE=cpu to force CPU and avoid VRAM conflict with LLM server.
 EMBED_DEVICE = env("EMBED_DEVICE", "").strip().lower() or None
 
+# Documents below this spirulina relevance score are skipped at index time.
+# 0.25 is deliberately lower than the QC threshold (0.35) and the copilot filter
+# (0.22) — it accepts borderline documents into the KB so the copilot can still
+# retrieve them when queried with a very specific focus, while the QC step checks
+# the aggregate share remains healthy.
 INDEX_MIN_SPIRULINA_SCORE = float(env("INDEX_MIN_SPIRULINA_SCORE", "0.25"))
 INDEX_ALLOW_NON_SPIRULINA = env_bool("INDEX_ALLOW_NON_SPIRULINA", False)
 
+# 64 points per Qdrant upsert request — balances HTTP payload size and round-trip
+# overhead. Too small = many round trips; too large = risk of timeout on slow networks.
 UPSERT_BATCH = int(env("QDRANT_UPSERT_BATCH", 64))
-MAX_CHUNKS_PER_DOC = int(env("MAX_CHUNKS_PER_DOC", "50"))  # cap per-doc chunks to prevent single page bloat
+# Hard cap on chunks per document. Prevents a single very-long PDF (e.g. a thesis or
+# textbook) from flooding the KB and dominating retrieval results. At 2200 chars/chunk,
+# 50 chunks ≈ 110 KB of text — more than enough for any scientific paper.
+MAX_CHUNKS_PER_DOC = int(env("MAX_CHUNKS_PER_DOC", "50"))
 
 
 def _build_payload(meta: dict, url: str, domain: str, doc_id: str, content_hash: str, spiru_score: float, is_spiru: bool, chunk_text_val: str, chunk_i: int) -> dict:
@@ -149,6 +164,10 @@ def main() -> None:
 
         content_hash = meta.get("content_hash") or ""
         doc_id = safe_id(f"doc|{url}|{content_hash}")[:16]
+        # Point IDs must be unsigned 64-bit integers in Qdrant. We derive a stable
+        # base from url+content_hash so re-indexing the same document produces the
+        # same IDs (idempotent upsert). Modulo 10^12 keeps the number human-readable
+        # in logs while staying well within u64 range.
         base = int(safe_id(url + content_hash), 16) % (10**12)
 
         points_batch = []
