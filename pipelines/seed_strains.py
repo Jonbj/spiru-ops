@@ -28,6 +28,7 @@ from pipelines.common import (
 
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.3")
 BRAVE_API_KEY = env("BRAVE_API_KEY", required=False)
+SEARXNG_URL = env("SEARXNG_URL", "").strip().rstrip("/")
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 # Output is RUN_ID-scoped (set by daily.sh)
@@ -39,11 +40,36 @@ CONFIG_PATH = env("STRAIN_SEEDS_CONFIG", "configs/strain_seeds.yaml")
 SEED_SCORE = 999
 
 
+def searxng_search(query: str, count: int = 10) -> List[Dict[str, Any]]:
+    """SearXNG (self-hosted, free). Returns results in the same shape as brave_search."""
+    url = f"{SEARXNG_URL}/search"
+    params = {
+        "q": query,
+        "format": "json",
+        "engines": "google,bing,duckduckgo",
+        "language": "en-US",
+        "pageno": "1",
+    }
+    try:
+        r = requests.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=15)
+        r.raise_for_status()
+        results = r.json().get("results") or []
+    except Exception as e:
+        print(f"[seed_strains] WARN: searxng failed: {e}", flush=True)
+        return []
+    return [
+        {
+            "url": hit.get("url", ""),
+            "title": hit.get("title", ""),
+            "description": hit.get("content", ""),
+        }
+        for hit in results[:count]
+        if hit.get("url")
+    ]
+
+
 def brave_search(query: str, count: int = 10) -> List[Dict[str, Any]]:
-    """
-    Brave Web Search API. Returns list of result objects (dicts).
-    If BRAVE_API_KEY missing, returns empty list.
-    """
+    """Brave Web Search API (paid fallback). Returns empty list if key missing."""
     if not BRAVE_API_KEY:
         return []
 
@@ -60,6 +86,13 @@ def brave_search(query: str, count: int = 10) -> List[Dict[str, Any]]:
 
     data = r.json()
     return (data.get("web") or {}).get("results") or []
+
+
+def web_search(query: str, count: int = 10) -> List[Dict[str, Any]]:
+    """SearXNG (primary, free) → Brave (fallback, paid)."""
+    if SEARXNG_URL:
+        return searxng_search(query, count=count)
+    return brave_search(query, count=count)
 
 
 def mk_row(
@@ -138,7 +171,7 @@ def add_collection_discovery(cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
         queries = col.get("brave_queries", []) or []
         for q in queries:
             try:
-                results = brave_search(q, count=10)
+                results = web_search(q, count=10)
                 for r in results:
                     url = r.get("url") or ""
                     url = normalize_url(url)
@@ -186,12 +219,9 @@ def main():
     # 1) Always include must_urls (doc-driven gold seeds)
     rows.extend(add_must_urls(cfg))
 
-    # 2) Optionally include Brave-based discovery
-    if BRAVE_API_KEY:
+    # 2) Optionally include web-based discovery (SearXNG primary, Brave fallback)
+    if SEARXNG_URL or BRAVE_API_KEY:
         rows.extend(add_collection_discovery(cfg))
-    else:
-        # still output must_urls only; that's fine
-        pass
 
     rows = dedup_rows(rows)
 
@@ -201,8 +231,8 @@ def main():
 
     print(str(OUT_PATH))
     print(f"strain seed urls: {len(rows)}")
-    if not BRAVE_API_KEY:
-        print("Note: BRAVE_API_KEY not set, only must_urls were emitted.")
+    if not SEARXNG_URL and not BRAVE_API_KEY:
+        print("Note: SEARXNG_URL and BRAVE_API_KEY not set, only must_urls were emitted.")
 
 
 if __name__ == "__main__":
