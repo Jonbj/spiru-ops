@@ -32,6 +32,7 @@ high-leverage place to improve KB quality (domain diversity, Spirulina-centricit
 """
 
 import json
+import logging
 import pathlib
 import re
 import time
@@ -55,6 +56,9 @@ from pipelines.common import (
 )
 
 from pipelines.relevance import compute_spirulina_relevance
+
+# Configura il logger
+logger = logging.getLogger(__name__)
 
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.4")
 
@@ -80,9 +84,16 @@ BRAVE_MAX_QUERIES_PER_RUN = int(env("BRAVE_MAX_QUERIES_PER_RUN", "0"))
 # Semantic Scholar (free academic API — complements OpenAlex/CORE)
 SEMANTIC_SCHOLAR_KEY = env("SEMANTIC_SCHOLAR_KEY", required=False)
 SEMANTIC_SCHOLAR_SLEEP_S = float(env("SEMANTIC_SCHOLAR_SLEEP_S", "1.0"))
+# After this many consecutive 429s, S2 is disabled for the rest of the run
+SEMANTIC_SCHOLAR_MAX_429 = int(env("SEMANTIC_SCHOLAR_MAX_429", "5"))
+
+# Max seconds the per-query discover loop may run (0 = no limit).
+# Prevents a slow run from blocking the next cron slot via flock.
+DISCOVER_MAX_RUNTIME_S = int(env("DISCOVER_MAX_RUNTIME_S", "3600"))
 
 # Mutable run-level state for CORE rate-limit tracking (dict avoids `global`)
 _core_state: dict = {"streak_429": 0, "disabled": False}
+_ss_state: dict = {"streak_429": 0, "disabled": False}
 
 STATE_DIR = pathlib.Path(env("STATE_DIR", "storage/state"))
 # Output path is RUN_ID-scoped for determinism; daily.sh exports CANDIDATES_PATH
@@ -151,14 +162,20 @@ def resolve_final_url(url: str) -> str:
         r = _SESSION.head(url, allow_redirects=True, timeout=RESOLVE_DOI_TIMEOUT_S, headers=headers)
         if r.status_code >= 200 and r.url:
             return r.url
-    except Exception:
-        pass
+    except requests.RequestException as e:
+        logger.warning(f"HEAD request failed for {url}: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error in HEAD request for {url}: {e}")
+
     try:
         r = _SESSION.get(url, allow_redirects=True, timeout=RESOLVE_DOI_TIMEOUT_S, stream=True, headers=headers)
         if r.status_code >= 200 and r.url:
             return r.url
-    except Exception:
-        pass
+    except requests.RequestException as e:
+        logger.warning(f"GET request failed for {url}: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error in GET request for {url}: {e}")
+
     return url
 
 
@@ -277,6 +294,8 @@ def semantic_scholar_search(query: str, limit: int = 15) -> List[Dict[str, Any]]
     Optional API key (SEMANTIC_SCHOLAR_KEY) increases rate limits to 1 req/s.
     Register at: https://www.semanticscholar.org/product/api
     """
+    if _ss_state["disabled"]:
+        return []
     url = "https://api.semanticscholar.org/graph/v1/paper/search"
     headers: Dict[str, str] = {"User-Agent": USER_AGENT}
     if SEMANTIC_SCHOLAR_KEY:
@@ -287,8 +306,18 @@ def semantic_scholar_search(query: str, limit: int = 15) -> List[Dict[str, Any]]
         "fields": "title,abstract,year,publicationDate,openAccessPdf,externalIds",
     }
     try:
-        r = _SESSION.get(url, params=params, headers=headers, timeout=30)
+        r = _SESSION.get(url, params=params, headers=headers, timeout=10)
+        if r.status_code == 429:
+            _ss_state["streak_429"] += 1
+            if _ss_state["streak_429"] >= SEMANTIC_SCHOLAR_MAX_429:
+                _ss_state["disabled"] = True
+                print(
+                    f"[discover] WARN: Semantic Scholar disabled after {_ss_state['streak_429']} consecutive 429s — skipping for this run",
+                    flush=True,
+                )
+            return []
         r.raise_for_status()
+        _ss_state["streak_429"] = 0
         return r.json().get("data") or []
     except Exception as e:
         print(f"[discover] WARN: semantic_scholar failed: {e}", flush=True)
@@ -714,8 +743,12 @@ def main():
     _web_query_count = 0
     # Cost cap applies only when using Brave (paid). SearXNG is free → no cap.
     _web_cap = 0 if SEARXNG_URL else BRAVE_MAX_QUERIES_PER_RUN
+    _discover_t0 = time.monotonic()
+    _budget_exceeded = False
 
     for f in focuses:
+        if _budget_exceeded:
+            break
         focus = f.get("name") or "unknown"
         queries = f.get("queries") or []
         base_score = float(f.get("base_score") or 10)
@@ -728,6 +761,13 @@ def main():
             q = (q or "").strip()
             if not q:
                 continue
+            if DISCOVER_MAX_RUNTIME_S > 0 and time.monotonic() - _discover_t0 > DISCOVER_MAX_RUNTIME_S:
+                print(
+                    f"[discover] WARN: max runtime {DISCOVER_MAX_RUNTIME_S}s exceeded — stopping query loop early",
+                    flush=True,
+                )
+                _budget_exceeded = True
+                break
             q = ensure_spirulina_in_query(q)
 
             # 1) Web search (SearXNG primary → Brave fallback)

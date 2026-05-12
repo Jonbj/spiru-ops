@@ -47,6 +47,7 @@ This file contains verbose comments because it is high-leverage and complex.
 
 import os
 import json
+import logging
 import pathlib
 import random
 import re
@@ -77,6 +78,9 @@ from pipelines.common import (
     classify_doc_type,
 )
 from pipelines.relevance import compute_spirulina_relevance, llm_spirulina_score
+
+# Configura il logger
+logger = logging.getLogger(__name__)
 
 USER_AGENT = env("USER_AGENT", "spiru-ops-bot/0.6")
 OPENALEX_EMAIL = env("OPENALEX_EMAIL", required=False)
@@ -596,20 +600,41 @@ def try_download_with_openalex_fallback(
             domain_429[dom] = domain_429.get(dom, 0) + 1
 
         if status not in (403, 429) or not doi:
+            logger.warning(f"Download failed for {url} with status {status}")
             raise
 
         if status == 403 and domain_403.get(dom, 0) > MAX_403_PER_DOMAIN:
+            logger.warning(f"Domain {dom} exceeded 403 limit, skipping")
             raise
         if status == 429 and domain_429.get(dom, 0) > MAX_429_PER_DOMAIN:
+            logger.warning(f"Domain {dom} exceeded 429 limit, skipping")
             raise
 
+        logger.info(f"Attempting OpenAlex fallback for DOI: {doi}")
         work = openalex_lookup_by_doi(doi)
-        alt = best_url_from_openalex(work or {})
+        if not work:
+            logger.warning(f"OpenAlex lookup failed for DOI: {doi}")
+            raise
+
+        alt = best_url_from_openalex(work)
         alt = normalize_url(alt or "")
         if not alt or alt == normalize_url(url):
+            logger.warning(f"No valid alternative URL found in OpenAlex for DOI: {doi}")
             raise
 
+        logger.info(f"Using OpenAlex fallback URL: {alt}")
         fb_stats.used += 1
+
+        # Verifica che l'URL alternativo sia accessibile
+        try:
+            head_response = http_head(alt)
+            if head_response.status_code >= 400:
+                logger.warning(f"OpenAlex fallback URL {alt} returns status {head_response.status_code}")
+                raise requests.exceptions.HTTPError(f"Status {head_response.status_code}")
+        except Exception as head_error:
+            logger.warning(f"OpenAlex fallback URL {alt} is not accessible: {head_error}")
+            raise
+
         timeout_s2 = _request_timeout_for(alt, hinted_pdf)
         final_url, n, sha, prefix, ctype = download_stream_to_file(alt, out_path, max_bytes, timeout_s=timeout_s2)
         fb_stats.success += 1
@@ -913,8 +938,8 @@ def main() -> None:
     # 403 (paywalls) cool down for 7 days; 429 (rate limit) cool down for 6 hours.
     _DOMAIN_FAIL_CACHE_PATH = STATE_DIR / "domain_fail_cache.json"
     _now_ts = datetime.now(timezone.utc).timestamp()
-    _TTL_403 = 7 * 86400
-    _TTL_429 = 6 * 3600
+    _TTL_403 = int(env("DOMAIN_FAIL_TTL_403", str(48 * 3600)))   # default 48h (was 7d)
+    _TTL_429 = int(env("DOMAIN_FAIL_TTL_429", str(6 * 3600)))    # default 6h (unchanged)
 
     def _load_domain_fail_cache() -> Tuple[Dict[str, int], Dict[str, int]]:
         d403: Dict[str, int] = {}

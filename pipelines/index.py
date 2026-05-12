@@ -27,6 +27,7 @@ All IO is RUN_ID-scoped to avoid overwriting and midnight-split issues.
 """
 
 import json
+import logging
 import pathlib
 from urllib.parse import urlparse
 
@@ -40,6 +41,9 @@ from pipelines.qdrant_rest import (
     ensure_collection_hybrid,
     upsert_points_hybrid,
 )
+
+# Configura il logger
+logger = logging.getLogger(__name__)
 
 QDRANT_URL = env("QDRANT_URL", required=True)
 COLLECTION = env("QDRANT_COLLECTION", "docs_chunks_v2")
@@ -73,11 +77,22 @@ INDEX_ALLOW_NON_SPIRULINA = env_bool("INDEX_ALLOW_NON_SPIRULINA", False)
 
 # 64 points per Qdrant upsert request — balances HTTP payload size and round-trip
 # overhead. Too small = many round trips; too large = risk of timeout on slow networks.
-UPSERT_BATCH = int(env("QDRANT_UPSERT_BATCH", 64))
+UPSERT_BATCH = int(env("QDRANT_UPSERT_BATCH", "64"))
 # Hard cap on chunks per document. Prevents a single very-long PDF (e.g. a thesis or
 # textbook) from flooding the KB and dominating retrieval results. At 2200 chars/chunk,
 # 50 chunks ≈ 110 KB of text — more than enough for any scientific paper.
 MAX_CHUNKS_PER_DOC = int(env("MAX_CHUNKS_PER_DOC", "50"))
+
+# Validazione dei parametri di chunking
+CHUNK_MAX = int(env("CHUNK_MAX_CHARS", 2200))
+if CHUNK_MAX <= 0:
+    raise ValueError("CHUNK_MAX_CHARS must be positive")
+
+CHUNK_OVERLAP = int(env("CHUNK_OVERLAP", 240))
+if CHUNK_OVERLAP < 0:
+    raise ValueError("CHUNK_OVERLAP cannot be negative")
+if CHUNK_OVERLAP >= CHUNK_MAX:
+    raise ValueError("CHUNK_OVERLAP must be less than CHUNK_MAX_CHARS")
 
 
 def _build_payload(meta: dict, url: str, domain: str, doc_id: str, content_hash: str, spiru_score: float, is_spiru: bool, chunk_text_val: str, chunk_i: int) -> dict:
