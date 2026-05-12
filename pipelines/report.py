@@ -388,6 +388,8 @@ def main() -> None:
                 ("boilerplate_share_avg", f"{(sum(boiler_share)/len(boiler_share)):.2%}" if boiler_share else "n/a"),
                 ("failures_total", str(failures_total)),
                 ("skipped_already_seen", str(skipped.get("already_seen", 0))),
+                ("skipped_already_seen_doi", str(skipped.get("already_seen_doi", 0))),
+                ("skipped_domain_403_cooldown", str(skipped.get("domain_403_cooldown", 0))),
                 ("skipped_denied_domain", str(skipped.get("denied_domain", 0))),
                 ("indexed_docs", str(indexed.get("docs_indexed", 0))),
                 ("indexed_docs_skipped_low_relevance", str(indexed.get("docs_skipped_low_relevance", 0))),
