@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "426722115fbb3d25",
+        "id": "93dbdafa8933445e",
         "type": "tabs",
         "children": [
           {
-            "id": "32be5464d5305201",
+            "id": "24e62048d40dac34",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "progetto/customers/inbox/2026-04-12T134327Z.md",
-                "mode": "source",
+                "file": "docs/medium_spirulina_guida_tecnica.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-04-12T134327Z"
+              "title": "medium_spirulina_guida_tecnica"
             }
           }
         ]
@@ -194,44 +194,44 @@
       "bases:Create new base": false
     }
   },
-  "active": "32be5464d5305201",
+  "active": "24e62048d40dac34",
   "lastOpenFiles": [
-    "progetto/customers/inbox/2026-04-12T181001Z.md",
-    "progetto/competitors/inbox/2026-04-12T181001Z.md",
-    "progetto/customers/inbox/2026-04-12T135306Z.md",
-    "progetto/customer-discovery.md",
-    "progetto/customers/inbox/2026-04-12T134327Z.md",
+    "progetto/customers/inbox/2026-04-24T001001Z.md",
+    "progetto/competitors/inbox/2026-04-24T001001Z.md",
+    "progetto/customers/inbox/2026-04-23T181001Z.md",
+    "progetto/competitors/inbox/2026-04-23T181001Z.md",
+    "progetto/customers/inbox/2026-04-23T121001Z.md",
+    "progetto/competitors/inbox/2026-04-23T121001Z.md",
+    "progetto/customers/inbox/2026-04-23T061001Z.md",
+    "progetto/competitors/inbox/2026-04-23T061001Z.md",
+    "progetto/customers/inbox/2026-04-23T001001Z.md",
+    "progetto/competitors/inbox/2026-04-23T001001Z.md",
+    "progetto/customers/inbox/2026-04-22T181001Z.md",
+    "progetto/competitors/inbox/2026-04-22T181001Z.md",
+    "progetto/customers/inbox/2026-04-22T121001Z.md",
+    "progetto/competitors/inbox/2026-04-22T121001Z.md",
+    "progetto/customers/inbox/2026-04-22T061001Z.md",
+    "progetto/competitors/inbox/2026-04-22T061001Z.md",
+    "progetto/customers/inbox/2026-04-22T001002Z.md",
+    "progetto/competitors/inbox/2026-04-22T001002Z.md",
+    "progetto/customers/inbox/2026-04-21T181001Z.md",
+    "progetto/competitors/inbox/2026-04-21T181001Z.md",
+    "progetto/customers/inbox/2026-04-21T121001Z.md",
+    "progetto/competitors/inbox/2026-04-21T121001Z.md",
+    "progetto/customers/inbox/2026-04-21T061001Z.md",
+    "progetto/competitors/inbox/2026-04-21T061001Z.md",
+    "progetto/customers/inbox/2026-04-21T001001Z.md",
+    "progetto/competitors/inbox/2026-04-21T001001Z.md",
+    "Untitled.base",
+    "Untitled",
+    "docs/Untitled",
+    "docs",
     "progetto/customers/inbox",
     "progetto/customers",
-    "progetto/dati-climatici-fermo-marche.md",
-    "progetto/competitors/inbox/2026-04-12T061001Z.md",
-    "progetto/competitors/inbox/2026-04-12T001001Z.md",
-    "progetto/competitors/inbox/2026-04-11T181001Z.md",
     "progetto/customer-discovery.md.tmp.80041.1775916521688",
-    "progetto/competitors/inbox/2026-04-11T121001Z.md",
-    "progetto/competitors/inbox/2026-04-11T061001Z.md",
-    "progetto/competitors/inbox/2026-04-11T001001Z.md",
-    "progetto/competitors/inbox/2026-04-10T224911Z.md",
-    "progetto/operativo-aprile.md",
-    "progetto/competitors/inbox/2026-04-10T181001Z.md",
-    "progetto/competitors/inbox/2026-04-10T121001Z.md",
-    "progetto/competitors/competitor-map.md",
-    "progetto/competitors/inbox/2026-04-10T001001Z.md",
-    "progetto/competitors/inbox/2026-04-09T181001Z.md",
-    "progetto/competitors/inbox/2026-04-09T121001Z.md",
-    "progetto/competitors/inbox/2026-04-09T061001Z.md",
-    "progetto/competitors/inbox/2026-04-09T001001Z.md",
     "progetto/competitors/competitor-map.md.tmp.657400.1775686580798",
     "progetto/competitors/competitor-map.md.tmp.657400.1775686496614",
     "progetto/competitors/competitor-map.md.tmp.657400.1775686456652",
-    "progetto/competitors/competitor-map.md.tmp.657400.1775686445589",
-    "progetto/competitors/inbox/2026-04-08T181001Z.md",
-    "progetto/gantt-piano-operativo-algavitae-aprile.md",
-    "progetto/agent-guide-pianificazione.md.tmp.657400.1775667075022",
-    "progetto/agent-guide-pianificazione.md",
-    "progetto/agent-guide-pianificazione.md.tmp.657400.1775667020167",
-    "progetto/operativo-aprile.md.tmp.657400.1775666960124",
-    "coltura/setpoint-operativi.md",
     "Untitled.canvas"
   ]
 }

@@ -739,3 +739,507 @@
 - **Punti Qdrant aggiunti**: 112
 - **Avg spirulina score**: 0.838
 - **QC**: ❌ FAIL
+
+### 2026-04-19 — run `test-20260419-192354` (18:12 UTC)
+- **Documenti ingestiti**: 10 (failures: 42)
+- **Punti Qdrant aggiunti**: 74
+- **Avg spirulina score**: 0.978
+- **QC**: ❌ FAIL
+
+### 2026-04-19 — run `2026-04-19T181001Z` (18:46 UTC)
+- **Documenti ingestiti**: 3 (failures: 46)
+- **Punti Qdrant aggiunti**: 60
+- **Avg spirulina score**: 0.995
+- **QC**: ❌ FAIL
+
+### 2026-04-19 — run `2026-04-19T205028Z` (22:16 UTC)
+- **Documenti ingestiti**: 66 (failures: 33)
+- **Punti Qdrant aggiunti**: 908
+- **Avg spirulina score**: 0.94
+- **QC**: ✅ PASS
+
+### 2026-04-20 — run `2026-04-20T001001Z` (01:36 UTC)
+- **Documenti ingestiti**: 43 (failures: 61)
+- **Punti Qdrant aggiunti**: 683
+- **Avg spirulina score**: 0.884
+- **QC**: ✅ PASS
+
+### 2026-04-20 — run `2026-04-20T061001Z` (07:28 UTC)
+- **Documenti ingestiti**: 17 (failures: 61)
+- **Punti Qdrant aggiunti**: 145
+- **Avg spirulina score**: 0.944
+- **QC**: ❌ FAIL
+
+### 2026-04-20 — run `2026-04-20T121001Z` (13:19 UTC)
+- **Documenti ingestiti**: 15 (failures: 52)
+- **Punti Qdrant aggiunti**: 97
+- **Avg spirulina score**: 0.941
+- **QC**: ❌ FAIL
+
+### 2026-04-20 — run `2026-04-20T181001Z` (19:22 UTC)
+- **Documenti ingestiti**: 13 (failures: 57)
+- **Punti Qdrant aggiunti**: 101
+- **Avg spirulina score**: 0.852
+- **QC**: ❌ FAIL
+
+### 2026-04-21 — run `2026-04-21T001001Z` (01:23 UTC)
+- **Documenti ingestiti**: 36 (failures: 54)
+- **Punti Qdrant aggiunti**: 323
+- **Avg spirulina score**: 0.909
+- **QC**: ✅ PASS
+
+### 2026-04-21 — run `2026-04-21T061001Z` (07:24 UTC)
+- **Documenti ingestiti**: 14 (failures: 52)
+- **Punti Qdrant aggiunti**: 67
+- **Avg spirulina score**: 0.882
+- **QC**: ❌ FAIL
+
+### 2026-04-21 — run `2026-04-21T121001Z` (13:25 UTC)
+- **Documenti ingestiti**: 8 (failures: 52)
+- **Punti Qdrant aggiunti**: 16
+- **Avg spirulina score**: 0.891
+- **QC**: ❌ FAIL
+
+### 2026-04-21 — run `2026-04-21T181001Z` (19:15 UTC)
+- **Documenti ingestiti**: 6 (failures: 57)
+- **Punti Qdrant aggiunti**: 76
+- **Avg spirulina score**: 0.994
+- **QC**: ❌ FAIL
+
+### 2026-04-22 — run `2026-04-22T001002Z` (01:19 UTC)
+- **Documenti ingestiti**: 12 (failures: 56)
+- **Punti Qdrant aggiunti**: 97
+- **Avg spirulina score**: 0.972
+- **QC**: ❌ FAIL
+
+### 2026-04-22 — run `2026-04-22T061001Z` (07:12 UTC)
+- **Documenti ingestiti**: 16 (failures: 53)
+- **Punti Qdrant aggiunti**: 73
+- **Avg spirulina score**: 0.88
+- **QC**: ❌ FAIL
+
+### 2026-04-22 — run `2026-04-22T121001Z` (13:18 UTC)
+- **Documenti ingestiti**: 7 (failures: 51)
+- **Punti Qdrant aggiunti**: 31
+- **Avg spirulina score**: 0.826
+- **QC**: ❌ FAIL
+
+### 2026-04-22 — run `2026-04-22T181001Z` (19:15 UTC)
+- **Documenti ingestiti**: 6 (failures: 59)
+- **Punti Qdrant aggiunti**: 41
+- **Avg spirulina score**: 0.972
+- **QC**: ❌ FAIL
+
+### 2026-04-23 — run `2026-04-23T001001Z` (01:58 UTC)
+- **Documenti ingestiti**: 57 (failures: 41)
+- **Punti Qdrant aggiunti**: 606
+- **Avg spirulina score**: 0.845
+- **QC**: ✅ PASS
+
+### 2026-04-23 — run `2026-04-23T061001Z` (07:24 UTC)
+- **Documenti ingestiti**: 42 (failures: 41)
+- **Punti Qdrant aggiunti**: 321
+- **Avg spirulina score**: 0.925
+- **QC**: ✅ PASS
+
+### 2026-04-23 — run `2026-04-23T121001Z` (13:39 UTC)
+- **Documenti ingestiti**: 27 (failures: 44)
+- **Punti Qdrant aggiunti**: 202
+- **Avg spirulina score**: 0.941
+- **QC**: ✅ PASS
+
+### 2026-04-23 — run `2026-04-23T181001Z` (19:20 UTC)
+- **Documenti ingestiti**: 17 (failures: 46)
+- **Punti Qdrant aggiunti**: 167
+- **Avg spirulina score**: 0.897
+- **QC**: ❌ FAIL
+
+### 2026-04-24 — run `2026-04-24T001001Z` (01:27 UTC)
+- **Documenti ingestiti**: 24 (failures: 51)
+- **Punti Qdrant aggiunti**: 193
+- **Avg spirulina score**: 0.954
+- **QC**: ❌ FAIL
+
+### 2026-04-24 — run `2026-04-24T061001Z` (07:30 UTC)
+- **Documenti ingestiti**: 12 (failures: 45)
+- **Punti Qdrant aggiunti**: 129
+- **Avg spirulina score**: 0.974
+- **QC**: ❌ FAIL
+
+### 2026-04-24 — run `2026-04-24T121001Z` (13:53 UTC)
+- **Documenti ingestiti**: 16 (failures: 50)
+- **Punti Qdrant aggiunti**: 114
+- **Avg spirulina score**: 0.805
+- **QC**: ❌ FAIL
+
+### 2026-04-24 — run `2026-04-24T181001Z` (20:00 UTC)
+- **Documenti ingestiti**: 10 (failures: 52)
+- **Punti Qdrant aggiunti**: 145
+- **Avg spirulina score**: 0.812
+- **QC**: ❌ FAIL
+
+### 2026-04-25 — run `2026-04-25T001001Z` (01:57 UTC)
+- **Documenti ingestiti**: 33 (failures: 52)
+- **Punti Qdrant aggiunti**: 292
+- **Avg spirulina score**: 0.926
+- **QC**: ✅ PASS
+
+### 2026-04-25 — run `2026-04-25T061001Z` (07:39 UTC)
+- **Documenti ingestiti**: 14 (failures: 51)
+- **Punti Qdrant aggiunti**: 79
+- **Avg spirulina score**: 0.924
+- **QC**: ❌ FAIL
+
+### 2026-04-25 — run `2026-04-25T121002Z` (13:33 UTC)
+- **Documenti ingestiti**: 8 (failures: 47)
+- **Punti Qdrant aggiunti**: 13
+- **Avg spirulina score**: 0.898
+- **QC**: ❌ FAIL
+
+### 2026-04-25 — run `2026-04-25T181001Z` (19:45 UTC)
+- **Documenti ingestiti**: 11 (failures: 54)
+- **Punti Qdrant aggiunti**: 97
+- **Avg spirulina score**: 0.931
+- **QC**: ❌ FAIL
+
+### 2026-04-26 — run `2026-04-26T001001Z` (01:40 UTC)
+- **Documenti ingestiti**: 17 (failures: 44)
+- **Punti Qdrant aggiunti**: 147
+- **Avg spirulina score**: 0.936
+- **QC**: ❌ FAIL
+
+### 2026-04-26 — run `2026-04-26T061001Z` (08:39 UTC)
+- **Documenti ingestiti**: 39 (failures: 47)
+- **Punti Qdrant aggiunti**: 491
+- **Avg spirulina score**: 0.845
+- **QC**: ✅ PASS
+
+### 2026-04-26 — run `2026-04-26T121001Z` (13:41 UTC)
+- **Documenti ingestiti**: 14 (failures: 39)
+- **Punti Qdrant aggiunti**: 197
+- **Avg spirulina score**: 0.842
+- **QC**: ❌ FAIL
+
+### 2026-04-26 — run `2026-04-26T181001Z` (19:20 UTC)
+- **Documenti ingestiti**: 11 (failures: 52)
+- **Punti Qdrant aggiunti**: 27
+- **Avg spirulina score**: 0.829
+- **QC**: ❌ FAIL
+
+### 2026-04-27 — run `2026-04-27T001001Z` (01:28 UTC)
+- **Documenti ingestiti**: 14 (failures: 40)
+- **Punti Qdrant aggiunti**: 116
+- **Avg spirulina score**: 0.956
+- **QC**: ❌ FAIL
+
+### 2026-04-27 — run `2026-04-27T061001Z` (07:27 UTC)
+- **Documenti ingestiti**: 13 (failures: 42)
+- **Punti Qdrant aggiunti**: 130
+- **Avg spirulina score**: 0.941
+- **QC**: ❌ FAIL
+
+### 2026-04-27 — run `2026-04-27T121001Z` (13:38 UTC)
+- **Documenti ingestiti**: 11 (failures: 40)
+- **Punti Qdrant aggiunti**: 167
+- **Avg spirulina score**: 0.868
+- **QC**: ❌ FAIL
+
+### 2026-04-27 — run `2026-04-27T181001Z` (19:17 UTC)
+- **Documenti ingestiti**: 6 (failures: 44)
+- **Punti Qdrant aggiunti**: 17
+- **Avg spirulina score**: 0.967
+- **QC**: ❌ FAIL
+
+### 2026-04-28 — run `2026-04-28T001001Z` (01:23 UTC)
+- **Documenti ingestiti**: 12 (failures: 45)
+- **Punti Qdrant aggiunti**: 48
+- **Avg spirulina score**: 0.864
+- **QC**: ❌ FAIL
+
+### 2026-04-28 — run `2026-04-28T061001Z` (07:17 UTC)
+- **Documenti ingestiti**: 7 (failures: 48)
+- **Punti Qdrant aggiunti**: 31
+- **Avg spirulina score**: 0.922
+- **QC**: ❌ FAIL
+
+### 2026-04-28 — run `2026-04-28T121001Z` (13:42 UTC)
+- **Documenti ingestiti**: 8 (failures: 43)
+- **Punti Qdrant aggiunti**: 42
+- **Avg spirulina score**: 0.856
+- **QC**: ❌ FAIL
+
+### 2026-04-28 — run `2026-04-28T181001Z` (19:20 UTC)
+- **Documenti ingestiti**: 3 (failures: 36)
+- **Punti Qdrant aggiunti**: 24
+- **Avg spirulina score**: 0.985
+- **QC**: ❌ FAIL
+
+### 2026-04-29 — run `2026-04-29T001001Z` (01:24 UTC)
+- **Documenti ingestiti**: 18 (failures: 43)
+- **Punti Qdrant aggiunti**: 177
+- **Avg spirulina score**: 0.924
+- **QC**: ❌ FAIL
+
+### 2026-04-29 — run `2026-04-29T061001Z` (07:22 UTC)
+- **Documenti ingestiti**: 4 (failures: 39)
+- **Punti Qdrant aggiunti**: 15
+- **Avg spirulina score**: 0.823
+- **QC**: ❌ FAIL
+
+### 2026-04-29 — run `2026-04-29T181001Z` (20:16 UTC)
+- **Documenti ingestiti**: 20 (failures: 39)
+- **Punti Qdrant aggiunti**: 391
+- **Avg spirulina score**: 0.872
+- **QC**: ✅ PASS
+
+### 2026-04-30 — run `2026-04-30T001001Z` (01:30 UTC)
+- **Documenti ingestiti**: 19 (failures: 42)
+- **Punti Qdrant aggiunti**: 175
+- **Avg spirulina score**: 0.951
+- **QC**: ❌ FAIL
+
+### 2026-04-30 — run `2026-04-30T061001Z` (07:27 UTC)
+- **Documenti ingestiti**: 10 (failures: 49)
+- **Punti Qdrant aggiunti**: 96
+- **Avg spirulina score**: 0.761
+- **QC**: ❌ FAIL
+
+### 2026-04-30 — run `2026-04-30T121001Z` (13:23 UTC)
+- **Documenti ingestiti**: 10 (failures: 51)
+- **Punti Qdrant aggiunti**: 61
+- **Avg spirulina score**: 0.959
+- **QC**: ❌ FAIL
+
+### 2026-04-30 — run `2026-04-30T181001Z` (19:27 UTC)
+- **Documenti ingestiti**: 7 (failures: 43)
+- **Punti Qdrant aggiunti**: 40
+- **Avg spirulina score**: 0.817
+- **QC**: ❌ FAIL
+
+### 2026-05-01 — run `2026-05-01T001001Z` (01:31 UTC)
+- **Documenti ingestiti**: 11 (failures: 41)
+- **Punti Qdrant aggiunti**: 132
+- **Avg spirulina score**: 0.915
+- **QC**: ❌ FAIL
+
+### 2026-05-01 — run `2026-05-01T061001Z` (07:30 UTC)
+- **Documenti ingestiti**: 16 (failures: 47)
+- **Punti Qdrant aggiunti**: 114
+- **Avg spirulina score**: 0.879
+- **QC**: ❌ FAIL
+
+### 2026-05-01 — run `2026-05-01T121001Z` (13:19 UTC)
+- **Documenti ingestiti**: 8 (failures: 40)
+- **Punti Qdrant aggiunti**: 95
+- **Avg spirulina score**: 0.922
+- **QC**: ❌ FAIL
+
+### 2026-05-01 — run `2026-05-01T181001Z` (19:21 UTC)
+- **Documenti ingestiti**: 4 (failures: 37)
+- **Punti Qdrant aggiunti**: 13
+- **Avg spirulina score**: 0.725
+- **QC**: ❌ FAIL
+
+### 2026-05-02 — run `2026-05-02T001001Z` (00:51 UTC)
+- **Documenti ingestiti**: 4 (failures: 21)
+- **Punti Qdrant aggiunti**: 77
+- **Avg spirulina score**: 0.702
+- **QC**: ❌ FAIL
+
+### 2026-05-02 — run `2026-05-02T061001Z` (07:36 UTC)
+- **Documenti ingestiti**: 2 (failures: 24)
+- **Punti Qdrant aggiunti**: 50
+- **Avg spirulina score**: 0.581
+- **QC**: ❌ FAIL
+
+### 2026-05-02 — run `2026-05-02T121001Z` (12:47 UTC)
+- **Documenti ingestiti**: 1 (failures: 23)
+- **Punti Qdrant aggiunti**: 1
+- **Avg spirulina score**: 0.962
+- **QC**: ❌ FAIL
+
+### 2026-05-02 — run `2026-05-02T181001Z` (19:06 UTC)
+- **Documenti ingestiti**: 1 (failures: 27)
+- **Punti Qdrant aggiunti**: 3
+- **Avg spirulina score**: 0.996
+- **QC**: ❌ FAIL
+
+### 2026-05-03 — run `2026-05-03T001001Z` (01:46 UTC)
+- **Documenti ingestiti**: 26 (failures: 27)
+- **Punti Qdrant aggiunti**: 914
+- **Avg spirulina score**: 0.754
+- **QC**: ✅ PASS
+
+### 2026-05-03 — run `2026-05-03T061001Z` (07:26 UTC)
+- **Documenti ingestiti**: 2 (failures: 30)
+- **Punti Qdrant aggiunti**: 1
+- **Avg spirulina score**: 0.47
+- **QC**: ❌ FAIL
+
+### 2026-05-03 — run `2026-05-03T121001Z` (12:41 UTC)
+- **Documenti ingestiti**: 0 (failures: 25)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-03 — run `2026-05-03T181001Z` (19:00 UTC)
+- **Documenti ingestiti**: 18 (failures: 38)
+- **Punti Qdrant aggiunti**: 209
+- **Avg spirulina score**: 0.956
+- **QC**: ✅ PASS
+
+### 2026-05-04 — run `2026-05-04T001001Z` (00:43 UTC)
+- **Documenti ingestiti**: 1 (failures: 31)
+- **Punti Qdrant aggiunti**: 4
+- **Avg spirulina score**: 0.713
+- **QC**: ❌ FAIL
+
+### 2026-05-04 — run `2026-05-04T061001Z` (06:39 UTC)
+- **Documenti ingestiti**: 0 (failures: 23)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-04 — run `2026-05-04T121001Z` (13:11 UTC)
+- **Documenti ingestiti**: 5 (failures: 28)
+- **Punti Qdrant aggiunti**: 95
+- **Avg spirulina score**: 0.992
+- **QC**: ❌ FAIL
+
+### 2026-05-04 — run `2026-05-04T181001Z` (18:45 UTC)
+- **Documenti ingestiti**: 6 (failures: 27)
+- **Punti Qdrant aggiunti**: 35
+- **Avg spirulina score**: 0.338
+- **QC**: ❌ FAIL
+
+### 2026-05-05 — run `2026-05-05T061001Z` (07:13 UTC)
+- **Documenti ingestiti**: 0 (failures: 21)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-05 — run `2026-05-05T121001Z` (13:16 UTC)
+- **Documenti ingestiti**: 1 (failures: 26)
+- **Punti Qdrant aggiunti**: 16
+- **Avg spirulina score**: 0.984
+- **QC**: ❌ FAIL
+
+### 2026-05-05 — run `2026-05-05T181001Z` (19:08 UTC)
+- **Documenti ingestiti**: 0 (failures: 25)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-06 — run `2026-05-06T001001Z` (01:28 UTC)
+- **Documenti ingestiti**: 7 (failures: 83)
+- **Punti Qdrant aggiunti**: 198
+- **Avg spirulina score**: 0.805
+- **QC**: ❌ FAIL
+
+### 2026-05-06 — run `2026-05-06T061001Z` (07:49 UTC)
+- **Documenti ingestiti**: 16 (failures: 82)
+- **Punti Qdrant aggiunti**: 438
+- **Avg spirulina score**: 0.711
+- **QC**: ❌ FAIL
+
+### 2026-05-07 — run `2026-05-07T121001Z` (13:29 UTC)
+- **Documenti ingestiti**: 7 (failures: 62)
+- **Punti Qdrant aggiunti**: 195
+- **Avg spirulina score**: 0.599
+- **QC**: ❌ FAIL
+
+### 2026-05-07 — run `2026-05-07T181001Z` (19:12 UTC)
+- **Documenti ingestiti**: 3 (failures: 52)
+- **Punti Qdrant aggiunti**: 79
+- **Avg spirulina score**: 0.882
+- **QC**: ❌ FAIL
+
+### 2026-05-08 — run `2026-05-08T001001Z` (01:22 UTC)
+- **Documenti ingestiti**: 3 (failures: 42)
+- **Punti Qdrant aggiunti**: 139
+- **Avg spirulina score**: 0.735
+- **QC**: ❌ FAIL
+
+### 2026-05-08 — run `2026-05-08T061001Z` (07:06 UTC)
+- **Documenti ingestiti**: 0 (failures: 39)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-08 — run `2026-05-08T121001Z` (13:07 UTC)
+- **Documenti ingestiti**: 3 (failures: 40)
+- **Punti Qdrant aggiunti**: 20
+- **Avg spirulina score**: 0.989
+- **QC**: ❌ FAIL
+
+### 2026-05-08 — run `2026-05-08T181001Z` (19:19 UTC)
+- **Documenti ingestiti**: 4 (failures: 40)
+- **Punti Qdrant aggiunti**: 7
+- **Avg spirulina score**: 0.459
+- **QC**: ❌ FAIL
+
+### 2026-05-09 — run `2026-05-09T001001Z` (01:16 UTC)
+- **Documenti ingestiti**: 1 (failures: 31)
+- **Punti Qdrant aggiunti**: 8
+- **Avg spirulina score**: 0.998
+- **QC**: ❌ FAIL
+
+### 2026-05-09 — run `2026-05-09T061001Z` (07:15 UTC)
+- **Documenti ingestiti**: 0 (failures: 28)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-09 — run `2026-05-09T121001Z` (13:43 UTC)
+- **Documenti ingestiti**: 16 (failures: 28)
+- **Punti Qdrant aggiunti**: 369
+- **Avg spirulina score**: 0.687
+- **QC**: ✅ PASS
+
+### 2026-05-09 — run `2026-05-09T181001Z` (18:50 UTC)
+- **Documenti ingestiti**: 3 (failures: 39)
+- **Punti Qdrant aggiunti**: 28
+- **Avg spirulina score**: 0.995
+- **QC**: ❌ FAIL
+
+### 2026-05-10 — run `2026-05-10T001001Z` (01:13 UTC)
+- **Documenti ingestiti**: 2 (failures: 29)
+- **Punti Qdrant aggiunti**: 50
+- **Avg spirulina score**: 0.999
+- **QC**: ❌ FAIL
+
+### 2026-05-10 — run `2026-05-10T061001Z` (06:49 UTC)
+- **Documenti ingestiti**: 1 (failures: 30)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0.099
+- **QC**: ❌ FAIL
+
+### 2026-05-10 — run `2026-05-10T121001Z` (13:16 UTC)
+- **Documenti ingestiti**: 1 (failures: 29)
+- **Punti Qdrant aggiunti**: 50
+- **Avg spirulina score**: 0.978
+- **QC**: ❌ FAIL
+
+### 2026-05-11 — run `2026-05-11T001001Z` (01:11 UTC)
+- **Documenti ingestiti**: 0 (failures: 22)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0
+- **QC**: ❌ FAIL
+
+### 2026-05-11 — run `2026-05-11T181001Z` (19:11 UTC)
+- **Documenti ingestiti**: 1 (failures: 24)
+- **Punti Qdrant aggiunti**: 0
+- **Avg spirulina score**: 0.122
+- **QC**: ❌ FAIL
+
+### 2026-05-12 — run `2026-05-12T001001Z` (01:13 UTC)
+- **Documenti ingestiti**: 2 (failures: 31)
+- **Punti Qdrant aggiunti**: 10
+- **Avg spirulina score**: 0.465
+- **QC**: ❌ FAIL
+
+### 2026-05-12 — run `2026-05-12T061001Z` (07:11 UTC)
+- **Documenti ingestiti**: 1 (failures: 21)
+- **Punti Qdrant aggiunti**: 4
+- **Avg spirulina score**: 0.997
+- **QC**: ❌ FAIL
